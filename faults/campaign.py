@@ -42,6 +42,7 @@ def main() -> int:
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--cooldown", type=int, default=720)
     ap.add_argument("--round", default=None, help="only runs with this label (r1/r2)")
+    ap.add_argument("--skip-done", action="store_true", help="skip runs that already have a ground_truth.json")
     ap.add_argument("--background", action="store_true",
                     help="also run the normal background traffic in this process (one process = less memory)")
     args = ap.parse_args()
@@ -56,6 +57,10 @@ def main() -> int:
         log("background traffic running inside the campaign process; settling 600 s first")
         time.sleep(600)
     plan = [p for p in PLAN if (not args.only or p[0] in args.only) and (not args.round or p[2] == args.round)]
+    if args.skip_done:
+        from faults.common import RUNS_DIR
+        plan = [p for p in plan if not os.path.exists(os.path.join(RUNS_DIR, f"{p[0]}-{p[2]}", "ground_truth.json"))]
+    log(f"plan: {[f'{f}-{lbl}' for f, _, lbl in plan]}")
     record = os.path.join(REPO, "runtime", "campaign.jsonl")
     for i, (fault, variant, label) in enumerate(plan):
         started = iso()
