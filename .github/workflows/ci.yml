@@ -1,0 +1,91 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Job 1: every push and pull request, on GitHub's runners. Nothing here needs
+  # a running service, Ollama or Docker Compose.
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the doctor's git collector tests read history
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: |
+            patient/requirements.txt
+            doctor/requirements.txt
+
+      - name: Install
+        run: |
+          pip install -r patient/requirements.txt
+          if [ -f doctor/requirements.txt ]; then pip install -r doctor/requirements.txt; fi
+          pip install ruff==0.15.22 yamllint==1.37.1
+
+      - name: ruff
+        run: ruff check .
+
+      - name: yamllint
+        run: yamllint -c .yamllint.yml .
+
+      - name: patient tests
+        working-directory: patient
+        # conftest.py pins every service address; nothing is listening there.
+        run: python -m pytest -q -p no:cacheprovider
+
+      - name: alert-sink tests
+        working-directory: alert_sink
+        run: python -m pytest -q -p no:cacheprovider
+
+      - name: doctor tests
+        if: hashFiles('doctor/tests/**') != ''
+        run: python -m pytest -q -p no:cacheprovider doctor/tests
+
+      - name: promtool and amtool
+        run: |
+          docker run --rm --entrypoint sh -v "$PWD/monitoring/prometheus:/etc/prometheus" -w /etc/prometheus \
+            prom/prometheus:v3.5.0 -c "promtool check config prometheus.yml && promtool test rules alert.rules.test.yml"
+          docker run --rm --entrypoint amtool -v "$PWD/monitoring/alertmanager:/etc/alertmanager" \
+            prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.yml
+
+      - name: compose file is valid
+        run: |
+          cp .env.example .env
+          IMAGE_TAG=ci docker compose config --quiet
+
+  # Job 2: deploy. Only pushes to main, never pull requests, and only on the
+  # self-hosted runner on the HP Pavilion (label "pavilion").
+  deploy:
+    needs: lint-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, pavilion]
+    env:
+      # Lives outside the checkout so it survives between runs (see README).
+      AID_HOME: /opt/aid
+      DEPLOY_LOG_PATH: /opt/aid/runtime/deploys.jsonl
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # deploy.py diffs against the previous deployed SHA
+          clean: false     # keep the DVC workspace (kb/) between runs
+
+      - name: Machine configuration
+        run: cp "$AID_HOME/.env" .env
+
+      - name: Knowledge base
+        run: |
+          python3 -m pip install --user -q -r requirements-dev.txt
+          python3 -m dvc pull || python3 -m dvc repro build_kb
+
+      - name: Build, deploy, smoke test (rolls back on failure)
+        run: python3 deploy/deploy.py --reason "ci run ${{ github.run_id }} (${{ github.actor }})"

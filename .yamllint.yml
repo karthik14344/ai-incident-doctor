@@ -1,0 +1,14 @@
+extends: default
+ignore: |
+  **/node_modules/
+  .venv/
+  kb/
+  patient/frontend/
+rules:
+  line-length: { max: 160 }
+  document-start: disable
+  truthy: { check-keys: false }
+  comments: { min-spaces-from-content: 1 }
+  braces: { max-spaces-inside: 1 }
+  brackets: { max-spaces-inside: 1 }
+  indentation: { spaces: consistent, indent-sequences: whatever }
