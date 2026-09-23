@@ -499,3 +499,8 @@ def save_report(report: Dict[str, Any]) -> None:
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, f"{report['run_id']}.json"), "w", encoding="utf-8") as fh:
         json.dump(report, fh, indent=2)
+
+    # Also an MLflow experiment run, when MLFLOW_TRACKING_URI is configured.
+    from evaluation.mlflow_log import log_report
+
+    report["mlflow_run_id"] = log_report(report)
