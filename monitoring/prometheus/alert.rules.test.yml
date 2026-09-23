@@ -80,3 +80,19 @@ tests:
       - eval_time: 9m
         alertname: MemoryClimbing
         exp_alerts: []
+
+  - name: most questions refused as out of scope fires ChatAnswersRefused
+    interval: 30s
+    input_series:
+      - series: 'knowledgeai_chat_answers_total{outcome="answered", job="gateway"}'
+        values: '0+1x20'
+      - series: 'knowledgeai_chat_answers_total{outcome="refused_scope", job="gateway"}'
+        values: '0+2x20'
+    alert_rule_test:
+      - eval_time: 8m
+        alertname: ChatAnswersRefused
+        exp_alerts:
+          - exp_labels: { severity: warning, service: gateway }
+            exp_annotations:
+              summary: "66.67% of chat questions were refused as outside the documents"
+              description: "Share of chat answers refused by the scope guardrail over the last 5 minutes is above 30%."

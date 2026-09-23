@@ -166,3 +166,18 @@ groups:
         annotations:
           summary: "{{ $value | humanizePercentage }} of retrieval queries returned zero chunks"
           description: "Share of retrieval queries with an empty result over the last 5 minutes is above 20%."
+
+      - alert: ChatAnswersRefused
+        # Normally ~0%: the corpus covers the questions users ask.
+        expr: |
+          (
+            sum(rate(knowledgeai_chat_answers_total{outcome="refused_scope"}[5m]))
+            / sum(rate(knowledgeai_chat_answers_total[5m]))
+          ) > 0.3
+        for: 2m
+        labels:
+          severity: warning
+          service: gateway
+        annotations:
+          summary: "{{ $value | humanizePercentage }} of chat questions were refused as outside the documents"
+          description: "Share of chat answers refused by the scope guardrail over the last 5 minutes is above 30%."
