@@ -187,19 +187,31 @@ _add(Fault(
 
 # 6. Tight internal timeout --------------------------------------------------------
 _add(Fault(
-    id="f6_tight_timeout", name="Gateway -> LLM stream timeout lowered to 3 s",
+    # Redesigned on measurements (DECISIONS D-79): the spec's "3 s" never trips on this
+    # hardware - LLM time-to-first-token p95 is 0.07 s and retrieval p99 0.1 s - so the
+    # timeout is set just under the real latency instead: the gateway->retrieval call
+    # finishes within 50 ms 93.4% of the time, so a 50 ms timeout fails ~1 in 15.
+    id="f6_tight_timeout", name="Gateway -> retrieval timeout set to 50 ms (a unit slip)",
     delivery="push", incident_class="code_defect", component="gateway",
-    acceptable_classes=["configuration"], acceptable_components=["llm"],
-    true_cause=("A commit lowered the gateway's httpx timeout for the LLM stream from 120 s to 3 s. Requests "
-                "that wait longer than 3 s for the first token (queued behind another generation) fail "
-                "intermittently with ReadTimeout, for no visible reason."),
-    expected_fix="Restore the LLM stream timeout (120 s, or at least well above time-to-first-token under load).",
+    acceptable_classes=["configuration"], acceptable_components=["retrieval"],
+    true_cause=("A commit set the gateway's httpx timeout for the chat retrieval call to 0.05 s (meant as a "
+                "'fail fast' limit, but in seconds). Retrieval normally answers in ~30-50 ms, so the slower "
+                "~7% of calls raise ReadTimeout; the gateway then answers without context and refuses the "
+                "question. Failures are intermittent, for no visible reason."),
+    expected_fix="Restore the retrieval call timeout (30 s, or at least well above retrieval latency).",
     edits=[(GATEWAY,
-            '            async with telemetry.async_client("gateway", timeout=120.0) as client:\n',
-            '            async with telemetry.async_client("gateway", timeout=3.0) as client:\n')],
-    message="Don't let one slow generation hold a gateway connection for two minutes",
-    distractor_paths=["api_gateway", "llm_service"],
-    expected_alerts=["ChatRequestsFailing", "DownstreamCallFailures"],
+            '    async with telemetry.async_client("gateway", timeout=30.0) as client:\n'
+            '        try:\n'
+            '            r = await client.post(f"{RETRIEVAL_SERVICE_URL}/retrieve", json=retrieval_payload)\n',
+            '    # Retrieval answers in ~30 ms; fail fast rather than hold the chat request.\n'
+            '    async with telemetry.async_client("gateway", timeout=0.05) as client:\n'
+            '        try:\n'
+            '            r = await client.post(f"{RETRIEVAL_SERVICE_URL}/retrieve", json=retrieval_payload)\n')],
+    message="Fail fast when retrieval is slow - it normally answers in about 30 ms",
+    distractor_paths=["api_gateway", "retrieval_service"],
+    # Busy-hour chat (below capacity), so a ~7% failure rate shows up in most minutes.
+    load={"mode": "chat", "rate": 0.8, "concurrency": 16, "duration": 600},
+    expected_alerts=["DownstreamCallFailures"],
     acceptance_test=os.path.join(ACCEPTANCE, "test_f6_tight_timeout.py"),
 ))
 
@@ -228,6 +240,6 @@ TICKET_TEXT = {
     "f3b_retrieval_bad_address": "The assistant says it has nothing relevant in the documents, for every question.",
     "f4_memory_leak": "Searches sometimes fail and the assistant seems to be restarting.",
     "f5_typo": "Some of my searches fail with an error while others work fine.",
-    "f6_tight_timeout": "Every now and then an answer fails with an error, for no obvious reason.",
+    "f6_tight_timeout": "Every now and then it says it has nothing on a question it answered fine a minute ago.",
     "f7_kb_missing_docs": "It no longer answers questions about the library, scholarships or placements.",
 }

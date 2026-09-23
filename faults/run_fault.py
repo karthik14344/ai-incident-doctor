@@ -120,7 +120,9 @@ def kb_swap(kb_dir: Optional[str], force: bool = False) -> str:
     cmd = ["run", "--rm", "kb-loader", "python", "-m", "kb.load_kb", "--kb", "/kb", "--chroma-dir", "/chroma-data",
            "--docs-dir", "/app/storage/documents", "--log", "/runtime/kb_loads.jsonl"] + (["--force"] if force else [])
     out = compose(*cmd, extra_env=extra)
-    compose("start", "chroma")
+    # --no-deps: `start`/plain `up` would also re-run chroma's dependency, kb-loader,
+    # which reloads the declared KB (./kb) and undoes the change one second later.
+    compose("up", "-d", "--no-deps", "chroma")
     return out.strip().splitlines()[-1] if out.strip() else ""
 
 

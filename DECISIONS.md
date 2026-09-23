@@ -430,3 +430,23 @@ applied to `main` by hand.
   `trigger: ticket` and `monitoring_missed: true`, and both the miss and the ticket
   diagnosis are reported. A ticket is a person reporting a symptom, so it does not
   break D-42 (changes never wake the doctor).
+- **D-79. f6 was redesigned from measurements.** As specified ("drop a gateway
+  httpx timeout to 3 s so ~1 in 20 requests fail") it cannot reproduce on this
+  hardware: measured LLM time-to-first-token p95 is 0.07 s at 1 chat/s (Ollama
+  streams from parallel slots, and httpx timeouts are per read), and after the
+  Chroma fix retrieval p99 is 0.1 s. Nothing in the request path has a tail near
+  3 s, and the first f6 run recorded zero failures (kept as
+  `_did-not-reproduce-f6-r1-no-load`). The fault keeps its intent - a timeout set
+  just below real latency, failing a small share of requests for no visible
+  reason - as a unit slip: the chat retrieval call's timeout becomes `0.05` s. The
+  gateway->retrieval call completes within 50 ms 93.4% of the time, so ~7% fail. It
+  runs under busy-hour chat (0.8/s, below the 1.37/s capacity) so the failures
+  appear in most minutes. On the Pavilion, with retrieval on the same machine but
+  Ollama across Wi-Fi, this share will differ.
+- **D-80. A data change must not be undone by its own restart.** `docker compose
+  start chroma` also re-runs chroma's dependency, kb-loader, which reloaded the
+  declared KB one second after the fault loaded the partial one (the first f7 run
+  never took effect; kept as `_did-not-reproduce-f7-r1-kb-restored-by-compose`). The
+  swap now restarts only ChromaDB (`up -d --no-deps chroma`); verified by a library
+  question retrieving only the four remaining documents, and the restore bringing
+  the library policy back.
