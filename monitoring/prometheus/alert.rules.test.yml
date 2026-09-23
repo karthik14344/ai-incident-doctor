@@ -1,0 +1,57 @@
+# promtool test rules prometheus/alert.rules.test.yml
+rule_files:
+  - alert.rules.yml
+evaluation_interval: 15s
+
+tests:
+  - name: a stopped service raises ServiceDown
+    interval: 5s
+    input_series:
+      - series: 'up{job="retrieval", instance="retrieval:8002"}'
+        values: '1 1 1 0 0 0 0 0 0 0 0 0'
+    alert_rule_test:
+      - eval_time: 55s
+        alertname: ServiceDown
+        exp_alerts:
+          - exp_labels: { severity: critical, service: retrieval, job: retrieval, instance: "retrieval:8002" }
+            exp_annotations:
+              summary: "retrieval is not answering Prometheus scrapes"
+              description: "The /metrics endpoint of retrieval has failed every scrape for at least 20 seconds."
+
+  - name: any rise of the embedding fallback counter fires
+    interval: 15s
+    input_series:
+      - series: 'knowledgeai_embedding_fallback_total{service="retrieval", job="retrieval"}'
+        values: '0 0 0 3 7 12'
+    alert_rule_test:
+      - eval_time: 75s
+        alertname: EmbeddingFallbackActive
+        exp_alerts:
+          - exp_labels: { severity: warning, service: retrieval, job: retrieval }
+            exp_annotations:
+              summary: "embedding fallback counter on retrieval rose by 12 in 2 minutes"
+              description: "knowledgeai_embedding_fallback_total increased on retrieval; it is expected to stay flat."
+
+  - name: a flat fallback counter stays quiet
+    interval: 15s
+    input_series:
+      - series: 'knowledgeai_embedding_fallback_total{service="retrieval", job="retrieval"}'
+        values: '5 5 5 5 5 5 5 5'
+    alert_rule_test:
+      - eval_time: 105s
+        alertname: EmbeddingFallbackActive
+        exp_alerts: []
+
+  - name: two restarts in 15 minutes is a restart loop
+    interval: 1m
+    input_series:
+      - series: 'process_start_time_seconds{job="retrieval", instance="retrieval:8002"}'
+        values: '100 100 400 400 700 700'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: RestartLoop
+        exp_alerts:
+          - exp_labels: { severity: critical, service: retrieval, job: retrieval, instance: "retrieval:8002" }
+            exp_annotations:
+              summary: "retrieval process has started 2 times in 15 minutes"
+              description: "The process start time reported by retrieval changed 2 times within 15 minutes."

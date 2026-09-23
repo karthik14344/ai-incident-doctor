@@ -1,0 +1,163 @@
+# Alert rules for the patient (KnowledgeAI).
+#
+# RULE FOR EVERY ANNOTATION: describe the SYMPTOM ONLY - what is observed and
+# where. Never name a likely cause. These alerts are inputs to the incident
+# doctor's evaluation; an annotation that hints at the cause leaks the answer
+# and makes the measured accuracy meaningless.
+#
+# Labels: severity (critical|warning|info), service (the affected service).
+
+groups:
+  - name: knowledgeai-availability
+    rules:
+      - alert: ServiceDown
+        expr: up{job=~"gateway|ingestion|retrieval|llm"} == 0
+        for: 20s
+        labels:
+          severity: critical
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "{{ $labels.job }} is not answering Prometheus scrapes"
+          description: "The /metrics endpoint of {{ $labels.job }} has failed every scrape for at least 20 seconds."
+
+      - alert: RestartLoop
+        expr: changes(process_start_time_seconds{job=~"gateway|ingestion|retrieval|llm"}[15m]) >= 2
+        labels:
+          severity: critical
+          service: "{{ $labels.job }}"
+        annotations:
+          summary: "{{ $labels.job }} process has started {{ $value }} times in 15 minutes"
+          description: "The process start time reported by {{ $labels.job }} changed {{ $value }} times within 15 minutes."
+
+      - alert: ContainerOOMKilled
+        expr: increase(container_oom_events_total{container_label_com_docker_compose_service=~"gateway|ingestion|retrieval|llm"}[10m]) > 0
+        labels:
+          severity: critical
+          service: "{{ $labels.container_label_com_docker_compose_service }}"
+        annotations:
+          summary: "{{ $labels.container_label_com_docker_compose_service }} container recorded an out-of-memory kill"
+          description: "cAdvisor counted {{ $value }} OOM events for this container in the last 10 minutes."
+
+  - name: knowledgeai-errors
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum by (service) (rate(knowledgeai_http_requests_total{status=~"5..", endpoint!="/metrics"}[2m]))
+            / sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[2m]))
+          ) > 0.05
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.service }} is answering {{ $value | humanizePercentage }} of requests with 5xx"
+          description: "Share of 5xx responses from {{ $labels.service }} over the last 2 minutes is above 5%."
+
+      - alert: ChatRequestsFailing
+        expr: |
+          (
+            sum(rate(knowledgeai_chat_answers_total{outcome="error"}[3m]))
+            / sum(rate(knowledgeai_chat_answers_total[3m]))
+          ) > 0.02
+        for: 30s
+        labels:
+          severity: warning
+          service: gateway
+        annotations:
+          summary: "{{ $value | humanizePercentage }} of chat requests ended in an error"
+          description: "Chat requests whose answer stream ended in an error, over the last 3 minutes, above 2%."
+
+      - alert: DownstreamCallFailures
+        expr: sum by (service, target) (increase(knowledgeai_downstream_failures_total[2m])) > 0
+        for: 20s
+        labels:
+          severity: warning
+        annotations:
+          summary: "calls from {{ $labels.service }} to {{ $labels.target }} are failing"
+          description: "{{ $value | printf \"%.0f\" }} failed calls from {{ $labels.service }} to {{ $labels.target }} in the last 2 minutes."
+
+      - alert: OllamaCallFailures
+        expr: sum by (service, operation) (increase(knowledgeai_ollama_failures_total{reason!="fallback"}[2m])) > 0
+        for: 20s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Ollama {{ $labels.operation }} calls from {{ $labels.service }} are failing"
+          description: "{{ $value | printf \"%.0f\" }} failed Ollama {{ $labels.operation }} calls in the last 2 minutes."
+
+  - name: knowledgeai-latency-and-load
+    rules:
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le, service, endpoint) (
+              rate(knowledgeai_http_request_duration_seconds_bucket{endpoint=~"/api/chat|/api/retrieval/search|/retrieve|/generate"}[2m])
+            )
+          ) > 15
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 latency of {{ $labels.service }} {{ $labels.endpoint }} is {{ $value | printf \"%.1f\" }}s"
+          description: "95th percentile request duration over the last 2 minutes is above the 15 s threshold."
+
+      - alert: NoTraffic
+        expr: sum(rate(knowledgeai_http_requests_total{service="gateway", endpoint="/api/chat"}[30m])) == 0
+        for: 30m
+        labels:
+          severity: info
+          service: gateway
+        annotations:
+          summary: "no chat requests have reached the gateway for 30 minutes"
+          description: "The gateway has served zero /api/chat requests in the last 30 minutes."
+
+  - name: knowledgeai-resources
+    rules:
+      - alert: MemoryClimbing
+        # 128 KiB/s sustained = ~7.5 MiB/min of steady growth for 3 minutes.
+        expr: deriv(knowledgeai_process_resident_memory_bytes[5m]) > 131072
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "resident memory of {{ $labels.service }} is growing by {{ $value | humanize1024 }}B/s"
+          description: "Process memory of {{ $labels.service }} has risen steadily for at least 3 minutes."
+
+      - alert: ContainerMemoryNearLimit
+        expr: |
+          (
+            container_memory_working_set_bytes{container_label_com_docker_compose_service=~"gateway|ingestion|retrieval|llm"}
+            / container_spec_memory_limit_bytes{container_label_com_docker_compose_service=~"gateway|ingestion|retrieval|llm"}
+          ) > 0.85
+          and container_spec_memory_limit_bytes > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: "{{ $labels.container_label_com_docker_compose_service }}"
+        annotations:
+          summary: "{{ $labels.container_label_com_docker_compose_service }} is using {{ $value | humanizePercentage }} of its memory limit"
+          description: "Container working-set memory has been above 85% of the configured limit for 1 minute."
+
+  - name: knowledgeai-retrieval-quality
+    rules:
+      - alert: EmbeddingFallbackActive
+        expr: increase(knowledgeai_embedding_fallback_total[2m]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "embedding fallback counter on {{ $labels.service }} rose by {{ $value | printf \"%.0f\" }} in 2 minutes"
+          description: "knowledgeai_embedding_fallback_total increased on {{ $labels.service }}; it is expected to stay flat."
+
+      - alert: ZeroChunkRetrievals
+        expr: |
+          (
+            sum(rate(knowledgeai_zero_chunk_retrievals_total[5m]))
+            / sum(rate(knowledgeai_retrieved_chunks_count[5m]))
+          ) > 0.2
+        for: 1m
+        labels:
+          severity: warning
+          service: retrieval
+        annotations:
+          summary: "{{ $value | humanizePercentage }} of retrieval queries returned zero chunks"
+          description: "Share of retrieval queries with an empty result over the last 5 minutes is above 20%."
