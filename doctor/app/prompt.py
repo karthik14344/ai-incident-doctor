@@ -113,7 +113,9 @@ def _fmt_deploys(bundle: Dict[str, Any]) -> str:
 
 
 def _fmt_commits(ranked: List[Dict[str, Any]], bundle: Dict[str, Any], diff_chars: int) -> str:
-    by_sha = {c["sha"]: c for c in bundle.get("candidate_commits", [])}
+    from app.retrieval import effective_candidates
+
+    by_sha = {c["sha"]: c for c in effective_candidates(bundle)}
     out = []
     for r in ranked:
         c = by_sha[r["sha"]]

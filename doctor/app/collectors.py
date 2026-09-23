@@ -268,12 +268,14 @@ DIFF_CHARS_PER_FILE = 2500
 
 
 def ignored(path: str, settings: Settings = SETTINGS) -> bool:
-    """Paths that belong to the experimenter, not the system under diagnosis.
+    """Paths that are not part of the system under diagnosis.
 
-    Fault-injection scripts, recorded incidents with their ground truth and the
-    evaluation harness live in this repository for convenience, but they are
-    not part of anything that is deployed. If the doctor could read their diffs
-    it would be reading the answer key, so it never sees them.
+    * The experimenter's: fault-injection scripts, recorded incidents with their
+      ground truth, results. Their diffs would be the answer key.
+    * The doctor's own code and tooling (doctor/, loadgen/): the doctor watches
+      the patient; its own changes are not the patient's changes, even though
+      they share a repository and a deploy. In a real setting it would watch a
+      different repository.
     """
     return any(path == p.rstrip("/") or path.startswith(p) for p in settings.ignore_paths)
 

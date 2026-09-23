@@ -56,7 +56,7 @@ def write_markdown(results: Dict[str, Any]) -> str:
             agg = groups[key].get(delivery)
             if agg:
                 entries.append((f"{comparison}: {arm} / {model}", agg))
-        if len(entries) > (1 if base else 0):
+        if entries:
             title = {"environment": "environment faults (no guilty commit) - the real score",
                      "data": "data faults (guilty knowledge-base version, no commit)",
                      "push": "push faults (guilty commit; the deploy record nearly gives it away)",

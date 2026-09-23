@@ -108,7 +108,7 @@ class Settings:
             "DOCTOR_DEPLOY_LOG", get("DEPLOY_LOG_PATH", os.path.join(REPO_ROOT_DEFAULT, "runtime", "deploys.jsonl")))),
             "kb_loads.jsonl")))
     ignore_paths: tuple = field(default_factory=lambda: tuple(
-        p.strip() for p in get("DOCTOR_IGNORE_PATHS", "faults/,incidents/,doctor/eval/,RESULTS.md").split(",")
+        p.strip() for p in get("DOCTOR_IGNORE_PATHS", "faults/,incidents/,doctor/,loadgen/,RESULTS.md").split(",")
         if p.strip()))
     embed_model: str = field(default_factory=lambda: get("DOCTOR_EMBED_MODEL", "nomic-embed-text"))
     # How far before the alert a deploy can be and still be a suspect.

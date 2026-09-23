@@ -157,6 +157,8 @@ def main(argv=None) -> int:
     ap.add_argument("--only-arm", default=None)
     ap.add_argument("--only-model", default=None)
     ap.add_argument("--no-verify", action="store_true")
+    ap.add_argument("--baseline-only", action="store_true",
+                    help="only the model-free parts: the most-recent-deploy baseline, retrieval, live timings")
     ap.add_argument("--out", default=None)
     args = ap.parse_args(argv)
 
@@ -190,6 +192,8 @@ def main(argv=None) -> int:
         plan = [p for p in plan if p[1] == args.only_arm]
     if args.only_model:
         plan = [p for p in plan if p[2].model == args.only_model]
+    if args.baseline_only:
+        plan = []
 
     runs_path = os.path.join(out_dir, "runs.jsonl")
     rows: List[Dict[str, Any]] = []
@@ -204,6 +208,8 @@ def main(argv=None) -> int:
         diag = most_recent_deploy_baseline(bundle)
         s = score(diag, {"status": "ok", "retrieval": {}}, truth)
         s["guilty_in_latest_deploy"] = bool(truth.get("guilty_commit")) and truth["guilty_commit"] in diag["_deploy_commits"]
+        for k in ("guilty_in_retrieved", "guilty_in_time_filter", "guilty_rank", "time_filter_size"):
+            s.pop(k, None)  # the baseline has no retrieval step: not applicable, not zero
         baseline_rows.append({"incident": inc["name"], "repeat": 0, "truth": truth, "score": s})
         ranked = rank_commits(bundle, SETTINGS)
         retrieval_rows.append({"incident": inc["name"], "delivery": truth["delivery"],

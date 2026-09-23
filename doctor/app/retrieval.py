@@ -143,9 +143,24 @@ def evidence_query_text(bundle: Dict[str, Any]) -> str:
     return "\n".join(parts)
 
 
+def effective_candidates(bundle: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """The bundle's candidate commits restricted to the system under diagnosis.
+
+    Applied at ranking time as well as at collection time, so evidence recorded
+    before a path was added to DOCTOR_IGNORE_PATHS is treated the same way."""
+    from app.collectors import ignored
+
+    out = []
+    for c in bundle.get("candidate_commits") or []:
+        files = [f for f in c.get("files", []) if not ignored(f["path"])]
+        if files:
+            out.append({**c, "files": files})
+    return out
+
+
 def rank_commits(bundle: Dict[str, Any], settings: Settings = SETTINGS, use_embeddings: bool = True,
                  top_k: int = 5) -> Dict[str, Any]:
-    candidates = bundle.get("candidate_commits") or []
+    candidates = effective_candidates(bundle)
     time_filtered = [c["sha"] for c in candidates]
     if not candidates:
         return {"time_filtered": [], "ranked": [], "embedding_used": False, "note": "no deploys in the lookback window"}
@@ -155,7 +170,9 @@ def rank_commits(bundle: Dict[str, Any], settings: Settings = SETTINGS, use_embe
     for c in candidates:
         ct = commit_terms(c)
         matched = sorted(set(ev) & set(ct), key=lambda t: -ev[t])
-        score = sum(ev[t] * min(ct[t], 3) for t in matched)
+        # Length-normalised (as BM25 does): a large commit touching everything
+        # must not win on the sheer number of identifiers it contains.
+        score = sum(ev[t] * min(ct[t], 3) for t in matched) / max(1.0, len(ct)) ** 0.5
         lexical[c["sha"]] = (float(score), matched[:10])
     top_lex = max(v[0] for v in lexical.values()) or 1.0
 

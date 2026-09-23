@@ -60,8 +60,15 @@ def most_recent_deploy_baseline(bundle: Dict[str, Any]) -> Dict[str, Any]:
     """'Always blame the most recent deploy': its newest commit, class code_defect.
 
     The component is the first service that deploy changed (or gateway)."""
+    from app.retrieval import effective_candidates
+
     latest = bundle.get("latest_deploy") or {}
     commits = latest.get("commits") or ([latest["git_sha"]] if latest.get("git_sha") else [])
+    # Same scope as the doctor (the patient's own commits), so the baseline is
+    # not handicapped by blaming a change to the doctor or the docs tooling.
+    in_scope = {c["sha"] for c in effective_candidates(bundle)}
+    scoped = [c for c in commits if c in in_scope]
+    commits = scoped or commits
     services = [s for s in latest.get("services_changed", []) if s in
                 ("gateway", "ingestion", "retrieval", "llm")] or ["gateway"]
     sha = commits[-1] if commits else None

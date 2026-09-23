@@ -1,0 +1,359 @@
+{
+ "generated": "20260923-184705",
+ "incidents": [
+  "f3_retrieval_down-r1",
+  "f1_embed_timeout-r1",
+  "f2_capacity-r1"
+ ],
+ "repeats": 3,
+ "primary_model": "ollama:llama3",
+ "primary_is_cloud": false,
+ "replay_settings": {
+  "ollama_num_ctx": 16384,
+  "max_prompt_tokens": 6500,
+  "max_completion_tokens": 2500
+ },
+ "skipped": [],
+ "baseline_most_recent_deploy": {
+  "all": {
+   "n_runs": 3,
+   "n_incidents": 3,
+   "acc_at_1": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "acc_at_3": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "class_correct": {
+    "mean": 0.333,
+    "min": 0.333,
+    "max": 0.333,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "class_correct_lenient": {
+    "mean": 0.333,
+    "min": 0.333,
+    "max": 0.333,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "component_at_1": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "valid_output": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "false_attribution": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "guilty_in_retrieved": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "guilty_in_time_filter": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "fix_verified": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "fix_acceptance_passed": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "reasoning_s": null,
+   "tokens_per_incident": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "cost_usd_per_incident": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "constraint_violations_per_run": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   }
+  },
+  "push": {
+   "n_runs": 1,
+   "n_incidents": 1,
+   "acc_at_1": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "acc_at_3": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "class_correct": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "class_correct_lenient": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "component_at_1": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "valid_output": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "false_attribution": null,
+   "guilty_in_retrieved": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "guilty_in_time_filter": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "fix_verified": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "fix_acceptance_passed": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "reasoning_s": null,
+   "tokens_per_incident": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "cost_usd_per_incident": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "constraint_violations_per_run": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   }
+  },
+  "environment": {
+   "n_runs": 2,
+   "n_incidents": 2,
+   "acc_at_1": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "acc_at_3": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "class_correct": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "class_correct_lenient": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "component_at_1": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "valid_output": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "false_attribution": {
+    "mean": 1.0,
+    "min": 1.0,
+    "max": 1.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "guilty_in_retrieved": null,
+   "guilty_in_time_filter": null,
+   "fix_verified": null,
+   "fix_acceptance_passed": null,
+   "reasoning_s": null,
+   "tokens_per_incident": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "cost_usd_per_incident": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   },
+   "constraint_violations_per_run": {
+    "mean": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "std": 0.0,
+    "repeats": 1
+   }
+  }
+ },
+ "baseline_deploy_hit": {
+  "push": 1.0,
+  "environment": null,
+  "data": null
+ },
+ "retrieval": [
+  {
+   "incident": "f3_retrieval_down-r1",
+   "delivery": "environment",
+   "guilty": null,
+   "time_filter_size": 23,
+   "in_time_filter": false,
+   "in_top5": false,
+   "rank": null
+  },
+  {
+   "incident": "f1_embed_timeout-r1",
+   "delivery": "push",
+   "guilty": "3f8fef7301a256f703f9971661076fa765c68556",
+   "time_filter_size": 26,
+   "in_time_filter": true,
+   "in_top5": true,
+   "rank": 1
+  },
+  {
+   "incident": "f2_capacity-r1",
+   "delivery": "environment",
+   "guilty": null,
+   "time_filter_size": 32,
+   "in_time_filter": false,
+   "in_top5": false,
+   "rank": null
+  }
+ ],
+ "live_timings": [
+  {
+   "incident": "f3_retrieval_down-r1",
+   "delivery": "environment",
+   "unnoticed_s": 33.0,
+   "doctor_s": 139.0,
+   "first_alert": "DownstreamCallFailures",
+   "expected_alert": true
+  },
+  {
+   "incident": "f1_embed_timeout-r1",
+   "delivery": "push",
+   "unnoticed_s": 103.6,
+   "doctor_s": 162.4,
+   "first_alert": "EmbeddingFallbackActive",
+   "expected_alert": true
+  },
+  {
+   "incident": "f2_capacity-r1",
+   "delivery": "environment",
+   "unnoticed_s": 113.5,
+   "doctor_s": 376.5,
+   "first_alert": "HighLatencyP95",
+   "expected_alert": true
+  }
+ ],
+ "groups": {}
+}
