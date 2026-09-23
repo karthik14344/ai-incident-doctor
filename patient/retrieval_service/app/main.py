@@ -31,6 +31,7 @@ class QueryRequest(BaseModel):
     embedding_model: str = "nomic-embed-text"
     ollama_base_url: str = Field(default_factory=config.ollama_base_url)
 
+# Sources keep a 150-character preview; the full chunk text stays in raw_chunks.
 def assemble_context(chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Turn ranked chunks into the prompt context block and the source list.
 
