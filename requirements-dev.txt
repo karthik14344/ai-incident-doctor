@@ -3,5 +3,5 @@
 -r patient/requirements.txt
 dvc[s3]==3.63.0
 pathspec==0.12.1          # dvc 3.63 breaks with pathspec >= 0.12.2
-ruff==0.13.0
+ruff==0.15.22
 yamllint==1.37.1
