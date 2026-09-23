@@ -7,6 +7,7 @@ import Documents from './pages/Documents';
 import PipelineDebug from './pages/PipelineDebug';
 import ModelComparison from './pages/ModelComparison';
 import Settings from './pages/Settings';
+import Incidents from './pages/Incidents';
 import { api } from './services/api';
 
 export default function App() {
@@ -40,6 +41,8 @@ export default function App() {
         return <PipelineDebug />;
       case 'compare':
         return <ModelComparison />;
+      case 'incidents':
+        return <Incidents />;
       case 'settings':
         return <Settings />;
       default:
