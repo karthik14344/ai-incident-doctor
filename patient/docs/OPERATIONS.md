@@ -41,3 +41,7 @@ The Settings page lists the models Ollama has installed. Only llama3.2 is used f
 ## Backups
 
 The SQLite database lives in the appdata volume and the vector index in chroma-data. Snapshot both volumes together so documents and vectors stay consistent.
+
+## Guardrail refusals
+
+A refusal is not an outage. Check the guardrails field in the chat response to see which guardrail refused and why.
