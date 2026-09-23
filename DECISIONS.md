@@ -450,3 +450,22 @@ applied to `main` by hand.
   swap now restarts only ChromaDB (`up -d --no-deps chroma`); verified by a library
   question retrieving only the four remaining documents, and the restore bringing
   the library policy back.
+- **D-81. A backwards fix is corrected, and counted.** On replay, the small models
+  often copied the guilty diff's direction (old -> new) instead of writing its
+  reverse. That gives an edit whose `find` text is absent and whose `replace` text
+  is already in the file. `fixes.apply_edits_to_text` applies such an edit the
+  other way round, adds a `REVERSED_EDIT_CORRECTED` problem to the report, and the
+  evaluation reports how often it happened (`fix_edit_reversed`). The correction is
+  mechanical: it never invents text the model did not write. Because the rate is
+  published, the fix-verification rate can be read with and without this help.
+- **D-82. Every doctor index is an exact search over a JSON file.** ChromaDB 1.5.9
+  lost an HNSW segment twice mid-evaluation (`Error creating hnsw segment reader:
+  Nothing found on disk`): first on the past-incident collection at 96/192
+  replays, then on a code collection at 156/192. The indexes are small (about 317
+  code chunks per commit, 163 commit chunks, tens of incidents), so an
+  approximate-nearest-neighbour store buys nothing. Each index is now one JSON file
+  searched exhaustively by cosine and written atomically. Vectors in the old
+  collections were copied across unchanged (all 19 could still be read through
+  `get`), so the replays before and after the change use identical embeddings.
+  The one visible difference is that HNSW search was approximate and this search
+  is exact. At these sizes the two return the same neighbours.

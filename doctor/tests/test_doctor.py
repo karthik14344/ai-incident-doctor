@@ -285,3 +285,22 @@ def test_a_reversed_edit_is_applied_the_other_way_and_flagged(tiny_repo):
                                            "replace": "TIMEOUT = 10.0"}])
     assert "+TIMEOUT = 45.0" in out["diff"]
     assert any("REVERSED_EDIT_CORRECTED" in p for p in out["problems"])
+
+
+def test_json_index_is_exact_persistent_and_filterable(monkeypatch, tmp_path):
+    from app import indexes
+
+    vocab = ["timeout", "cache", "typo"]
+    monkeypatch.setattr(indexes, "embed", lambda texts, query=False, settings=None:
+                        [[float(w in t) for w in vocab] for t in texts])
+    s = Settings()
+    s.data_dir = str(tmp_path)
+    idx = indexes.Index("code_test", s)
+    assert idx.add(["a", "b"], ["embed timeout", "search cache"], [{"path": "x.py"}, {"path": "y.py"}]) == 2
+    assert idx.add(["a"], ["embed timeout"], [{"path": "x.py"}]) == 0
+    again = indexes.Index("code_test", s)
+    assert again.count() == 2
+    assert again.query("timeout", k=1)[0]["id"] == "a"
+    assert [h["id"] for h in again.query("timeout", where={"path": "y.py"})] == ["b"]
+    sims = again.similarities("cache", ["a", "b", "missing"])
+    assert sims == {"a": 0.0, "b": 1.0}

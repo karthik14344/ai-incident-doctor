@@ -1,4 +1,4 @@
-"""The doctor's three indexes, in its own ChromaDB directory.
+"""The doctor's three indexes, stored as JSON files in its data directory.
 
 * code      - the patient's source at one commit, chunked by function and class
               (not by character count) and carrying each file's import edges.
@@ -60,14 +60,6 @@ def cosine(a: List[float], b: List[float]) -> float:
     da = sum(x * x for x in a) ** 0.5
     db = sum(y * y for y in b) ** 0.5
     return num / (da * db) if da and db else 0.0
-
-
-def _client(settings: Settings):
-    import chromadb
-
-    path = os.path.join(settings.data_dir, "chroma")
-    os.makedirs(path, exist_ok=True)
-    return chromadb.PersistentClient(path=path)
 
 
 # ---------------------------------------------------------------- code chunking
@@ -159,52 +151,96 @@ def code_chunks_at(repo: str, sha: str) -> List[Dict[str, Any]]:
 
 # ---------------------------------------------------------------- index stores
 
-class Index:
-    """One ChromaDB collection with doctor-computed embeddings."""
+class SmallIndex:
+    """Exact cosine search over a handful of documents, stored as JSON.
+
+    Every doctor index is small: tens of past incidents, a few hundred code
+    chunks per commit, a few hundred commit chunks. ChromaDB twice lost the HNSW
+    segment of such a collection mid-evaluation ("Nothing found on disk"), so the
+    vectors live in one JSON file per index and are searched exhaustively -
+    deterministic, exact, and written atomically so nothing is half-written.
+    Vectors already stored in the old ChromaDB collection of the same name are
+    carried over when they can still be read, so no embedding changes.
+    """
 
     def __init__(self, name: str, settings: Settings = SETTINGS):
         self.settings = settings
-        self.name = name
-        self.collection = _client(settings).get_or_create_collection(name, metadata={"hnsw:space": "cosine"})
+        self.path = os.path.join(settings.data_dir, f"{name}.json")
+        self.items: Dict[str, Dict[str, Any]] = {}
+        if os.path.exists(self.path):
+            import json
+            with open(self.path, encoding="utf-8") as fh:
+                self.items = json.load(fh)
+        else:
+            self._migrate_from_chroma(name)
+
+    def _migrate_from_chroma(self, name: str) -> None:
+        path = os.path.join(self.settings.data_dir, "chroma")
+        if not os.path.isdir(path):
+            return
+        try:
+            import chromadb
+
+            col = chromadb.PersistentClient(path=path).get_collection(name)
+            got = col.get(include=["documents", "metadatas", "embeddings"])
+            self.items = {i: {"text": d, "meta": m or {}, "vector": [float(x) for x in e]}
+                          for i, d, m, e in zip(got["ids"], got["documents"], got["metadatas"], got["embeddings"])}
+        except Exception:  # missing or unreadable collection: rebuild by re-embedding
+            self.items = {}
+            return
+        if self.items:
+            self._save()
+
+    def _save(self) -> None:
+        import json
+        import tempfile
+        os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        fd, tmp = tempfile.mkstemp(dir=os.path.dirname(self.path), prefix=".idx.")
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(self.items, fh)
+        os.replace(tmp, self.path)
 
     def ids(self) -> set:
-        got = self.collection.get(include=[])
-        return set(got["ids"])
+        return set(self.items)
 
     def add(self, ids: List[str], texts: List[str], metadatas: List[Dict[str, Any]]) -> int:
-        existing = self.ids()
-        todo = [(i, t, m) for i, t, m in zip(ids, texts, metadatas) if i not in existing]
+        todo = [(i, t, m) for i, t, m in zip(ids, texts, metadatas) if i not in self.items]
         if not todo:
             return 0
         vectors = embed([t for _, t, _ in todo], settings=self.settings)
-        clean = [{k: (v if isinstance(v, (str, int, float, bool)) else str(v)) for k, v in m.items()}
-                 for _, _, m in todo]
-        self.collection.add(ids=[i for i, _, _ in todo], embeddings=vectors,
-                            documents=[t for _, t, _ in todo], metadatas=clean)
+        for (i, t, m), v in zip(todo, vectors):
+            clean = {k: (val if isinstance(val, (str, int, float, bool)) else str(val)) for k, val in m.items()}
+            self.items[i] = {"text": t, "meta": clean, "vector": v}
+        self._save()
         return len(todo)
 
     def query(self, text: str, k: int = 5, where: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        if self.collection.count() == 0:
+        if not self.items:
             return []
         vec = embed([text], query=True, settings=self.settings)[0]
-        res = self.collection.query(query_embeddings=[vec], n_results=min(k, self.collection.count()),
-                                    where=where, include=["documents", "metadatas", "distances"])
-        return [{"id": i, "text": d, "meta": m, "similarity": round(1 - dist, 4)}
-                for i, d, m, dist in zip(res["ids"][0], res["documents"][0], res["metadatas"][0],
-                                         res["distances"][0])]
+        scored = [{"id": i, "text": it["text"], "meta": it["meta"], "similarity": round(cosine(vec, it["vector"]), 4)}
+                  for i, it in self.items.items()
+                  if not where or all(it["meta"].get(key) == val for key, val in where.items())]
+        return sorted(scored, key=lambda h: -h["similarity"])[:k]
+
+    def count(self) -> int:
+        return len(self.items)
 
     def similarities(self, text: str, ids: List[str]) -> Dict[str, float]:
         """Cosine similarity of the query to specific stored chunks."""
+        ids = [i for i in ids if i in self.items]
         if not ids:
             return {}
         vec = embed([text], query=True, settings=self.settings)[0]
-        got = self.collection.get(ids=ids, include=["embeddings"])
-        return {i: cosine(vec, list(e)) for i, e in zip(got["ids"], got["embeddings"])}
+        return {i: cosine(vec, self.items[i]["vector"]) for i in ids}
+
+
+Index = SmallIndex
 
 
 def code_index(sha: str, settings: Settings = SETTINGS) -> Index:
     idx = Index(f"code_{sha[:12]}", settings)
-    if idx.collection.count() == 0:
+    if idx.count() == 0:
         chunks = code_chunks_at(settings.repo_root, sha)
         idx.add([hashlib.sha1(f"{c['path']}:{c['name']}:{c['start']}".encode()).hexdigest() for c in chunks],
                 [c["text"] for c in chunks],
@@ -233,56 +269,6 @@ def index_commits(commits: List[Dict[str, Any]], settings: Settings = SETTINGS) 
     if ids:
         idx.add(ids, texts, metas)
     return idx
-
-
-class SmallIndex:
-    """Exact cosine search over a handful of documents, stored as JSON.
-
-    Past incidents number in the tens. ChromaDB lost the HNSW segment of such a
-    small collection mid-evaluation ("Nothing found on disk"), so this index keeps
-    the vectors in one JSON file and searches them exhaustively - deterministic,
-    and nothing that can be half-written.
-    """
-
-    def __init__(self, name: str, settings: Settings = SETTINGS):
-        self.settings = settings
-        self.path = os.path.join(settings.data_dir, f"{name}.json")
-        self.items: Dict[str, Dict[str, Any]] = {}
-        if os.path.exists(self.path):
-            import json
-            with open(self.path, encoding="utf-8") as fh:
-                self.items = json.load(fh)
-
-    def _save(self) -> None:
-        import json
-        import tempfile
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
-        fd, tmp = tempfile.mkstemp(dir=os.path.dirname(self.path), prefix=".idx.")
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(self.items, fh)
-        os.replace(tmp, self.path)
-
-    def ids(self) -> set:
-        return set(self.items)
-
-    def add(self, ids: List[str], texts: List[str], metadatas: List[Dict[str, Any]]) -> int:
-        todo = [(i, t, m) for i, t, m in zip(ids, texts, metadatas) if i not in self.items]
-        if not todo:
-            return 0
-        vectors = embed([t for _, t, _ in todo], settings=self.settings)
-        for (i, t, m), v in zip(todo, vectors):
-            self.items[i] = {"text": t, "meta": m, "vector": v}
-        self._save()
-        return len(todo)
-
-    def query(self, text: str, k: int = 5, where: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        if not self.items:
-            return []
-        vec = embed([text], query=True, settings=self.settings)[0]
-        scored = [{"id": i, "text": it["text"], "meta": it["meta"], "similarity": round(cosine(vec, it["vector"]), 4)}
-                  for i, it in self.items.items()
-                  if not where or all(it["meta"].get(key) == val for key, val in where.items())]
-        return sorted(scored, key=lambda h: -h["similarity"])[:k]
 
 
 def incident_index(settings: Settings = SETTINGS, name: str = "incidents") -> SmallIndex:
