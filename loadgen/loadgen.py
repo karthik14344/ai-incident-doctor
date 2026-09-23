@@ -15,8 +15,9 @@ Modes:
     search    POST /api/retrieval/search on the gateway (retrieval only, no LLM)
     retrieve  POST /retrieve on the retrieval service directly
 
-Each chat request uses its own session id: the gateway's per-session rate
-limiter is a guardrail, not what a load test is measuring.
+Each chat request starts a new conversation (no session id), as a first
+message from a new user does: the gateway creates the session. The
+per-session rate limiter is a guardrail, not what a load test measures.
 """
 
 import argparse
@@ -45,6 +46,10 @@ QUESTIONS = [
     "When does the odd semester begin according to the academic calendar?",
     "Can attendance shortage be condoned for medical reasons?",
     "What are the library opening hours?",
+    # Real users also type keywords rather than questions.
+    "hostel curfew timings",
+    "late fee for library books",
+    "scholarship eligibility criteria",
 ]
 
 
@@ -115,8 +120,7 @@ class LoadGenerator:
                 if self.mode == "chat":
                     tokens, refused = 0, False
                     async with client.stream("POST", f"{self.base_url}/api/chat",
-                                             json={"question": question, "collection_name": self.collection,
-                                                   "session_id": f"load_{uuid.uuid4().hex[:10]}"}) as resp:
+                                             json={"question": question, "collection_name": self.collection}) as resp:
                         rec["status"] = resp.status_code
                         async for line in resp.aiter_lines():
                             if not line.startswith("data: "):
