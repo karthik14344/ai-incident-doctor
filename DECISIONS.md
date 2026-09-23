@@ -277,3 +277,122 @@ applied to `main` by hand.
   reported separately, never merged into the same table silently. The local
   pipeline runs the identical scripts, but its timings (no network hop, no
   runner queue) are not comparable to Actions timings.
+
+## Fault injection
+
+- **D-52. Every fault carries a `delivery`** - `push` (a real commit through the
+  pipeline; f1, f4, f5, f6), `environment` (a recorded script changes the world;
+  f2, f3, f3b) or `data` (the knowledge base changes underneath; f7). Push faults
+  are validated by `faults/selfcheck.py`: with the fault applied the existing
+  suite still passes (the bug would ship) and the fault's acceptance test fails.
+- **D-53. Distractor commits are real, harmless work** (runbook notes, new passing
+  tests, explanatory comments in the very files the faults touch), applied once
+  each, never reverted. Two push variants: `guilty_last` (the latest deploy holds
+  the guilty commit, followed by a distractor in the same deploy) and
+  `guilty_earlier` (a distractor-only deploy lands after the guilty one), so the
+  "blame the most recent deploy" baseline is tested both ways.
+- **D-54. f1's trigger is a noisy neighbour on the shared Ollama.** Measured: with
+  llama3 and mistral busy, the first nomic-embed-text call waited 43 s (idle: 0.3 s).
+  45 s covers that; 10 s turns it into silent fallback vectors. The fault run keeps
+  two bigger models generating in turn (as the Model Comparison page would), which
+  is a realistic condition the original timeout was written for. Ground truth stays
+  `code_defect` (the commit), even though the neighbour is the trigger.
+- **D-55. f5's typo is on an input-dependent path in the gateway**, not in the
+  source-preview code: no chunk in the corpus is under 150 characters, so a typo in
+  the short-chunk branch would never run. Keyword queries (no '?') take the broken
+  branch; the load generator includes some.
+- **D-56. f7 removes documents rather than swapping the embedding model.** No
+  installed generative model serves embeddings on this Ollama ("does not support
+  embeddings"), and downloading a second embedding model onto the user's Ollama was
+  avoided. The KB version is built from 4 of 10 documents with the new
+  `KB_INCLUDE_DOCS` option and loaded by kb-loader, which records the load.
+- **D-57. Lenient class credit for f3b and f6.** A wrong address and a too-tight
+  timeout are arguably `configuration`; the strict class is reported first, the
+  lenient one alongside.
+- **D-58. Background traffic runs for the whole campaign** (chat 0.2/s, search
+  0.4/s), so every incident has a real baseline window. 10-minute cool-downs keep
+  one run's symptoms out of the next one's baseline and out of its incident group.
+
+## Keeping deploys from looking like incidents
+
+- **D-59.** A deploy recreates containers, so every alert that a recreate can trip
+  was hardened: `RestartLoop` counts Docker restarts (reset by a recreate) instead
+  of process start times; `MemoryClimbing` ignores a process's first 10 minutes;
+  `ServiceDown` needs 45 s; `HighErrorRate` needs 1 minute. The fault runner only
+  accepts alerts that *begin* after the break, and it finds the report of the
+  incident that exact alert opened. The first campaign attempt had picked up an
+  alert that started 9 s before the break.
+- **D-60. The deploy script hot-reloads Prometheus and Alertmanager.** Their config
+  is bind-mounted; without a reload a changed rule file kept the old rules firing.
+- **D-61. Latency thresholds come from the measured healthy baseline**: chat p95
+  16.9 s (p50 1.5 s), search p95 0.29 s on the laptop under background traffic.
+  A single 15 s threshold fired on a healthy system. Now 40 s for chat/generation,
+  5 s for search/retrieve. To be re-measured on the Pavilion.
+- **D-62. A chat refusal alert** (`ChatAnswersRefused` > 30% for 2 minutes; 0 of
+  45 in the baseline) is the symptom of a knowledge base that no longer covers the
+  questions.
+
+## The doctor on a shared, memory-starved laptop
+
+- **D-63. The live doctor matches the patient's Ollama context.** With no cloud key
+  the live doctor falls back to llama3.2 - the patient's own model on the same
+  Ollama. At num_ctx 16384 it made Ollama reload the model on every switch (a normal
+  chat took 35.7 s), so the doctor's own diagnoses showed up as latency alerts and
+  triggered more diagnoses. On this laptop `.env` sets `DOCTOR_OLLAMA_NUM_CTX=4096`,
+  `DOCTOR_MAX_PROMPT_TOKENS=3000`, `DOCTOR_MAX_COMPLETION_TOKENS=900` for the live
+  doctor. **Live reports on the laptop therefore use a reduced evidence budget;**
+  the evaluation replays run offline at 16384 / 6500 / 2500.
+- **D-64. Joining rules.** An alert joins an open incident on the same service
+  within 10 minutes only while that incident is still waiting for its window; after
+  the doctor has started, a later alert is a new incident. Incidents already on disk
+  are not re-opened after a restart; ones mid-flight become `interrupted`.
+- **D-65. Incident files are written atomically under one lock** (a race between
+  the worker, the catch-up poll and request handlers corrupted a file and cost one
+  live diagnosis).
+- **D-66. The other compose project on the laptop was stopped** (`docker compose
+  -p mlops-incident stop`, reversible with `start`) at the user's request, after the
+  Docker engine stopped answering twice under memory pressure. Claude Code's
+  low-memory guard also stopped background jobs once (Opera was using 5.6 GB); the
+  campaign then ran background traffic inside its own process to use less memory.
+
+## Evaluation
+
+- **D-67. Without a cloud key, the ablation runs on llama3 (8B)** as a local
+  stand-in for GLM; RESULTS.md says so in the table header. GLM rows appear as
+  "not run" until `DOCTOR_API_KEY` is set, and the same command then fills them.
+- **D-68. Repeats use different seeds** (1000 + repeat); with a fixed seed a local
+  model would repeat itself and the reported spread would be meaningless.
+- **D-69. Past incidents for the third arm are the other recorded incidents'
+  ground-truth resolutions, earlier ones only** (chronological leave-future-out), in
+  an index separate from the live one.
+- **D-70. The "most recent deploy" baseline** names the newest commit of the latest
+  successful deploy before the alert and calls it a code defect. Its deploy-level
+  hit rate (guilty commit anywhere in that deploy) is reported too.
+
+- **D-71. A real leak I introduced, found by the monitoring.** Moving ChromaDB to
+  a server (D-10) created a `chromadb.HttpClient` on every vector-store call; each
+  leaked ~1.35 MB (measured). Under ordinary background traffic the retrieval
+  container went from 106 MB to its 512 MB limit in minutes and was OOM-killed,
+  and the first clean-looking campaign run was diagnosed as "capacity / not enough
+  memory in retrieval" - reasonably, given the evidence. The client is now cached
+  per server (+0 MB for 150 calls). Every run before that fix was discarded as
+  contaminated (`runtime/fault-runs/_contaminated-*`), not counted.
+- **D-72. Failure alerts must outlast a deploy.** A recreate produces ~20 s of
+  failed calls, and a 20 s burst stays inside a 2-minute `rate()` window for two
+  minutes, so `for:` alone did not help: f1's first "alert" was
+  DownstreamCallFailures from the guilty deploy's own recreate, 52 s after the
+  push. Now `DownstreamCallFailures` / `OllamaCallFailures` need failures in every
+  30 s window for a minute, `HighErrorRate` and `ChatRequestsFailing` use 1-2 minute
+  windows with 2 minutes of `for`. promtool tests prove a 20 s burst stays quiet and
+  a steady failure stream still pages. For that run the real symptom
+  (EmbeddingFallbackActive, 45 s after the deploy) was diagnosed separately by the
+  doctor; the run's record points at that incident and notes the blip.
+- **D-73. The doctor is not redeployed with the patient.** Every image used the
+  deploy's SHA tag, so each patient deploy recreated the doctor and interrupted a
+  diagnosis in progress. The doctor, alert-sink, container-exporter, mlflow and
+  frontend are now tagged with the SHA of the last commit that changed their own
+  code (`<NAME>_IMAGE_TAG`, computed by deploy.py and stored in the deploy record).
+- **D-74. The capacity surge was calibrated by measurement.** 1.2 chats/s with 32
+  in flight did not saturate the model (p95 ~12 s): Ollama runs several requests in
+  parallel. The first f2 run is recorded as "did not reproduce". At 4/s with 96 in
+  flight, throughput caps at 1.37/s and p95 reaches 75-88 s.
