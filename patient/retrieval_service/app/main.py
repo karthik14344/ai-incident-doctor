@@ -3,17 +3,18 @@ import sys
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from common import config
+from common import config, telemetry
 
-from ingestion_service.app.embedder import get_embedding
 from ingestion_service.app.vector_store import query_vector_store
 
 app = FastAPI(title="Retrieval Service", version="1.0.0")
+log = telemetry.instrument(app, "retrieval")
+telemetry.register_embedding_fallback("retrieval")
 
 app.add_middleware(
     CORSMiddleware,
@@ -68,7 +69,7 @@ def retrieve_context(req: QueryRequest):
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
     # 1. Embed query
-    query_emb = get_embedding(req.question, model=req.embedding_model, base_url=req.ollama_base_url)
+    query_emb = telemetry.instrumented_embedding("retrieval", req.question, req.embedding_model, req.ollama_base_url)
 
     # 2. Similarity Search in ChromaDB
     chunks = query_vector_store(
@@ -76,6 +77,10 @@ def retrieve_context(req: QueryRequest):
         query_embedding=query_emb,
         top_k=req.top_k
     )
+
+    telemetry.RETRIEVED_CHUNKS.labels("retrieval").observe(len(chunks))
+    if not chunks:
+        telemetry.ZERO_CHUNK_RETRIEVALS.labels("retrieval").inc()
 
     # 3. Assemble Context
     assembled = assemble_context(chunks)

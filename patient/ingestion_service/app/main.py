@@ -1,23 +1,23 @@
 import os
 import sys
-import sqlite3
 from datetime import datetime
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from common import config
+from common import config, telemetry
 
 from ingestion_service.app.pdf_processor import extract_text_from_pdf
 from ingestion_service.app.chunker import create_chunks
-from ingestion_service.app.embedder import get_embedding
 from ingestion_service.app.vector_store import add_chunks_to_vector_store
 from api_gateway.app.db import get_db_connection
 
 app = FastAPI(title="Ingestion Service", version="1.0.0")
+log = telemetry.instrument(app, "ingestion")
+telemetry.register_embedding_fallback("ingestion")
 
 app.add_middleware(
     CORSMiddleware,
@@ -71,7 +71,7 @@ def process_document_pipeline(req: ProcessRequest):
         cursor.execute("DELETE FROM document_chunks WHERE doc_id = ?", (req.doc_id,))
 
         for chunk in chunks:
-            emb = get_embedding(chunk["text"], model=req.embedding_model, base_url=req.ollama_base_url)
+            emb = telemetry.instrumented_embedding("ingestion", chunk["text"], req.embedding_model, req.ollama_base_url)
             embeddings.append(emb)
             chunk_id = f"{req.doc_id}_c{chunk['chunk_index']}"
 
@@ -96,7 +96,7 @@ def process_document_pipeline(req: ProcessRequest):
         update_doc_status(req.doc_id, "processed", pages=total_pages, chunks_count=len(chunks))
 
     except Exception as e:
-        print(f"[Ingestion Error] {e}")
+        log.error("document processing failed", exc=e, doc_id=req.doc_id)
         update_doc_status(req.doc_id, "error", error_message=str(e))
 
 @app.post("/process")
