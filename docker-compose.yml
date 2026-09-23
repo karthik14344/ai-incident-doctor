@@ -107,9 +107,10 @@ services:
     user: "0:0"
     environment: *patient-env
     command: ["python", "-m", "kb.load_kb", "--kb", "/kb", "--chroma-dir", "/chroma-data",
-              "--docs-dir", "/app/storage/documents"]
+              "--docs-dir", "/app/storage/documents", "--log", "/runtime/kb_loads.jsonl"]
     volumes:
-      - ./kb:/kb:ro
+      - ${KB_DIR:-./kb}:/kb:ro
+      - ${RUNTIME_DIR:-./runtime}:/runtime
       - chroma-data:/chroma-data
       - appdata:/app/data
       - documents:/app/storage/documents
@@ -187,6 +188,9 @@ services:
     <<: *restart
     image: ${IMAGE_PREFIX:-aid}/alert-sink:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
     build: { <<: *patient-build, dockerfile: alert_sink/Dockerfile }
+    environment:
+      # Every firing alert is pushed here as soon as it is logged.
+      DOCTOR_INCIDENT_URL: http://doctor:8100/incident
     volumes:
       - alert-log:/data
     ports: ["${ALERT_SINK_HOST_PORT:-9095}:9095"]

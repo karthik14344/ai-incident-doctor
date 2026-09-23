@@ -18,6 +18,7 @@ import argparse
 import json
 import os
 import shutil
+from datetime import datetime, timezone
 import sys
 
 PATIENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -91,6 +92,8 @@ def main() -> int:
     ap.add_argument("--chroma-dir", required=True)
     ap.add_argument("--docs-dir", required=True)
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--log", default=os.environ.get("KB_LOAD_LOG", ""),
+                    help="append a JSON record of every load here (the data-change log)")
     ap.add_argument("--owner", default="10001:10001", help="uid:gid that owns the app data and documents")
     args = ap.parse_args()
 
@@ -120,7 +123,17 @@ def main() -> int:
     with open(marker, "w") as fh:
         fh.write(version)
     _hand_back([os.path.dirname(DB_PATH), args.docs_dir], uid, gid)
-    print(json.dumps({"kb_loader": "loaded", "kb_version": version, "previous": current, "documents": docs}))
+    with open(manifest_path, "r", encoding="utf-8") as fh:
+        manifest = json.load(fh)
+    record = {"ts": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+              "kb_version": version, "previous": current, "documents": docs,
+              "collections": manifest.get("collections"), "embedding_model": manifest.get("embedding_model")}
+    if args.log:
+        # Like the deploy log, but for data: which knowledge base became live, when.
+        os.makedirs(os.path.dirname(args.log), exist_ok=True)
+        with open(args.log, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record) + "\n")
+    print(json.dumps({"kb_loader": "loaded", **record}))
     return 0
 
 
