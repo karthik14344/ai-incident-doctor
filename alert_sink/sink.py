@@ -10,13 +10,20 @@ Each line:
      "labels": {...}, "annotations": {...}, "generatorURL": "...",
      "groupKey": "..."}
 
+After appending, every FIRING alert is also POSTed straight to the doctor's
+/incident endpoint (DOCTOR_INCIDENT_URL), so a diagnosis starts with no human
+involved. Delivery runs in a background thread with retries and never delays
+Alertmanager. Resolved alerts are logged but not forwarded.
+
 GET /alerts?since=<iso> returns the lines (JSON array); GET /health for the
-healthcheck; GET /metrics for a received-alerts counter.
+healthcheck; GET /metrics for received/forwarded counters.
 """
 
 import json
 import os
 import threading
+import time
+import urllib.request
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -24,7 +31,35 @@ from urllib.parse import parse_qs, urlparse
 LOG_PATH = os.environ.get("ALERT_LOG_PATH", "/data/alerts.jsonl")
 PORT = int(os.environ.get("PORT", "9095"))
 _lock = threading.Lock()
+DOCTOR_INCIDENT_URL = os.environ.get("DOCTOR_INCIDENT_URL", "")
 _received = {"firing": 0, "resolved": 0}
+_forwarded = {"ok": 0, "failed": 0}
+
+
+def _log(msg: str, **fields) -> None:
+    print(json.dumps({"ts": _now(), "service": "alert-sink", "msg": msg, **fields}), flush=True)
+
+
+def forward_to_doctor(alert: dict, attempts: int = 5) -> bool:
+    """POST one firing alert to the doctor's /incident endpoint."""
+    if not DOCTOR_INCIDENT_URL:
+        return False
+    body = json.dumps({"alert": alert}).encode()
+    for attempt in range(attempts):
+        try:
+            req = urllib.request.Request(DOCTOR_INCIDENT_URL, data=body, method="POST",
+                                         headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                result = json.loads(resp.read() or b"{}")
+            _forwarded["ok"] += 1
+            _log("forwarded to doctor", alertname=alert.get("alertname"), result=result.get("status"),
+                 incident_id=result.get("incident_id"))
+            return True
+        except Exception as exc:  # the doctor may be restarting; its catch-up poll is the backstop
+            _log("forward to doctor failed", alertname=alert.get("alertname"), attempt=attempt + 1, error=str(exc))
+            time.sleep(2 ** attempt)
+    _forwarded["failed"] += 1
+    return False
 
 
 def _now() -> str:
@@ -53,6 +88,9 @@ def append_alerts(payload: dict) -> int:
             for line in lines:
                 fh.write(json.dumps(line) + "\n")
                 _received[line["status"] if line["status"] in _received else "firing"] += 1
+    for line in lines:
+        if line["status"] == "firing":
+            threading.Thread(target=forward_to_doctor, args=(line,), daemon=True).start()
     return len(lines)
 
 
@@ -101,11 +139,13 @@ class Handler(BaseHTTPRequestHandler):
         if url.path == "/metrics":
             body = "".join(
                 f'alert_sink_alerts_received_total{{status="{k}"}} {v}\n' for k, v in _received.items())
+            body += "".join(
+                f'alert_sink_doctor_forwards_total{{result="{k}"}} {v}\n' for k, v in _forwarded.items())
             return self._send(200, body.encode(), "text/plain; version=0.0.4")
         return self._send(404, b'{"error":"not found"}')
 
     def log_message(self, fmt, *args):  # one JSON line per request, like the rest of the stack
-        print(json.dumps({"ts": _now(), "service": "alert-sink", "msg": fmt % args}), flush=True)
+        _log(fmt % args)
 
 
 if __name__ == "__main__":
