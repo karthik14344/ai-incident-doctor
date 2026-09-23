@@ -42,3 +42,9 @@ def test_no_chunks_gives_an_explicit_empty_context():
     out = assemble_context([])
     assert out["assembled_context"] == "No relevant document chunks found."
     assert out["sources"] == []
+
+
+def test_blank_questions_are_refused_before_retrieval():
+    from api_gateway.app import guardrails
+
+    assert guardrails.validate_input("   ").allowed is False
