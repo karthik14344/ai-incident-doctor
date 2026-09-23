@@ -12,22 +12,26 @@ groups:
     rules:
       - alert: ServiceDown
         expr: up{job=~"gateway|ingestion|retrieval|llm"} == 0
-        for: 20s
+        # 45 s: a deploy recreates a container in ~15 s and must not look like an outage.
+        for: 45s
         labels:
           severity: critical
           service: "{{ $labels.job }}"
         annotations:
           summary: "{{ $labels.job }} is not answering Prometheus scrapes"
-          description: "The /metrics endpoint of {{ $labels.job }} has failed every scrape for at least 20 seconds."
+          description: "The /metrics endpoint of {{ $labels.job }} has failed every scrape for at least 45 seconds."
 
       - alert: RestartLoop
-        expr: changes(process_start_time_seconds{job=~"gateway|ingestion|retrieval|llm"}[15m]) >= 2
+        # Docker's restart count, not the process start time: a deploy recreates the
+        # container (count back to 0) and must not look like a crash loop.
+        expr: |
+          (max_over_time(aid_container_restart_count{service=~"gateway|ingestion|retrieval|llm"}[15m])
+           - min_over_time(aid_container_restart_count{service=~"gateway|ingestion|retrieval|llm"}[15m])) >= 2
         labels:
           severity: critical
-          service: "{{ $labels.job }}"
         annotations:
-          summary: "{{ $labels.job }} process has started {{ $value }} times in 15 minutes"
-          description: "The process start time reported by {{ $labels.job }} changed {{ $value }} times within 15 minutes."
+          summary: "{{ $labels.service }} container restarted {{ $value }} times in 15 minutes"
+          description: "Docker restarted the {{ $labels.service }} container {{ $value }} times within 15 minutes."
 
       - alert: ContainerOOMKilled
         expr: increase(aid_container_oom_kills_total{service=~"gateway|ingestion|retrieval|llm"}[10m]) > 0
@@ -114,7 +118,11 @@ groups:
     rules:
       - alert: MemoryClimbing
         # 128 KiB/s sustained = ~7.5 MiB/min of steady growth for 3 minutes.
-        expr: deriv(knowledgeai_process_resident_memory_bytes[5m]) > 131072
+        # Ignores the first 10 minutes of a process: start-up allocation is not a trend.
+        expr: |
+          deriv(knowledgeai_process_resident_memory_bytes[5m]) > 131072
+          and on (service)
+            (time() - max by (service) (label_replace(process_start_time_seconds, "service", "$1", "job", "(.*)"))) > 600
         for: 3m
         labels:
           severity: warning

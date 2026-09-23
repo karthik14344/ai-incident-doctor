@@ -8,15 +8,18 @@ tests:
     interval: 5s
     input_series:
       - series: 'up{job="retrieval", instance="retrieval:8002"}'
-        values: '1 1 1 0 0 0 0 0 0 0 0 0'
+        values: '1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
     alert_rule_test:
-      - eval_time: 55s
+      - eval_time: 30s
+        alertname: ServiceDown
+        exp_alerts: []
+      - eval_time: 85s
         alertname: ServiceDown
         exp_alerts:
           - exp_labels: { severity: critical, service: retrieval, job: retrieval, instance: "retrieval:8002" }
             exp_annotations:
               summary: "retrieval is not answering Prometheus scrapes"
-              description: "The /metrics endpoint of retrieval has failed every scrape for at least 20 seconds."
+              description: "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds."
 
   - name: any rise of the embedding fallback counter fires
     interval: 15s
@@ -42,16 +45,38 @@ tests:
         alertname: EmbeddingFallbackActive
         exp_alerts: []
 
-  - name: two restarts in 15 minutes is a restart loop
+  - name: two Docker restarts in 15 minutes is a restart loop
     interval: 1m
     input_series:
-      - series: 'process_start_time_seconds{job="retrieval", instance="retrieval:8002"}'
-        values: '100 100 400 400 700 700'
+      - series: 'aid_container_restart_count{service="retrieval", job="container-exporter"}'
+        values: '0 0 1 1 2 2'
     alert_rule_test:
       - eval_time: 5m
         alertname: RestartLoop
         exp_alerts:
-          - exp_labels: { severity: critical, service: retrieval, job: retrieval, instance: "retrieval:8002" }
+          - exp_labels: { severity: critical, service: retrieval, job: container-exporter }
             exp_annotations:
-              summary: "retrieval process has started 2 times in 15 minutes"
-              description: "The process start time reported by retrieval changed 2 times within 15 minutes."
+              summary: "retrieval container restarted 2 times in 15 minutes"
+              description: "Docker restarted the retrieval container 2 times within 15 minutes."
+
+  - name: a deploy (recreated container, count reset) is not a restart loop
+    interval: 1m
+    input_series:
+      - series: 'aid_container_restart_count{service="retrieval", job="container-exporter"}'
+        values: '0 0 0 0 0 0'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: RestartLoop
+        exp_alerts: []
+
+  - name: memory growth right after a process starts is not a climb
+    interval: 30s
+    input_series:
+      - series: 'knowledgeai_process_resident_memory_bytes{service="retrieval", job="retrieval"}'
+        values: '100000000+1000000x20'
+      - series: 'process_start_time_seconds{job="retrieval", instance="retrieval:8002"}'
+        values: '0x20'
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: MemoryClimbing
+        exp_alerts: []
