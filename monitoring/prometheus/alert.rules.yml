@@ -81,7 +81,9 @@ groups:
           severity: warning
         annotations:
           summary: "calls from {{ $labels.service }} to {{ $labels.target }} are failing"
-          description: "Calls from {{ $labels.service }} to {{ $labels.target }} have kept failing for at least a minute ({{ $value | printf \"%.2f\" }} failures/s)."
+          description: >-
+            Calls from {{ $labels.service }} to {{ $labels.target }} have kept failing
+            for at least a minute ({{ $value | printf "%.2f" }} failures/s).
 
       - alert: OllamaCallFailures
         expr: sum by (service, operation) (rate(knowledgeai_ollama_failures_total{reason!="fallback"}[30s])) > 0
