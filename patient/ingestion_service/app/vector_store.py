@@ -83,6 +83,7 @@ def add_chunks_to_vector_store(
             metadatas=metadatas
         )
 
+# Distances are cosine (hnsw:space=cosine); similarity is reported as 1 - distance.
 def query_vector_store(
     collection_name: str,
     query_embedding: List[float],
