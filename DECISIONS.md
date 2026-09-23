@@ -186,3 +186,94 @@ applied to `main` by hand.
   stopped answering (HTTP 500 on every call) during an image build; restarting
   Docker Desktop recovered it. The stack itself uses about 1.4 GB. This is why
   timings measured here must be re-measured on the Pavilion (PAVILION.md).
+
+## The doctor
+
+- **D-34. Ollama's OpenAI-compatible endpoint is not used for reasoning.**
+  Measured: an 11,000-token prompt sent to `/v1/chat/completions` was reported
+  as 2,050 prompt tokens and answered from the tail only; `num_ctx` passed via
+  `extra_body` was ignored. The Ollama provider therefore calls the native
+  `/api/chat` with `num_ctx=16384` and the JSON schema as `format`. GLM,
+  Gemini, Groq and OpenAI go through the OpenAI-compatible client as specified.
+- **D-35. Fixes are requested as search/replace edits, not raw diffs.** Small
+  models rarely produce a diff `git apply` accepts. The doctor renders the edits
+  against the running commit into a real unified diff itself; that diff is what
+  the report shows and what verification applies.
+- **D-36. Verification = the patient's own test suite on a throwaway export**
+  (`git archive` at the running commit, patched). "verified" requires the diff
+  to apply and every test to pass. In the evaluation a fault-specific acceptance
+  test is also run and reported *separately* - the suite says "nothing broke",
+  the acceptance test says "the fault is fixed". Operational actions (restart,
+  scale) cannot be tested on a copy and are always "unverified - needs human
+  review".
+- **D-37. Root-cause identity for scoring.** A hypothesis matches the truth if
+  it names the guilty commit (when there is one) or, when the truth has no
+  commit, names none and names the right component. `component` is an enum in
+  the output schema so this is objective.
+- **D-38. Symptom-to-vocabulary hints in lexical retrieval** (e.g. a rising
+  fallback counter adds "embed", "fallback", "timeout" to the query). This is
+  generic operational knowledge written once in `retrieval.py`, not knowledge of
+  any injected fault; it is applied identically to every incident.
+- **D-39. Prompt budget of ~6,500 tokens for every model**, trimmed longest-
+  section-first, so llama3 (8k context) sees the same evidence as GLM.
+- **D-40. The doctor's own embeddings are local**; if Ollama is down, retrieval
+  degrades to lexical ranking and the report says so. Reasoning goes to the
+  cloud provider with a local fallback.
+- **D-41. Experimenter paths are invisible to the doctor.** `faults/`,
+  `incidents/`, `doctor/eval/` and `RESULTS.md` hold fault scripts, recorded
+  ground truth and the harness. They are not part of any deployed artifact, and
+  their diffs would be the answer key, so the doctor drops them from commit
+  file lists (commits touching only them are not candidates). Fault commits
+  themselves use ordinary, realistic messages.
+
+## Triggers
+
+- **D-42. A git push never wakes the doctor.** The pipeline ends at the deploy
+  record. Tests fail if anything under `deploy/` or `scripts/pipeline/`, or the
+  workflow, references the doctor's entry points or URL.
+- **D-43. Three entry points only.** `POST /incident` (alert-sink calls it for
+  every firing alert, immediately after appending to the trigger log, in a
+  background thread with retries), `POST /ticket` (free text + rough time; the
+  doctor locates the onset from symptom metrics), and `python -m app.replay`
+  (the only one the evaluation uses). A catch-up poll of alert-sink fills gaps
+  while the doctor was down, sharing the same de-duplication.
+- **D-44. Alerts on the same service within 10 minutes join one incident.**
+  A single fault fires several alerts (e.g. ServiceDown, DownstreamCallFailures,
+  ChatRequestsFailing); diagnosing each separately would triple the cost and
+  count one fault three times.
+- **D-45. Every incident is snapshotted before reasoning** (`bundle.json`:
+  alert, related alerts, grouped logs, raw metric series and summaries, deploy
+  records, the commit range with diffs, KB loads, source excerpts). Replays read
+  only the snapshot.
+- **D-46. Knowledge-base loads are change history too.** kb-loader appends to
+  `runtime/kb_loads.jsonl`, the data counterpart of the deploy log; the doctor
+  collects it, which is what lets a `data` fault have a guilty KB version.
+
+## The pipeline: local stand-in for GitHub Actions
+
+- **D-47. A local bare remote runs the CI/CD loop.** This build must not create
+  a GitHub repository or send code off the machine, but a `push` fault has to go
+  through a real `git push` and the pipeline. `runtime/pipeline.git` has a
+  post-receive hook; `git push pipeline main` runs job 1 then job 2.
+- **D-48. The steps exist once.** `scripts/pipeline/verify.sh` (lint + tests)
+  and `scripts/pipeline/deploy.sh <sha>` (which calls `deploy/deploy.py`, the
+  single implementation of build / KB swap / compose up / smoke test / rollback
+  / deploy record / Grafana annotation). The hook and `.github/workflows/ci.yml`
+  both call these scripts and contain no copy of the steps. Only environment
+  preparation differs (pip install on GitHub runners, copying `/opt/aid/.env` on
+  the Pavilion).
+- **D-49. The hook is tracked** (`scripts/pipeline/post-receive`), installed by
+  `scripts/pipeline/init_local_pipeline.sh`; `verify.sh` fails if the installed
+  copy differs from the tracked one.
+- **D-50. The hook is synchronous and bounded**: `git push` returns when the
+  deploy is done, each job runs under `timeout ${PIPELINE_TIMEOUT_S:-2400}`,
+  all output is tee'd to `runtime/pipeline-logs/<sha>.log`, and the log path is
+  printed on success, failure and timeout. Each run is also appended to
+  `runtime/pipeline_runs.jsonl`.
+- **D-51. Every deploy record says which pipeline produced it**
+  (`pipeline: local | github | manual`). **All results in RESULTS.md measured
+  on this laptop come from the local stand-in** and are labelled as such; after
+  the switch to GitHub Actions on the Pavilion they must be re-measured and
+  reported separately, never merged into the same table silently. The local
+  pipeline runs the identical scripts, but its timings (no network hop, no
+  runner queue) are not comparable to Actions timings.
