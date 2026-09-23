@@ -66,6 +66,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Settings are read per request so a change on the Settings page applies to the next question.
 def get_settings_map() -> Dict[str, str]:
     settings = dict(DEFAULT_SETTINGS)
     try:
