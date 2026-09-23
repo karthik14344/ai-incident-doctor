@@ -71,6 +71,7 @@ MAX_SINGLE_CHAR_RUN = 60        # "aaaaaa..." spam
 _CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 
 
+# Cheapest checks first: this runs before any retrieval or model call.
 def validate_input(question: str) -> Verdict:
     text = question or ""
     if len(text.strip()) < MIN_QUESTION_CHARS:
