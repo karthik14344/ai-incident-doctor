@@ -121,3 +121,68 @@ applied to `main` by hand.
 - **D-18. Lint scope.** ruff enforces pyflakes + syntax errors only, so the
   imported code is not reformatted; mass reformatting would bury the real
   changes in the commit history that the doctor searches.
+
+## Deployment, monitoring, CI/CD
+
+- **D-19. One uvicorn worker per container.** Prometheus counters, the
+  in-flight gauge and the embedding-fallback counter are per process; several
+  workers would each report a fraction. Scale by containers, not workers.
+- **D-20. Every patient image carries the whole backend package.** The
+  services import each other's modules (the gateway uses the vector store and
+  the evaluation scorers; retrieval uses the embedder). The dependency layer is
+  identical in all four Dockerfiles, so it is stored once.
+- **D-21. The knowledge base is built by a DVC stage and loaded by a one-shot
+  `kb-loader`.** `build_kb` produces the documents, a ChromaDB store (tested:
+  the chromadb 1.5.9 server reads a store built by the 1.5.9 embedded client)
+  and the SQLite rows, stamped with a content-hash `kb_version` that also sits
+  in git (`kb/manifest.json`, `cache: false`). kb-loader swaps the index in only
+  when the version changed, and must run while ChromaDB is stopped. Documents
+  uploaded through the UI live in the same collection and are replaced when a
+  new KB version is loaded - acceptable for this project, noted here.
+- **D-22. `embedder.py` is deliberately not a dependency of `build_kb`.** Its
+  only edits in this project are the timeout fault and its fix, which do not
+  change embedding values; listing it would mark the KB stale on every fault.
+  The build refuses to publish if the hash fallback fired during the build.
+- **D-23. DVC remote = MinIO in the stack** (`s3://dvc/knowledge-base`); the
+  endpoint and credentials are machine-specific and live in `.dvc/config.local`
+  (not committed).
+- **D-24. Separate Ollama URLs for host and containers.** On Docker Desktop,
+  `host.docker.internal` from the Windows host resolves to the LAN IP (where
+  Ollama, bound to 127.0.0.1, is not listening) while from a container it
+  reaches the host's loopback. Hence `OLLAMA_BASE_URL` (host tools) and
+  `CONTAINER_OLLAMA_BASE_URL` (containers). On the Pavilion both are the
+  laptop's LAN address.
+- **D-25. Every host port is configurable.** The development laptop also runs
+  another compose project that holds 8000, 9090, 3000 etc. This laptop's `.env`
+  shifts every host port by +10000; defaults are the container ports.
+- **D-26. MinIO comes from `quay.io/minio/minio`.** The Docker Hub
+  `minio/minio` repository no longer serves images.
+- **D-27. cAdvisor cannot see containers on Docker 29's containerd image
+  store** ("failed to identify the read-write layer ID"), on Docker Desktop and
+  on fresh Linux installs. Turning the containerd store off would affect other
+  projects' images on the laptop, so instead a small stdlib
+  `container-exporter` reads per-container memory, limit, restart count and OOM
+  events from the Docker API. cAdvisor stays in the stack (raw-cgroup mode) for
+  what it can see. OOM and near-limit alerts use the exporter's series.
+- **D-28. nginx resolves upstreams per request** (Docker DNS, `resolver
+  127.0.0.11`): containers are recreated with new IPs during deploys and fault
+  injection, and startup-time resolution would pin a dead address.
+- **D-29. Alert annotations are symptom-only and there are no inhibit rules.**
+  Every symptom reaches the trigger log; picking the root is the doctor's job.
+  Grafana "fault" annotations exist for human viewers only - the doctor never
+  reads Grafana.
+- **D-30. Scrape and rule evaluation every 5 s**, so faults surface within
+  seconds; the alert-to-report time is one of the measured results.
+- **D-31. Deploy records live outside compose** (`runtime/deploys.jsonl`, or
+  `DEPLOY_LOG_PATH`, `/opt/aid/runtime` on the Pavilion). Failed deploys are
+  recorded too; the "previous SHA" of a deploy is the last *successful* one.
+  A dirty working tree cannot be deployed, so an image tag always describes
+  exactly the code in it.
+- **D-32. MLflow logging uses the REST API directly**, so the patient images
+  gain no dependency. The server runs `--serve-artifacts` so clients need no
+  S3 credentials.
+- **D-33. The machine is memory-constrained.** With two compose stacks and the
+  usual desktop apps, the laptop reached 0.2 GB free and the Docker engine
+  stopped answering (HTTP 500 on every call) during an image build; restarting
+  Docker Desktop recovered it. The stack itself uses about 1.4 GB. This is why
+  timings measured here must be re-measured on the Pavilion (PAVILION.md).
