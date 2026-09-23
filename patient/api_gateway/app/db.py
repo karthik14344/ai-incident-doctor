@@ -11,6 +11,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+# Idempotent: CREATE TABLE IF NOT EXISTS and INSERT OR IGNORE for default settings.
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
