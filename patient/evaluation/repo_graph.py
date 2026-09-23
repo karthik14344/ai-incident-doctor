@@ -26,7 +26,7 @@ are real, and both this module and Sourcegraph are blind to them.
 import ast
 import json
 import os
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

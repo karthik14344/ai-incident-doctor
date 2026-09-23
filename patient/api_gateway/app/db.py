@@ -1,7 +1,5 @@
 import sqlite3
 import os
-import json
-from datetime import datetime
 
 from common import config
 

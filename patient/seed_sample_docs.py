@@ -1,6 +1,5 @@
 import os
 import sys
-import sqlite3
 from datetime import datetime
 
 # Add root directory to sys.path

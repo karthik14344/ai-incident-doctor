@@ -21,7 +21,7 @@ def extract_text_from_pdf(file_path: str):
                     "page": idx + 1,
                     "text": text
                 })
-    except Exception as e:
+    except Exception:
         # Fallback if file is txt or simple reading error
         with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
             text = f.read()

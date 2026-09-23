@@ -23,7 +23,7 @@ import re
 import threading
 import time
 from dataclasses import dataclass, field
-from typing import Any, List, Optional
+from typing import List, Optional
 
 # ---------------------------------------------------------------------------
 # The verdict every guardrail returns

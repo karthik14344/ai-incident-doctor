@@ -1,0 +1,17 @@
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-exclude = [
+    "patient/frontend", "**/node_modules", ".venv",
+    # Preserved byte-for-byte: carries the deliberate latent bug (DECISIONS.md).
+    "patient/ingestion_service/app/embedder.py",
+]
+
+[tool.ruff.lint]
+# Pyflakes (undefined names, unused imports/variables) and syntax errors.
+# Style rules are deliberately not enforced on the imported KnowledgeAI code:
+# reformatting it would bury the real changes in the history the doctor reads.
+select = ["E9", "F"]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::DeprecationWarning"]
