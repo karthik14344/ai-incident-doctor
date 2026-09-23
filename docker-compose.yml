@@ -1,0 +1,356 @@
+# ai-incident-doctor - the whole stack.
+#
+#   The patient:   gateway, ingestion, retrieval, llm, chroma, frontend (+ kb-loader)
+#   Monitoring:    prometheus, alertmanager, alert-sink, grafana, loki, alloy, cadvisor
+#   ML ops:        mlflow, minio (+ minio-init)
+#   The doctor:    doctor (never sabotaged; its own ChromaDB directory)
+#   Optional:      cloudflared  (profile "tunnel" - off by default)
+#
+# Ollama is NOT here. The patient reaches it over the network at
+# OLLAMA_BASE_URL - on the Pavilion that is this laptop's LAN address.
+#
+# Images are tagged with the git SHA being deployed (IMAGE_TAG), never only
+# "latest". deploy/deploy.py sets IMAGE_TAG, KB_VERSION and APP_GIT_SHA; to
+# bring the stack up by hand:
+#   IMAGE_TAG=$(git rev-parse --short HEAD) APP_GIT_SHA=$(git rev-parse HEAD) docker compose up -d --build
+
+name: aid
+
+x-restart: &restart
+  restart: unless-stopped
+
+x-patient-env: &patient-env
+  OLLAMA_BASE_URL: ${CONTAINER_OLLAMA_BASE_URL:?set CONTAINER_OLLAMA_BASE_URL in .env}
+  INGESTION_SERVICE_URL: http://ingestion:8001
+  # Overridable only so the dependency-failure fault can point the gateway
+  # at a wrong address without a commit (faults/dependency_*).
+  RETRIEVAL_SERVICE_URL: ${RETRIEVAL_SERVICE_URL_OVERRIDE:-http://retrieval:8002}
+  LLM_SERVICE_URL: http://llm:8003
+  CHROMA_HOST: chroma
+  CHROMA_PORT: "8000"
+  KB_VERSION: ${KB_VERSION:-unknown}
+  # Inside a container every setting comes from the environment above.
+  KNOWLEDGEAI_ENV_FILE: /dev/null
+  LOG_LEVEL: INFO
+
+x-patient-build: &patient-build
+  context: .
+  args:
+    APP_GIT_SHA: ${APP_GIT_SHA:-unknown}
+
+x-host-gateway: &host-gateway
+  # Lets OLLAMA_BASE_URL=http://host.docker.internal:11434 work on Linux too.
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+services:
+  # ------------------------------------------------------------ the patient
+  gateway:
+    <<: [*restart, *host-gateway]
+    image: ${IMAGE_PREFIX:-aid}/gateway:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: patient/api_gateway/Dockerfile }
+    environment: *patient-env
+    ports: ["8000:8000"]
+    volumes:
+      - appdata:/app/data
+      - documents:/app/storage/documents
+    mem_limit: 768m
+    memswap_limit: 768m
+    depends_on:
+      chroma: { condition: service_healthy }
+      retrieval: { condition: service_healthy }
+      llm: { condition: service_healthy }
+
+  ingestion:
+    <<: [*restart, *host-gateway]
+    image: ${IMAGE_PREFIX:-aid}/ingestion:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: patient/ingestion_service/Dockerfile }
+    environment: *patient-env
+    ports: ["8001:8001"]
+    volumes:
+      - appdata:/app/data
+      - documents:/app/storage/documents
+    mem_limit: 768m
+    memswap_limit: 768m
+    depends_on:
+      chroma: { condition: service_healthy }
+
+  retrieval:
+    <<: [*restart, *host-gateway]
+    image: ${IMAGE_PREFIX:-aid}/retrieval:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: patient/retrieval_service/Dockerfile }
+    environment: *patient-env
+    ports: ["8002:8002"]
+    mem_limit: 512m
+    memswap_limit: 512m
+    depends_on:
+      chroma: { condition: service_healthy }
+
+  llm:
+    <<: [*restart, *host-gateway]
+    image: ${IMAGE_PREFIX:-aid}/llm:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: patient/llm_service/Dockerfile }
+    environment: *patient-env
+    ports: ["8003:8003"]
+    mem_limit: 384m
+    memswap_limit: 384m
+
+  kb-loader:
+    # One-shot: copies the DVC-built knowledge base into the chroma volume when
+    # its version changed. Must finish before chroma starts (same volume).
+    image: ${IMAGE_PREFIX:-aid}/ingestion:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    restart: "no"
+    user: "0:0"
+    environment: *patient-env
+    command: ["python", "-m", "kb.load_kb", "--kb", "/kb", "--chroma-dir", "/chroma-data",
+              "--docs-dir", "/app/storage/documents"]
+    volumes:
+      - ./kb:/kb:ro
+      - chroma-data:/chroma-data
+      - appdata:/app/data
+      - documents:/app/storage/documents
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "true"]
+
+  chroma:
+    <<: *restart
+    image: chromadb/chroma:1.5.9
+    volumes:
+      - chroma-data:/data
+    ports: ["8010:8000"]
+    mem_limit: 1g
+    memswap_limit: 1g
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8000 && printf 'GET /api/v2/heartbeat HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    depends_on:
+      kb-loader: { condition: service_completed_successfully }
+
+  frontend:
+    <<: *restart
+    image: ${IMAGE_PREFIX:-aid}/frontend:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: patient/frontend/Dockerfile }
+    environment:
+      GATEWAY_UPSTREAM: http://gateway:8000
+      DOCTOR_UPSTREAM: http://doctor:8100
+    ports: ["3001:8080"]
+    mem_limit: 64m
+    depends_on:
+      gateway: { condition: service_healthy }
+
+  # ------------------------------------------------------------ monitoring
+  prometheus:
+    <<: *restart
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    ports: ["9090:9090"]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  alertmanager:
+    <<: *restart
+    image: prom/alertmanager:v0.28.1
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager:ro
+      - alertmanager-data:/alertmanager
+    ports: ["9093:9093"]
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9093/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  alert-sink:
+    <<: *restart
+    image: ${IMAGE_PREFIX:-aid}/alert-sink:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: alert_sink/Dockerfile }
+    volumes:
+      - alert-log:/data
+    ports: ["9095:9095"]
+    mem_limit: 64m
+
+  grafana:
+    <<: *restart
+    image: grafana/grafana:12.1.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/knowledgeai.json
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports: ["3000:3000"]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      prometheus: { condition: service_healthy }
+      loki: { condition: service_healthy }
+
+  loki:
+    <<: *restart
+    image: grafana/loki:3.5.3
+    command: ["-config.file=/etc/loki/loki.yml"]
+    volumes:
+      - ./monitoring/loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki-data:/loki
+    ports: ["3100:3100"]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3100/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+
+  alloy:
+    <<: *restart
+    image: grafana/alloy:v1.10.2
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "--storage.path=/var/lib/alloy/data",
+              "/etc/alloy/config.alloy"]
+    volumes:
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - alloy-data:/var/lib/alloy/data
+    ports: ["12345:12345"]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/12345 && printf 'GET /-/ready HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      loki: { condition: service_healthy }
+
+  cadvisor:
+    <<: *restart
+    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    privileged: true
+    devices: ["/dev/kmsg"]
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=10s
+      - --enable_metrics=cpu,memory,oom_event
+      - --store_container_labels=true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports: ["8080:8080"]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ------------------------------------------------------------ ML ops
+  minio:
+    <<: *restart
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
+    volumes:
+      - minio-data:/data
+    ports: ["9000:9000", "9001:9001"]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  minio-init:
+    # One-shot: create the buckets MLflow and DVC use.
+    image: quay.io/minio/mc:RELEASE.2025-04-16T18-13-26Z
+    restart: "no"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    entrypoint: ["sh", "-c", "mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" && mc mb -p local/mlflow local/dvc"]
+    healthcheck:
+      test: ["CMD", "true"]
+    depends_on:
+      minio: { condition: service_healthy }
+
+  mlflow:
+    <<: *restart
+    image: ${IMAGE_PREFIX:-aid}/mlflow:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: monitoring/mlflow/Dockerfile }
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - mlflow-data:/mlflow
+    ports: ["5000:5000"]
+    mem_limit: 512m
+    depends_on:
+      minio-init: { condition: service_completed_successfully }
+
+  # ------------------------------------------------------------ optional
+  cloudflared:
+    # Public link to the frontend ONLY. Off by default:
+    #   docker compose --profile tunnel up -d cloudflared
+    # With CLOUDFLARE_TUNNEL_TOKEN set it runs your named tunnel (route it to
+    # http://frontend:8080 in the Cloudflare dashboard); without one it opens a
+    # temporary trycloudflare.com URL, printed in `docker compose logs cloudflared`.
+    profiles: ["tunnel"]
+    <<: *restart
+    image: cloudflare/cloudflared:2025.8.1
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    command: >-
+      tunnel --no-autoupdate --metrics 0.0.0.0:2000
+      ${CLOUDFLARE_TUNNEL_ARGS:---url http://frontend:8080}
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "cloudflared", "tunnel", "--metrics", "127.0.0.1:2000", "ready"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      frontend: { condition: service_healthy }
+
+volumes:
+  appdata:
+  documents:
+  chroma-data:
+  prometheus-data:
+  alertmanager-data:
+  alert-log:
+  grafana-data:
+  loki-data:
+  alloy-data:
+  minio-data:
+  mlflow-data:
