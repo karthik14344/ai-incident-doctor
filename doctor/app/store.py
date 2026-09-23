@@ -36,18 +36,22 @@ def list_incidents(settings: Settings = SETTINGS) -> List[Dict[str, Any]]:
         return []
     out = []
     for incident_id in os.listdir(root):
+        meta = load(incident_id, "incident.json", settings) or {}
         report = load(incident_id, "report.json", settings)
-        bundle_alert = (load(incident_id, "bundle.json", settings) or {}).get("alert", {})
+        alert = meta.get("alert") or (load(incident_id, "bundle.json", settings) or {}).get("alert", {})
         d = (report or {}).get("diagnosis") or {}
         top = (d.get("hypotheses") or [{}])[0]
         out.append({
-            "id": incident_id, "alertname": bundle_alert.get("alertname"),
-            "service": (bundle_alert.get("labels") or {}).get("service"),
-            "started": bundle_alert.get("startsAt"), "status": (report or {}).get("status", "collecting"),
+            "id": incident_id, "alertname": alert.get("alertname"),
+            "service": (alert.get("labels") or {}).get("service") or meta.get("service"),
+            "started": alert.get("startsAt"),
+            "status": meta.get("status") or (report or {}).get("status", "collecting"),
+            "trigger": meta.get("trigger") or (report or {}).get("trigger", "alert"),
             "incident_class": d.get("incident_class"), "top_cause": top.get("cause"),
             "suspected_commit": top.get("suspected_commit"), "confidence": top.get("confidence"),
             "verification": ((report or {}).get("verification") or {}).get("status"),
             "provider": (report or {}).get("provider"), "model": (report or {}).get("model"),
+            "alert_to_report_s": meta.get("alert_to_report_s") or (report or {}).get("alert_to_report_s"),
             "resolved": load(incident_id, "resolution.json", settings) is not None,
         })
     return sorted(out, key=lambda r: r.get("started") or "", reverse=True)
