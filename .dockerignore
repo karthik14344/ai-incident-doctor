@@ -1,0 +1,19 @@
+# Build context is the repo root; keep it small and secret-free.
+.git
+.venv
+**/__pycache__
+**/.pytest_cache
+.ruff_cache
+**/node_modules
+**/dist
+**/.vite
+.env
+.env.*
+runtime
+runtime-local.log
+patient/data
+patient/chroma_data
+patient/storage/documents/doc_*
+doctor/data
+incidents/runs
+*.log
