@@ -7,7 +7,7 @@ import json
 import time
 import httpx
 import asyncio
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -18,9 +18,10 @@ from typing import Optional, List, Dict, Any
 # only place that knows exactly when a timed run starts and stops.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from evaluation.resources import ResourceSampler
-from common import config
+from common import config, telemetry
 
 app = FastAPI(title="LLM Service", version="1.0.0")
+log = telemetry.instrument(app, "llm")
 
 app.add_middleware(
     CORSMiddleware,
@@ -100,6 +101,7 @@ async def stream_ollama_tokens(req: GenerateRequest):
         "stream": True
     }
 
+    started = time.perf_counter()
     try:
         async with httpx.AsyncClient(timeout=120.0, trust_env=False) as client:
             async with client.stream("POST", endpoint, json=payload) as response:
@@ -116,11 +118,15 @@ async def stream_ollama_tokens(req: GenerateRequest):
                                     break
                             except Exception:
                                 pass
+                    telemetry.OLLAMA_LATENCY.labels("llm", "generate").observe(time.perf_counter() - started)
                     return
                 else:
-                    print(f"[LLM Service] Ollama returned status {response.status_code}")
+                    telemetry.OLLAMA_FAILURES.labels("llm", "generate", f"http_{response.status_code}").inc()
+                    log.warning("ollama returned an error status", status=response.status_code, model=model_name)
     except Exception as e:
-        print(f"[LLM Service Error] Ollama stream failed: {e}")
+        telemetry.OLLAMA_FAILURES.labels("llm", "generate", type(e).__name__).inc()
+        log.error("ollama stream failed", exc=e, model=model_name)
+    telemetry.OLLAMA_LATENCY.labels("llm", "generate").observe(time.perf_counter() - started)
 
     # Fallback RAG generator if Ollama connection is unavailable
     fallback_text = (
