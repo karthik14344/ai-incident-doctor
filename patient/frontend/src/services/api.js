@@ -1,25 +1,4 @@
-const API_BASE = 'http://localhost:8000/api';
-
-/**
- * Voice endpoints answer with `detail: { message, fallback }` so callers can
- * tell "the server is missing, use the browser" apart from a real error.
- */
-async function buildVoiceError(res, defaultMessage) {
-  let detail = null;
-  try {
-    const body = await res.json();
-    detail = body?.detail ?? null;
-  } catch {
-    // Non-JSON error body; fall through to the default message.
-  }
-
-  const message =
-    typeof detail === 'string' ? detail : detail?.message || defaultMessage;
-  const error = new Error(message);
-  error.status = res.status;
-  error.canFallback = typeof detail === 'object' && detail?.fallback === 'browser';
-  return error;
-}
+const API_BASE = '/api';
 
 export const api = {
   // System Status
@@ -303,36 +282,6 @@ export const api = {
     const res = await fetch(`${API_BASE}/evaluation/repo/result`);
     if (!res.ok) return null;
     return res.json();
-  },
-
-  // Voice (VEXYL-STT speech input / Futurix-AI Hindi TTS output)
-  getVoiceCapabilities: async () => {
-    const res = await fetch(`${API_BASE}/voice/capabilities`);
-    if (!res.ok) throw new Error("Failed to fetch voice capabilities");
-    return res.json();
-  },
-
-  transcribeAudio: async (audioBlob, languageCode = 'hi-IN') => {
-    const formData = new FormData();
-    formData.append('file', audioBlob, 'recording.wav');
-    formData.append('language_code', languageCode);
-
-    const res = await fetch(`${API_BASE}/voice/transcribe`, {
-      method: 'POST',
-      body: formData
-    });
-    if (!res.ok) throw await buildVoiceError(res, "Speech recognition failed");
-    return res.json();
-  },
-
-  synthesizeSpeech: async (text, language = 'hi') => {
-    const res = await fetch(`${API_BASE}/voice/speak`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, language })
-    });
-    if (!res.ok) throw await buildVoiceError(res, "Speech synthesis failed");
-    return res.blob();
   },
 
   // Settings

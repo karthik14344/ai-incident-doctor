@@ -6,7 +6,6 @@ export default function Navbar({ systemStatus, activeTab }) {
       case 'dashboard': return 'System Overview & Health';
       case 'chat': return 'AI Document Assistant Chat';
       case 'documents': return 'Knowledge Base Documents';
-      case 'chunks': return 'Document Chunk Inspector';
       case 'pipeline': return 'RAG Pipeline Visualizer & Debugger';
       case 'compare': return 'Multi-Model RAG Benchmark';
       case 'settings': return 'System Settings & Config';
@@ -16,7 +15,7 @@ export default function Navbar({ systemStatus, activeTab }) {
 
   const isOllamaOnline = systemStatus?.ollama === 'online';
 
-  const microservices = ['gateway', 'ingestion', 'retrieval', 'llm_service', 'voice'];
+  const microservices = ['gateway', 'ingestion', 'retrieval', 'llm_service'];
   const onlineCount = systemStatus
     ? microservices.filter((key) => systemStatus[key] === 'online').length
     : 0;

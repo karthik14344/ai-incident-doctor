@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 
-export default function Documents({ setActiveTab, setSelectedDocId }) {
+export default function Documents() {
   const [documents, setDocuments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState('');
@@ -83,11 +83,6 @@ export default function Documents({ setActiveTab, setSelectedDocId }) {
     } catch (e) {
       alert("Failed to reprocess: " + e.message);
     }
-  };
-
-  const openChunkInspector = (docId) => {
-    setSelectedDocId(docId);
-    setActiveTab('chunks');
   };
 
   return (
@@ -216,12 +211,6 @@ export default function Documents({ setActiveTab, setSelectedDocId }) {
                       </span>
                     </td>
                     <td className="py-4 px-6 text-right space-x-2">
-                      <button
-                        onClick={() => openChunkInspector(doc.doc_id)}
-                        className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-medium transition-all"
-                      >
-                        View Chunks
-                      </button>
                       <button
                         onClick={() => handleReprocess(doc.doc_id)}
                         className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition-all"

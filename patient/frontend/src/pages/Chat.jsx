@@ -1,24 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
-import VoiceInput from '../components/VoiceInput';
-import SpeakButton from '../components/SpeakButton';
 import SuggestedQueries from '../components/SuggestedQueries';
-
-// Shown only while the voice service is unreachable, so the mic is on the
-// browser engine and English is a valid choice. Once the service answers, its
-// own list (the 14 codes indic-conformer actually supports) replaces this.
-const FALLBACK_LANGUAGES = [
-  { code: 'hi-IN', name: 'Hindi' },
-  { code: 'en-IN', name: 'English (India)' },
-  { code: 'bn-IN', name: 'Bengali' },
-  { code: 'ta-IN', name: 'Tamil' },
-  { code: 'te-IN', name: 'Telugu' },
-  { code: 'kn-IN', name: 'Kannada' },
-  { code: 'ml-IN', name: 'Malayalam' },
-  { code: 'mr-IN', name: 'Marathi' },
-  { code: 'gu-IN', name: 'Gujarati' },
-  { code: 'pa-IN', name: 'Punjabi' }
-];
 
 export default function Chat({ setActiveTab }) {
   const [sessions, setSessions] = useState([]);
@@ -30,33 +12,10 @@ export default function Chat({ setActiveTab }) {
   const [streamingSources, setStreamingSources] = useState([]);
   const [streamingPipeline, setStreamingPipeline] = useState(null);
 
-  // Voice input/output state
-  const [voiceCaps, setVoiceCaps] = useState(null);
-  const [sttLanguage, setSttLanguage] = useState('hi-IN');
-  const [interimText, setInterimText] = useState('');
-  const [autoSpeakKey, setAutoSpeakKey] = useState(null);
-
   const messagesEndRef = useRef(null);
-
-  // Voice input is on unless the user turned it off in Settings. A missing
-  // capabilities response (gateway restarting) still leaves the mic usable via
-  // the browser engine.
-  const voiceInputEnabled = voiceCaps?.voice_input_enabled !== false;
-
-  const voiceLanguages = useMemo(() => {
-    const base = voiceCaps?.languages?.length ? voiceCaps.languages : FALLBACK_LANGUAGES;
-    // indic-conformer has no English code, but the browser engine does, so only
-    // offer English while we are actually on the browser fallback.
-    const onBrowserEngine = voiceCaps?.stt?.available !== true;
-    if (onBrowserEngine && !base.some((l) => l.code === 'en-IN')) {
-      return [...base, { code: 'en-IN', name: 'English (India)' }];
-    }
-    return base;
-  }, [voiceCaps]);
 
   useEffect(() => {
     loadSessions();
-    loadVoiceCapabilities();
   }, []);
 
   useEffect(() => {
@@ -79,24 +38,6 @@ export default function Chat({ setActiveTab }) {
     } catch (e) {
       console.error("Error loading sessions:", e);
     }
-  };
-
-  const loadVoiceCapabilities = async () => {
-    try {
-      const caps = await api.getVoiceCapabilities();
-      setVoiceCaps(caps);
-      if (caps.stt_language) setSttLanguage(caps.stt_language);
-    } catch (e) {
-      // Voice is an enhancement: if the gateway cannot answer, leave the mic
-      // on its browser fallback rather than breaking the chat page.
-      console.warn("Voice capabilities unavailable:", e);
-      setVoiceCaps(null);
-    }
-  };
-
-  const handleTranscript = (text) => {
-    setInterimText('');
-    setInputQuestion((prev) => (prev.trim() ? `${prev.trim()} ${text}` : text));
   };
 
   const loadHistory = async (sessId) => {
@@ -155,7 +96,7 @@ export default function Chat({ setActiveTab }) {
     setStreamingPipeline(null);
 
     try {
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -207,20 +148,15 @@ export default function Chat({ setActiveTab }) {
       }
 
       // Add finished Assistant message to list
-      const speakKey = `spk_${Date.now()}`;
       const assistantMsgObj = {
         role: 'assistant',
         content: fullText,
         sources: metaSources,
         pipeline_debug: metaDebug,
-        timestamp: new Date().toISOString(),
-        speakKey
+        timestamp: new Date().toISOString()
       };
 
       setMessages((prev) => [...prev, assistantMsgObj]);
-      if (voiceCaps?.voice_output_enabled && fullText.trim()) {
-        setAutoSpeakKey(speakKey);
-      }
       loadSessions();
 
     } catch (err) {
@@ -346,18 +282,6 @@ export default function Chat({ setActiveTab }) {
                       {msg.content}
                     </div>
 
-                    {/* Read-aloud control */}
-                    {msg.role === 'assistant' && (
-                      <div className="flex items-center gap-2">
-                        <SpeakButton
-                          capabilities={voiceCaps}
-                          text={msg.content}
-                          language={sttLanguage}
-                          autoPlay={!!msg.speakKey && msg.speakKey === autoSpeakKey}
-                        />
-                      </div>
-                    )}
-
                     {/* RAG Sources Cards */}
                     {msg.role === 'assistant' && msg.sources && msg.sources.length > 0 && (
                       <div className="pt-4 border-t border-slate-800/80 space-y-2">
@@ -427,32 +351,6 @@ export default function Chat({ setActiveTab }) {
         {/* Input Bar */}
         <div className="p-4 border-t border-slate-800 bg-slate-900/60 backdrop-blur-md">
           <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto flex items-center gap-3">
-            {voiceInputEnabled && (
-              <>
-                <select
-                  value={sttLanguage}
-                  onChange={(e) => setSttLanguage(e.target.value)}
-                  disabled={isStreaming}
-                  title="Speech recognition language"
-                  className="shrink-0 px-2.5 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
-                >
-                  {voiceLanguages.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.name}
-                    </option>
-                  ))}
-                </select>
-
-                <VoiceInput
-                  capabilities={voiceCaps}
-                  language={sttLanguage}
-                  disabled={isStreaming}
-                  onTranscript={handleTranscript}
-                  onInterim={setInterimText}
-                />
-              </>
-            )}
-
             <div className="flex-1 relative">
               <SuggestedQueries
                 query={inputQuestion}
@@ -467,11 +365,6 @@ export default function Chat({ setActiveTab }) {
                 disabled={isStreaming}
                 className="w-full px-5 py-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
               />
-              {interimText && (
-                <span className="absolute inset-y-0 right-4 flex items-center text-xs text-indigo-400/70 italic pointer-events-none max-w-[50%] truncate">
-                  {interimText}
-                </span>
-              )}
             </div>
 
             <button
@@ -483,21 +376,6 @@ export default function Chat({ setActiveTab }) {
               <span className="text-base">➤</span>
             </button>
           </form>
-
-          {voiceInputEnabled && (
-            <p className="max-w-4xl mx-auto pt-2 text-[11px] text-slate-500">
-              🎙️ Speech input:{' '}
-              <span className={voiceCaps?.stt?.available ? 'text-emerald-400' : 'text-amber-400'}>
-                {voiceCaps?.stt?.available
-                  ? `VEXYL-STT (${voiceCaps.stt.model || 'indic-conformer-600m'})`
-                  : 'Browser fallback — start VEXYL-STT for Indic accuracy'}
-              </span>
-              {' · '}Voice output:{' '}
-              <span className={voiceCaps?.tts?.available ? 'text-emerald-400' : 'text-amber-400'}>
-                {voiceCaps?.tts?.available ? 'Futurix-AI Hindi-TTS' : 'Browser fallback'}
-              </span>
-            </p>
-          )}
         </div>
       </div>
     </div>

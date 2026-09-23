@@ -4,16 +4,13 @@ import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
 import Documents from './pages/Documents';
-import ChunkInspector from './pages/ChunkInspector';
 import PipelineDebug from './pages/PipelineDebug';
 import ModelComparison from './pages/ModelComparison';
-import EvaluationLab from './pages/EvaluationLab';
 import Settings from './pages/Settings';
 import { api } from './services/api';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [selectedDocId, setSelectedDocId] = useState(null);
   const [systemStatus, setSystemStatus] = useState(null);
 
   useEffect(() => {
@@ -38,15 +35,11 @@ export default function App() {
       case 'chat':
         return <Chat setActiveTab={setActiveTab} />;
       case 'documents':
-        return <Documents setActiveTab={setActiveTab} setSelectedDocId={setSelectedDocId} />;
-      case 'chunks':
-        return <ChunkInspector selectedDocId={selectedDocId} />;
+        return <Documents />;
       case 'pipeline':
         return <PipelineDebug />;
       case 'compare':
         return <ModelComparison />;
-      case 'evaluation':
-        return <EvaluationLab />;
       case 'settings':
         return <Settings />;
       default:

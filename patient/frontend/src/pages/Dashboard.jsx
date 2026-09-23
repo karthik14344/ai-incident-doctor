@@ -33,7 +33,6 @@ export default function Dashboard({ setActiveTab }) {
     { name: 'Ingestion Service (Port 8001)', status: status?.ingestion === 'online', type: 'PDF & Vector Pipeline' },
     { name: 'Retrieval Service (Port 8002)', status: status?.retrieval === 'online', type: 'Similarity Search' },
     { name: 'LLM Service (Port 8003)', status: status?.llm_service === 'online', type: 'Ollama Client' },
-    { name: 'Voice Service (Port 8004)', status: status?.voice === 'online', type: 'VEXYL-STT & Hindi-TTS' },
     { name: 'Ollama LLM Engine', status: status?.ollama === 'online', type: status?.ollama_models?.length ? status.ollama_models.join(', ') : 'llama3.2' },
     { name: 'ChromaDB Vector Store', status: true, type: 'Cosine Vector DB' },
   ];
