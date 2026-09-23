@@ -18,7 +18,6 @@ import argparse
 import json
 import os
 import shutil
-import sqlite3
 import sys
 
 PATIENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -72,12 +71,27 @@ def load_records(records_path: str) -> int:
     return len(records["documents"])
 
 
+def _hand_back(paths, uid: int, gid: int) -> None:
+    """kb-loader runs as root because the ChromaDB volume is root-owned; the
+    SQLite database and documents it writes belong to the services' user."""
+    if not hasattr(os, "geteuid") or os.geteuid() != 0:
+        return
+    for top in paths:
+        if not os.path.exists(top):
+            continue
+        os.chown(top, uid, gid)
+        for dirpath, dirnames, filenames in os.walk(top):
+            for name in dirnames + filenames:
+                os.chown(os.path.join(dirpath, name), uid, gid)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--kb", required=True, help="the kb/ directory built by build_kb.py")
     ap.add_argument("--chroma-dir", required=True)
     ap.add_argument("--docs-dir", required=True)
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--owner", default="10001:10001", help="uid:gid that owns the app data and documents")
     args = ap.parse_args()
 
     manifest_path = os.path.join(args.kb, "manifest.json")
@@ -90,7 +104,11 @@ def main() -> int:
 
     marker = os.path.join(args.chroma_dir, MARKER)
     current = open(marker).read().strip() if os.path.exists(marker) else None
+    from api_gateway.app.db import DB_PATH
+
+    uid, gid = (int(x) for x in args.owner.split(":"))
     if current == version and not args.force:
+        _hand_back([os.path.dirname(DB_PATH), args.docs_dir], uid, gid)
         print(json.dumps({"kb_loader": "unchanged", "kb_version": version}))
         return 0
 
@@ -101,6 +119,7 @@ def main() -> int:
     docs = load_records(os.path.join(args.kb, "records.json"))
     with open(marker, "w") as fh:
         fh.write(version)
+    _hand_back([os.path.dirname(DB_PATH), args.docs_dir], uid, gid)
     print(json.dumps({"kb_loader": "loaded", "kb_version": version, "previous": current, "documents": docs}))
     return 0
 
