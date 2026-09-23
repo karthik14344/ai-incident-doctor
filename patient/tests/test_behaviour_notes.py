@@ -20,3 +20,10 @@ def test_bare_model_names_get_the_latest_tag():
 
     assert resolve_model_tag("llama3.2") == "llama3.2:latest"
     assert resolve_model_tag("llama3.2:1b") == "llama3.2:1b"
+
+
+def test_greetings_are_recognised():
+    from llm_service.app.main import is_greeting_question
+
+    assert is_greeting_question("Hello!")
+    assert not is_greeting_question("What is the attendance requirement?")
