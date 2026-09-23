@@ -53,13 +53,15 @@ def iso(ts: Optional[float] = None) -> str:
 
 
 def parse_ts(value: str) -> float:
+    import re
     text = value.replace("Z", "+00:00")
-    if "." in text:
-        head, _, rest = text.partition(".")
-        digits = "".join(ch for ch in rest if ch.isdigit())
-        tail = rest[len(digits):]
-        text = f"{head}.{digits[:6].ljust(6, '0')}{tail}"
-    return datetime.fromisoformat(text).timestamp()
+    m = re.match(r"^([^.]+)\.(\d+)(.*)$", text)
+    if m:  # Python 3.10 accepts only 3 or 6 fractional digits
+        text = f"{m.group(1)}.{m.group(2)[:6].ljust(6, '0')}{m.group(3)}"
+    dt = datetime.fromisoformat(text)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.timestamp()
 
 
 def log(msg: str) -> None:

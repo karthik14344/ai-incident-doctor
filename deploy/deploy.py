@@ -184,6 +184,23 @@ def smoke_test(gateway: str, deadline_s: float = 180) -> Dict[str, object]:
     return {"ok": False, "error": last_error, "seconds": round(time.time() - started, 1)}
 
 
+def reload_monitoring() -> None:
+    """Prometheus rules and Alertmanager routes are bind-mounted config files; a
+    deploy that changes them must hot-reload both, or the old rules keep firing."""
+    for name in ("PROMETHEUS_URL", "ALERTMANAGER_URL"):
+        url = setting(name)
+        if not url:
+            continue
+        for attempt in range(10):
+            try:
+                req = urllib.request.Request(f"{url.rstrip('/')}/-/reload", data=b"", method="POST")
+                urllib.request.urlopen(req, timeout=10).read()
+                print(f"reloaded {name}", flush=True)
+                break
+            except (urllib.error.URLError, OSError):
+                time.sleep(3)
+
+
 def annotate(text: str, tags: List[str]) -> Optional[str]:
     grafana = setting("GRAFANA_URL")
     password = setting("GRAFANA_ADMIN_PASSWORD")
@@ -236,6 +253,7 @@ def main() -> int:
         if kb != last_kb_version():
             compose(env, "stop", "chroma", check=False)
         compose(env, "up", "-d", "--remove-orphans")
+        reload_monitoring()
         smoke = smoke_test(setting("GATEWAY_URL"))
         if not smoke["ok"]:
             raise RuntimeError(f"smoke test failed: {smoke.get('error')}")

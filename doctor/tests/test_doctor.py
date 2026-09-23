@@ -216,7 +216,7 @@ class ScriptedProvider:
     def __init__(self, outputs):
         self.outputs = list(outputs)
 
-    def complete(self, system, user, schema_, budget, **kw):
+    def complete(self, system, user, schema_, budget, seed=7, **kw):
         budget.take()
         return llm.Completion(text=self.outputs.pop(0), provider="scripted", model="m", prompt_tokens=100,
                               completion_tokens=50, seconds=0.01)

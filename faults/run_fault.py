@@ -189,41 +189,49 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
         truth["guilty_kb_version"] = timeline.get("guilty_kb_version")
     write_json(os.path.join(run_dir, "timeline.json"), timeline)
 
-    neighbour = Neighbour().start() if fault.neighbour else None
-    load = Load(**fault.load).start() if fault.load else None
-    timeline["load"] = fault.load
-    timeline["neighbour"] = bool(neighbour)
+    neighbour = load = alert = None
+    try:
+        neighbour = Neighbour().start() if fault.neighbour else None
+        load = Load(**fault.load).start() if fault.load else None
+        timeline["load"] = fault.load
+        timeline["neighbour"] = bool(neighbour)
 
-    alert = wait_alert(timeline["t_break"], timeout=fault.alert_timeout_s)
-    if alert:
-        timeline["first_alert"] = {"alertname": alert["alertname"], "startsAt": alert["startsAt"],
-                                   "received_at": alert["received_at"], "labels": alert.get("labels")}
-        timeline["t_alert"] = alert["startsAt"]
-        timeline["unnoticed_s"] = round(parse_ts(alert["startsAt"]) - parse_ts(timeline["t_break"]), 1)
-        timeline["expected_alert"] = alert["alertname"] in fault.expected_alerts
-        log(f"alert {alert['alertname']} after {timeline['unnoticed_s']}s")
-        report = wait_report(timeline["t_break"])
-        if report:
-            inc = report["summary"]
-            timeline["incident_id"] = inc["id"]
-            meta = report["detail"].get("incident") or {}
-            timeline["t_report"] = meta.get("report_finished")
-            timeline["doctor_s"] = round(parse_ts(meta["report_finished"]) - parse_ts(alert["startsAt"]), 1) \
-                if meta.get("report_finished") else None
-            timeline["joined_alerts"] = meta.get("joined_alerts", [])
-            log(f"doctor report {inc['id']}: {inc['incident_class']} / {(inc.get('top_cause') or '')[:80]} "
-                f"({timeline['doctor_s']}s after the alert)")
-            export_incident(inc["id"], run_dir)
+        alert = wait_alert(timeline["t_break"], timeout=fault.alert_timeout_s)
+        if alert:
+            timeline["first_alert"] = {"alertname": alert["alertname"], "startsAt": alert["startsAt"],
+                                       "received_at": alert["received_at"], "labels": alert.get("labels")}
+            timeline["t_alert"] = alert["startsAt"]
+            timeline["unnoticed_s"] = round(parse_ts(alert["startsAt"]) - parse_ts(timeline["t_break"]), 1)
+            timeline["expected_alert"] = alert["alertname"] in fault.expected_alerts
+            log(f"alert {alert['alertname']} after {timeline['unnoticed_s']}s")
+            report = wait_report(timeline["t_break"])
+            if report:
+                inc = report["summary"]
+                timeline["incident_id"] = inc["id"]
+                meta = report["detail"].get("incident") or {}
+                timeline["t_report"] = meta.get("report_finished")
+                timeline["doctor_s"] = round(parse_ts(meta["report_finished"]) - parse_ts(alert["startsAt"]), 1) \
+                    if meta.get("report_finished") else None
+                timeline["joined_alerts"] = meta.get("joined_alerts", [])
+                log(f"doctor report {inc['id']}: {inc['incident_class']} / {(inc.get('top_cause') or '')[:80]} "
+                    f"({timeline['doctor_s']}s after the alert)")
+                export_incident(inc["id"], run_dir)
+            else:
+                log("no doctor report within the timeout")
         else:
-            log("no doctor report within the timeout")
-    else:
-        log("NO ALERT within the timeout - fault did not reproduce")
+            log("NO ALERT within the timeout - fault did not reproduce")
 
-    if neighbour:
-        neighbour.stop()
-        timeline["neighbour_calls"] = neighbour.calls
-    if load:
-        timeline["load_summary"] = load.join()
+        if neighbour:
+            neighbour.stop()
+            timeline["neighbour_calls"] = neighbour.calls
+        if load:
+            timeline["load_summary"] = load.join()
+
+    except Exception as exc:  # whatever went wrong while observing, the break is always reverted
+        timeline["observe_error"] = f"{type(exc).__name__}: {exc}"
+        log(f"observation failed: {timeline['observe_error']}")
+        if neighbour:
+            neighbour.stop()
 
     timeline["t_revert_start"] = iso()
     if fault.delivery == "push":

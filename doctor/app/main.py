@@ -87,7 +87,11 @@ def accept_alert(alert: Dict[str, Any], trigger: str = "alert") -> Dict[str, Any
             return {"status": "duplicate"}
         _seen.add(key)
         current = _open.get(service)
-        if trigger == "alert" and current and abs(t - current["t"]) < GROUP_S:
+        # Join only an incident whose evidence has not been collected yet; once the
+        # doctor has started on it, a later alert is a new incident.
+        joinable = (trigger == "alert" and current and abs(t - current["t"]) < GROUP_S
+                    and _meta(current["id"]).get("status") == "open")
+        if joinable:
             meta = _meta(current["id"])
             _update(current["id"], joined_alerts=meta.get("joined_alerts", []) + [
                 {"alertname": alert.get("alertname"), "startsAt": alert["startsAt"]}])

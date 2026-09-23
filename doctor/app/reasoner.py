@@ -32,7 +32,7 @@ def _normalise(obj: Dict[str, Any], candidates: List[str]) -> Dict[str, Any]:
     return obj
 
 
-def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget) -> Dict[str, Any]:
+def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget, seed: int = 7) -> Dict[str, Any]:
     provider = make_provider(cfg)
     usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "cost_usd": 0.0, "seconds": 0.0}
 
@@ -43,7 +43,7 @@ def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget) -> Dic
         usage["cost_usd"] = round(usage["cost_usd"] + c.cost_usd, 6)
         usage["seconds"] = round(usage["seconds"] + c.seconds, 2)
 
-    comp = provider.complete(built["system"], built["user"], DIAGNOSIS_SCHEMA, budget)
+    comp = provider.complete(built["system"], built["user"], DIAGNOSIS_SCHEMA, budget, seed=seed)
     account(comp)
     repaired, errors = False, []
     try:
@@ -54,7 +54,7 @@ def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget) -> Dic
     if errors:
         repaired = True
         comp2 = provider.complete(built["system"], built["user"] + "\n\n" + prompt.repair(comp.text, errors),
-                                  DIAGNOSIS_SCHEMA, budget)
+                                  DIAGNOSIS_SCHEMA, budget, seed=seed)
         account(comp2)
         try:
             obj2 = parse_json(comp2.text)
@@ -74,7 +74,7 @@ def diagnose(bundle: Dict[str, Any], arm: str = "logs_commits_incidents",
              providers: Optional[List[ProviderConfig]] = None, settings: Settings = SETTINGS,
              verify_fix: bool = True, acceptance_tests: Optional[List[str]] = None,
              incident_index: str = "incidents", use_embeddings: bool = True,
-             verification_cache: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+             verification_cache: Optional[Dict[str, Any]] = None, seed: int = 7) -> Dict[str, Any]:
     started = time.perf_counter()
     providers = providers or [p for p in (settings.primary, settings.fallback) if p]
     live_sha = (bundle.get("live_deploy") or {}).get("git_sha")
@@ -96,7 +96,7 @@ def diagnose(bundle: Dict[str, Any], arm: str = "logs_commits_incidents",
     attempts, outcome = [], None
     for cfg in providers:
         try:
-            outcome = _call(cfg, built, budget)
+            outcome = _call(cfg, built, budget, seed=seed)
             break
         except (ProviderError, BudgetExceeded, ValueError) as exc:
             attempts.append({"provider": cfg.label, "error": f"{type(exc).__name__}: {str(exc)[:300]}"})
