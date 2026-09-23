@@ -12,10 +12,20 @@ CHROMA_DATA_DIR = config.setting(
     os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "chroma_data"),
 )
 
+# One HttpClient per server, reused. Creating a new chromadb.HttpClient per call
+# leaks ~1.35 MB each (measured: 150 calls +203 MB, one reused client +0 MB);
+# under ordinary traffic that OOM-killed the retrieval container within minutes.
+_HTTP_CLIENTS = {}
+
+
 def get_chroma_client():
     host = config.setting("CHROMA_HOST")
     if host:
-        return chromadb.HttpClient(host=host, port=int(config.setting("CHROMA_PORT", "8000")))
+        port = int(config.setting("CHROMA_PORT", "8000"))
+        client = _HTTP_CLIENTS.get((host, port))
+        if client is None:
+            client = _HTTP_CLIENTS[(host, port)] = chromadb.HttpClient(host=host, port=port)
+        return client
     os.makedirs(CHROMA_DATA_DIR, exist_ok=True)
     return chromadb.PersistentClient(path=CHROMA_DATA_DIR)
 
