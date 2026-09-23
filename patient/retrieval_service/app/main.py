@@ -64,18 +64,10 @@ def assemble_context(chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
-# Recent retrievals, so a repeated question skips the embedding round-trip.
-_RECENT: Dict[str, Dict[str, Any]] = {}
-
-
 @app.post("/retrieve")
 def retrieve_context(req: QueryRequest):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
-
-    key = f"{req.collection_name}:{req.top_k}:{req.embedding_model}:{req.question.strip().lower()}"
-    if key in _RECENT:
-        return _RECENT[key]
 
     # 1. Embed query
     query_emb = telemetry.instrumented_embedding("retrieval", req.question, req.embedding_model, req.ollama_base_url)
@@ -94,7 +86,7 @@ def retrieve_context(req: QueryRequest):
     # 3. Assemble Context
     assembled = assemble_context(chunks)
 
-    response = {
+    return {
         "question": req.question,
         "query_embedding_dim": len(query_emb),
         "top_k": req.top_k,
@@ -103,8 +95,6 @@ def retrieve_context(req: QueryRequest):
         "assembled_context": assembled["assembled_context"],
         "raw_chunks": chunks
     }
-    _RECENT[key] = {**response, "query_embedding": list(query_emb)}
-    return response
 
 @app.get("/health")
 def health():
