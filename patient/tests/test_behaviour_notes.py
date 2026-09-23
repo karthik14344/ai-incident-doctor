@@ -27,3 +27,10 @@ def test_greetings_are_recognised():
 
     assert is_greeting_question("Hello!")
     assert not is_greeting_question("What is the attendance requirement?")
+
+
+def test_factual_prompts_carry_the_context():
+    from llm_service.app.main import build_prompt
+
+    prompt = build_prompt("What is the fee?", "CONTEXT-MARKER")
+    assert "RETRIEVED DOCUMENT CONTEXT" in prompt and "CONTEXT-MARKER" in prompt
