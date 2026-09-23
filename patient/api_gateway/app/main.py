@@ -470,11 +470,7 @@ async def chat_stream(req: ChatRequest):
 
     if not session_id:
         session_id = f"session_{uuid.uuid4().hex[:8]}"
-        # Name the conversation after the question itself, not its first 30 characters.
-        if "?" in req.question:
-            title = req.question.split("?")[0].strip()[:60] + "?"
-        else:
-            title = req.question.strip()[:60] + ("..." if len(req.qestion) > 60 else "")
+        title = req.question[:30] + ("..." if len(req.question) > 30 else "")
         cursor.execute("INSERT INTO chat_sessions (id, title, created_at) VALUES (?, ?, ?)", (session_id, title, datetime.utcnow().isoformat()))
         conn.commit()
 
