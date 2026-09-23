@@ -33,7 +33,9 @@ from datetime import datetime, timezone
 
 PATIENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPO_ROOT = os.path.dirname(PATIENT_DIR)
-KB_DIR = os.path.join(REPO_ROOT, "kb")
+# KB_OUT_DIR builds a candidate knowledge base somewhere other than kb/ (for
+# trying a different embedding model before promoting it); kb/ is the default.
+KB_DIR = os.environ.get("KB_OUT_DIR") or os.path.join(REPO_ROOT, "kb")
 INDEX_DIR = os.path.join(KB_DIR, "index")
 DOCS_DIR = os.path.join(KB_DIR, "documents")
 
@@ -51,7 +53,7 @@ from ingestion_service.app.embedder import embedding_fallback_count, get_embeddi
 from ingestion_service.app.vector_store import add_chunks_to_vector_store  # noqa: E402
 
 CHAT_COLLECTION = "default"
-EMBEDDING_MODEL = "nomic-embed-text"
+EMBEDDING_MODEL = os.environ.get("KB_EMBEDDING_MODEL") or "nomic-embed-text"
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 100
 
