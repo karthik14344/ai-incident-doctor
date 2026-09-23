@@ -33,3 +33,7 @@ The gateway limits requests per chat session. A burst from one browser tab is re
 ## Rolling back
 
 Every deploy is tagged with its git SHA. The deploy script rolls back automatically when the smoke test fails; to roll back by hand, redeploy the previous SHA.
+
+## Ollama model list
+
+The Settings page lists the models Ollama has installed. Only llama3.2 is used for chat by default; the Model Comparison page can benchmark the others.
