@@ -7,8 +7,6 @@ import json
 import time
 import uuid
 import shutil
-import httpx
-import sqlite3
 import threading
 from datetime import datetime
 from typing import Optional, List, Dict, Any
@@ -22,7 +20,7 @@ from pydantic import BaseModel
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(BASE_DIR)
 
-from common import config
+from common import config, telemetry
 from api_gateway.app.db import get_db_connection, init_db
 from api_gateway.app.metrics import evaluate_answer, summarise_run
 from api_gateway.app.suggestions import suggest_queries
@@ -58,6 +56,7 @@ DEFAULT_SETTINGS = {
 }
 
 app = FastAPI(title="KnowledgeAI API Gateway", version="1.0.0")
+log = telemetry.instrument(app, "gateway")
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,7 +76,7 @@ def get_settings_map() -> Dict[str, str]:
         conn.close()
         settings.update({row["key"]: row["value"] for row in rows})
     except Exception as e:
-        print(f"[Settings Map Error] {e}")
+        log.error("settings lookup failed", exc=e)
     return settings
 
 # Models
@@ -133,7 +132,7 @@ async def system_status():
             "ollama_models": []
         }
 
-        async with httpx.AsyncClient(timeout=3.0, trust_env=False) as client:
+        async with telemetry.async_client("gateway", timeout=3.0, trust_env=False) as client:
             # Check Ingestion
             try:
                 r = await client.get(f"{INGESTION_SERVICE_URL}/health")
@@ -170,7 +169,7 @@ async def system_status():
 
         return statuses
     except Exception as e:
-        print(f"[System Status Error] {e}")
+        log.error("system status check failed", exc=e)
         return {
             "gateway": "online",
             "ingestion": "online",
@@ -225,11 +224,11 @@ async def upload_document(
     }
 
     async def call_ingestion():
-        async with httpx.AsyncClient(timeout=300.0, trust_env=False) as client:
+        async with telemetry.async_client("gateway", timeout=300.0, trust_env=False) as client:
             try:
                 await client.post(f"{INGESTION_SERVICE_URL}/process", json=payload)
             except Exception as e:
-                print(f"[Gateway] Failed to trigger ingestion service: {e}")
+                log.error("ingestion call failed", exc=e, target="ingestion")
 
     background_tasks.add_task(call_ingestion)
 
@@ -250,7 +249,7 @@ def list_documents():
         conn.close()
         return [dict(row) for row in rows]
     except Exception as e:
-        print(f"[List Documents Error] {e}")
+        log.error("listing documents failed", exc=e)
         return []
 
 @app.get("/api/documents/{doc_id}")
@@ -304,11 +303,11 @@ async def reprocess_document(doc_id: str, background_tasks: BackgroundTasks):
     }
 
     async def call_ingestion():
-        async with httpx.AsyncClient(timeout=300.0, trust_env=False) as client:
+        async with telemetry.async_client("gateway", timeout=300.0, trust_env=False) as client:
             try:
                 await client.post(f"{INGESTION_SERVICE_URL}/process", json=payload)
             except Exception as e:
-                print(f"[Gateway] Failed to trigger ingestion service: {e}")
+                log.error("ingestion call failed", exc=e, target="ingestion")
 
     background_tasks.add_task(call_ingestion)
     return {"status": "reprocessing", "doc_id": doc_id}
@@ -356,7 +355,7 @@ async def debug_retrieval(req: ChatRequest):
         "ollama_base_url": settings.get("ollama_base_url", OLLAMA_DEFAULT_URL)
     }
 
-    async with httpx.AsyncClient(timeout=30.0, trust_env=False) as client:
+    async with telemetry.async_client("gateway", timeout=30.0, trust_env=False) as client:
         try:
             r = await client.post(f"{RETRIEVAL_SERVICE_URL}/retrieve", json=payload)
             if r.status_code == 200:
@@ -377,7 +376,7 @@ def list_chat_sessions():
         conn.close()
         return [dict(r) for r in rows]
     except Exception as e:
-        print(f"[List Chat Sessions Error] {e}")
+        log.error("listing chat sessions failed", exc=e)
         return []
 
 @app.post("/api/chat/sessions")
@@ -490,6 +489,7 @@ async def chat_stream(req: ChatRequest):
                 blocked_verdict = verdict
                 break
     if blocked_verdict is not None:
+        telemetry.CHAT_OUTCOMES.labels("refused_input").inc()
         return _guardrail_blocked_stream(
             session_id, guardrails.refusal_for(blocked_verdict),
             input_verdicts, [],
@@ -505,13 +505,15 @@ async def chat_stream(req: ChatRequest):
     }
 
     retrieval_data = {}
-    async with httpx.AsyncClient(timeout=30.0) as client:
+    async with telemetry.async_client("gateway", timeout=30.0) as client:
         try:
             r = await client.post(f"{RETRIEVAL_SERVICE_URL}/retrieve", json=retrieval_payload)
             if r.status_code == 200:
                 retrieval_data = r.json()
+            else:
+                log.warning("retrieval returned an error status", status=r.status_code, target="retrieval")
         except Exception as e:
-            print(f"[Gateway] Retrieval error: {e}")
+            log.error("retrieval call failed", exc=e, target="retrieval")
             retrieval_data = {
                 "assembled_context": "No document context available.",
                 "sources": [],
@@ -538,6 +540,7 @@ async def chat_stream(req: ChatRequest):
         scope = GUARDRAILS.check_scope(top_similarity, len(sources))
         scope_verdicts.append(scope.to_meta())
         if not scope.allowed:
+            telemetry.CHAT_OUTCOMES.labels("refused_scope").inc()
             return _guardrail_blocked_stream(
                 session_id, guardrails.refusal_for(scope),
                 input_verdicts + scope_verdicts, sources, pipeline_debug)
@@ -563,9 +566,10 @@ async def chat_stream(req: ChatRequest):
         yield f"data: {json.dumps(meta_event)}\n\n"
 
         full_response_text = []
+        stream_failed = False
 
         try:
-            async with httpx.AsyncClient(timeout=120.0) as client:
+            async with telemetry.async_client("gateway", timeout=120.0) as client:
                 async with client.stream("POST", f"{LLM_SERVICE_URL}/generate", json=llm_payload) as response:
                     async for line in response.aiter_lines():
                         if line.strip().startswith("data: "):
@@ -583,6 +587,9 @@ async def chat_stream(req: ChatRequest):
                             except Exception:
                                 pass
         except Exception as e:
+            stream_failed = True
+            telemetry.record_downstream_failure("gateway", "llm", "/generate", e)
+            log.error("llm stream failed", exc=e, target="llm")
             err_msg = f"\n[LLM Stream error: {e}]"
             full_response_text.append(err_msg)
             if not GUARDRAILS_ENABLED:
@@ -601,13 +608,17 @@ async def chat_stream(req: ChatRequest):
                     break
             if out_blocked is not None:
                 ai_message_text = guardrails.refusal_for(out_blocked)
+                telemetry.CHAT_OUTCOMES.labels("error" if stream_failed else "refused_output").inc()
             else:
+                telemetry.CHAT_OUTCOMES.labels("error" if stream_failed else "answered").inc()
                 caution = next((v.get("note") for v in output_verdicts
                                 if v.get("action") == "annotate" and v.get("note")), None)
                 if caution:
                     ai_message_text = f"{ai_message_text}\n\n⚠ {caution}"
             for chunk in _chunk_text(ai_message_text):
                 yield f"data: {json.dumps({'token': chunk})}\n\n"
+        else:
+            telemetry.CHAT_OUTCOMES.labels("error" if stream_failed else "answered").inc()
 
         # Save AI message to DB
         annotated_debug = ({**pipeline_debug, "guardrails": input_verdicts + scope_verdicts + output_verdicts}
@@ -650,7 +661,7 @@ async def available_models():
     ollama_online = False
 
     try:
-        async with httpx.AsyncClient(timeout=5.0, trust_env=False) as client:
+        async with telemetry.async_client("gateway", timeout=5.0, trust_env=False) as client:
             r = await client.get(f"{ollama_url.rstrip('/')}/api/tags")
             if r.status_code == 200:
                 ollama_online = True
@@ -669,7 +680,7 @@ async def available_models():
                         "modified_at": m.get("modified_at", "")
                     })
     except Exception as e:
-        print(f"[Available Models Error] {e}")
+        log.error("listing models failed", exc=e)
 
     def sort_key(item: Dict[str, Any]):
         name = item["name"]
@@ -702,7 +713,7 @@ async def _run_retrieval(question: str, collection_name: str, top_k: int,
     }
 
     started = time.perf_counter()
-    async with httpx.AsyncClient(timeout=60.0, trust_env=False) as client:
+    async with telemetry.async_client("gateway", timeout=60.0, trust_env=False) as client:
         r = await client.post(f"{RETRIEVAL_SERVICE_URL}/retrieve", json=payload)
         r.raise_for_status()
         data = r.json()
@@ -786,7 +797,7 @@ async def compare_models(req: ModelCompareRequest):
             }
 
             try:
-                async with httpx.AsyncClient(timeout=420.0, trust_env=False) as client:
+                async with telemetry.async_client("gateway", timeout=420.0, trust_env=False) as client:
                     r = await client.post(f"{LLM_SERVICE_URL}/benchmark", json=bench_payload)
                     bench = r.json() if r.status_code == 200 else {
                         "status": "error",
@@ -827,7 +838,7 @@ async def compare_models(req: ModelCompareRequest):
             conn.commit()
             conn.close()
         except Exception as e:
-            print(f"[Model Comparison Save Error] {e}")
+            log.error("saving model comparison failed", exc=e)
 
         yield _sse({
             "type": "summary",
@@ -857,7 +868,7 @@ def list_model_comparisons(limit: int = 25):
         rows = cursor.fetchall()
         conn.close()
     except Exception as e:
-        print(f"[List Comparisons Error] {e}")
+        log.error("listing comparisons failed", exc=e)
         return []
 
     history = []
