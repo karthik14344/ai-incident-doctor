@@ -110,7 +110,7 @@ class Settings:
     incident_before_s: int = field(default_factory=lambda: int(get("DOCTOR_INCIDENT_BEFORE_S", "600")))
     incident_after_s: int = field(default_factory=lambda: int(get("DOCTOR_INCIDENT_AFTER_S", "60")))
     baseline_s: int = field(default_factory=lambda: int(get("DOCTOR_BASELINE_S", "1800")))
-    max_calls_per_run: int = field(default_factory=lambda: int(get("DOCTOR_MAX_CALLS_PER_RUN", "4")))
+    max_calls_per_run: int = field(default_factory=lambda: int(get("DOCTOR_MAX_CALLS_PER_RUN", "6")))
     max_prompt_tokens: int = field(default_factory=lambda: int(get("DOCTOR_MAX_PROMPT_TOKENS", "6500")))
     auto_diagnose: bool = field(default_factory=lambda: get("DOCTOR_AUTO_DIAGNOSE", "true").lower() == "true")
 

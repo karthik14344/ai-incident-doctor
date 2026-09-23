@@ -336,6 +336,41 @@ services:
     depends_on:
       minio-init: { condition: service_completed_successfully }
 
+  # ------------------------------------------------------------ the doctor
+  doctor:
+    # Watches the patient; never sabotaged. Reads the repo (git history) and
+    # the deploy log read-only; keeps incidents and its own ChromaDB in its
+    # volume. Reasoning goes to DOCTOR_PROVIDER (a cloud API), so it keeps
+    # working when the patient's Ollama is what broke.
+    <<: [*restart, *host-gateway]
+    image: ${IMAGE_PREFIX:-aid}/doctor:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: doctor/Dockerfile }
+    environment:
+      DOCTOR_PROMETHEUS_URL: http://prometheus:9090
+      DOCTOR_LOKI_URL: http://loki:3100
+      DOCTOR_ALERT_SINK_URL: http://alert-sink:9095
+      DOCTOR_DEPLOY_LOG: /runtime/deploys.jsonl
+      DOCTOR_OLLAMA_BASE_URL: ${CONTAINER_OLLAMA_BASE_URL:?set CONTAINER_OLLAMA_BASE_URL in .env}
+      DOCTOR_PROVIDER: ${DOCTOR_PROVIDER:-}
+      DOCTOR_MODEL: ${DOCTOR_MODEL:-}
+      DOCTOR_API_KEY: ${DOCTOR_API_KEY:-}
+      DOCTOR_BASE_URL: ${DOCTOR_BASE_URL:-}
+      DOCTOR_FALLBACK_PROVIDER: ${DOCTOR_FALLBACK_PROVIDER:-}
+      DOCTOR_FALLBACK_MODEL: ${DOCTOR_FALLBACK_MODEL:-}
+      DOCTOR_FALLBACK_API_KEY: ${DOCTOR_FALLBACK_API_KEY:-}
+      DOCTOR_FALLBACK_BASE_URL: ${DOCTOR_FALLBACK_BASE_URL:-}
+      DOCTOR_AUTO_DIAGNOSE: ${DOCTOR_AUTO_DIAGNOSE:-true}
+      DOCTOR_MAX_CALLS_PER_RUN: ${DOCTOR_MAX_CALLS_PER_RUN:-6}
+    volumes:
+      - .:/repo:ro
+      - ${RUNTIME_DIR:-./runtime}:/runtime:ro
+      - doctor-data:/data
+    ports: ["${DOCTOR_HOST_PORT:-8100}:8100"]
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    depends_on:
+      alert-sink: { condition: service_healthy }
+
   # ------------------------------------------------------------ optional
   cloudflared:
     # Public link to the frontend ONLY. Off by default:
@@ -372,3 +407,4 @@ volumes:
   alloy-data:
   minio-data:
   mlflow-data:
+  doctor-data:
