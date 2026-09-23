@@ -1,0 +1,213 @@
+"""The fault catalogue: what each break is, how it enters, and the ground truth.
+
+Every fault has a `delivery`:
+
+  push         a real code/config commit, committed to main and pushed through the
+               pipeline (verify -> SHA-tagged deploy -> deploy record). Subtle
+               enough that the existing tests pass. There is a guilty commit.
+  environment  no code change: a recorded script changes the world around the app
+               (stop a container, point a URL at a dead address, a traffic surge).
+               Guilty commit is null by construction.
+  data         no code or infrastructure change: the knowledge base changes
+               underneath the app. Guilty commit null; guilty KB version set.
+
+Commit messages are ordinary. Nothing in a commit that reaches the pipeline
+mentions a fault; this file and the ground truth live under faults/, which the
+doctor never reads (DECISIONS.md D-41).
+"""
+
+import os
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
+
+from faults.common import REPO
+
+ACCEPTANCE = os.path.join(REPO, "faults", "acceptance")
+
+
+@dataclass
+class Fault:
+    id: str
+    name: str
+    delivery: str                                   # push | environment | data
+    incident_class: str
+    component: str
+    true_cause: str
+    expected_fix: str
+    acceptable_classes: List[str] = field(default_factory=list)
+    acceptable_components: List[str] = field(default_factory=list)
+    # push faults: (path, old, new) text edits and the commit message
+    edits: List[Tuple[str, str, str]] = field(default_factory=list)
+    message: str = ""
+    distractor_paths: List[str] = field(default_factory=list)
+    # traffic that makes the symptom appear, on top of the background traffic
+    load: Optional[Dict[str, Any]] = None
+    neighbour: bool = False                          # busy bigger models on the shared Ollama
+    expected_alerts: List[str] = field(default_factory=list)
+    acceptance_test: Optional[str] = None
+    alert_timeout_s: int = 900
+
+    def ground_truth(self) -> Dict[str, Any]:
+        return {"fault_id": self.id, "name": self.name, "delivery": self.delivery,
+                "incident_class": self.incident_class,
+                "acceptable_classes": sorted(set([self.incident_class] + self.acceptable_classes)),
+                "component": self.component,
+                "acceptable_components": sorted(set([self.component] + self.acceptable_components)),
+                "true_cause": self.true_cause, "expected_fix": self.expected_fix,
+                "acceptance_test": os.path.relpath(self.acceptance_test, REPO).replace("\\", "/")
+                if self.acceptance_test else None}
+
+
+EMBEDDER = "patient/ingestion_service/app/embedder.py"
+GATEWAY = "patient/api_gateway/app/main.py"
+RETRIEVAL = "patient/retrieval_service/app/main.py"
+
+FAULTS: Dict[str, Fault] = {}
+
+
+def _add(f: Fault) -> None:
+    FAULTS[f.id] = f
+
+
+# 1. Ticket B - the silent timeout regression -----------------------------------
+_add(Fault(
+    id="f1_embed_timeout", name="Embedding timeout lowered from 45 s to 10 s (silent fallback)",
+    delivery="push", incident_class="code_defect", component="retrieval",
+    acceptable_components=["ingestion", "ollama"],
+    true_cause=("EMBED_TIMEOUT_S in embedder.py was lowered from 45 to 10 s. When Ollama is slow to serve "
+                "nomic-embed-text (cold load while other models hold the GPU), embedding calls time out and "
+                "the embedder silently substitutes hash vectors, so retrieval returns unrelated chunks and "
+                "answers are wrong. Nothing errors; the fallback counter rises."),
+    expected_fix="Restore EMBED_TIMEOUT_S to 45 s and make the fallback loud (log/raise or at least count and "
+                 "alert) instead of silently answering from hash vectors.",
+    edits=[(EMBEDDER,
+            "# Cold nomic-embed-text can take ~15 s to load on first use. The old 10 s\n"
+            "# timeout turned that first query into silent garbage instead of a slow answer.\n"
+            "EMBED_TIMEOUT_S = 45.0",
+            "# Embedding calls normally return in well under a second; give up after 10 s\n"
+            "# so a stuck Ollama cannot hold a request thread for most of a minute.\n"
+            "EMBED_TIMEOUT_S = 10.0")],
+    message="Cap embedding calls at 10 s so a stuck call frees its thread",
+    distractor_paths=["retrieval_service", "vector_store", "chunker"],
+    neighbour=True,
+    expected_alerts=["EmbeddingFallbackActive"],
+    acceptance_test=os.path.join(ACCEPTANCE, "test_f1_embed_timeout.py"),
+))
+
+# 2. Concurrency starvation - the false-attribution test -----------------------
+_add(Fault(
+    id="f2_capacity", name="Concurrent chat surge saturates the single local model",
+    delivery="environment", incident_class="capacity", component="ollama", acceptable_components=["llm"],
+    true_cause=("Many simultaneous chat questions; the single local llama3.2 on Ollama serialises generation, "
+                "so requests queue and latency climbs. No deploy is involved."),
+    expected_fix="Bound concurrency at the gateway with a queue/semaphore and shed load (429) beyond it; "
+                 "scale generation capacity. No code change caused this.",
+    load={"mode": "chat", "rate": 1.2, "concurrency": 32, "duration": 360},
+    expected_alerts=["HighLatencyP95"],
+))
+
+# 3. Retrieval unreachable - dependency failure ---------------------------------
+_add(Fault(
+    id="f3_retrieval_down", name="Retrieval service stopped",
+    delivery="environment", incident_class="dependency_failure", component="retrieval",
+    true_cause="The retrieval container was stopped; every gateway call to it fails with a connection error.",
+    expected_fix="Restart the retrieval service (docker compose start retrieval).",
+    expected_alerts=["ServiceDown", "DownstreamCallFailures"],
+))
+_add(Fault(
+    id="f3b_retrieval_bad_address", name="Gateway pointed at a wrong retrieval address",
+    delivery="environment", incident_class="dependency_failure", component="retrieval",
+    acceptable_classes=["configuration"],
+    true_cause=("The gateway was restarted with RETRIEVAL_SERVICE_URL pointing at a host that does not exist; "
+                "retrieval itself is healthy but unreachable from the gateway."),
+    expected_fix="Restore the retrieval address (RETRIEVAL_SERVICE_URL=http://retrieval:8002) and restart the gateway.",
+    expected_alerts=["DownstreamCallFailures"],
+))
+
+# 4. Unbounded cache - memory leak ------------------------------------------------
+_add(Fault(
+    id="f4_memory_leak", name="Retrieval response cache that never evicts",
+    delivery="push", incident_class="code_defect", component="retrieval",
+    true_cause=("A commit added a module-level dict caching every retrieval response (with its query "
+                "embedding) keyed by question text, with no eviction. Memory grows with every distinct "
+                "question until the container hits its limit and is OOM-killed, repeatedly."),
+    expected_fix="Bound the cache (LRU with maxsize, or TTL) or remove it.",
+    edits=[(RETRIEVAL,
+            '@app.post("/retrieve")\ndef retrieve_context(req: QueryRequest):\n'
+            '    if not req.question.strip():\n'
+            '        raise HTTPException(status_code=400, detail="Question cannot be empty")\n',
+            '# Recent retrievals, so a repeated question skips the embedding round-trip.\n'
+            '_RECENT: Dict[str, Dict[str, Any]] = {}\n\n\n'
+            '@app.post("/retrieve")\ndef retrieve_context(req: QueryRequest):\n'
+            '    if not req.question.strip():\n'
+            '        raise HTTPException(status_code=400, detail="Question cannot be empty")\n\n'
+            '    key = f"{req.collection_name}:{req.top_k}:{req.embedding_model}:{req.question.strip().lower()}"\n'
+            '    if key in _RECENT:\n'
+            '        return _RECENT[key]\n'),
+           (RETRIEVAL,
+            '    return {\n        "question": req.question,',
+            '    response = {\n        "question": req.question,'),
+           (RETRIEVAL,
+            '        "raw_chunks": chunks\n    }\n',
+            '        "raw_chunks": chunks\n    }\n'
+            '    _RECENT[key] = {**response, "query_embedding": list(query_emb)}\n'
+            '    return response\n')],
+    message="Serve repeated retrieval questions from memory",
+    distractor_paths=["retrieval_service", "vector_store"],
+    load={"mode": "search", "rate": 6.0, "concurrency": 12, "duration": 900, "unique": True},
+    expected_alerts=["MemoryClimbing", "ContainerMemoryNearLimit", "ContainerOOMKilled", "RestartLoop"],
+    acceptance_test=os.path.join(ACCEPTANCE, "test_f4_memory_leak.py"),
+    alert_timeout_s=1200,
+))
+
+# 5. A typo on a path only some inputs take ---------------------------------------
+_add(Fault(
+    id="f5_typo", name="NameError when titling a chat session from a keyword query",
+    delivery="push", incident_class="code_defect", component="gateway",
+    true_cause=("A commit changed how new chat sessions are titled; the branch for questions without a '?' "
+                "refers to an undefined name (qestion), so keyword-style queries crash with NameError (HTTP 500) "
+                "while normal questions work."),
+    expected_fix="Fix the variable name (qestion -> req.question) in the session-title branch.",
+    edits=[(GATEWAY,
+            '        title = req.question[:30] + ("..." if len(req.question) > 30 else "")\n',
+            '        # Name the conversation after the question itself, not its first 30 characters.\n'
+            '        if "?" in req.question:\n'
+            '            title = req.question.split("?")[0].strip()[:60] + "?"\n'
+            '        else:\n'
+            '            title = req.question.strip()[:60] + ("..." if len(qestion) > 60 else "")\n')],
+    message="Title new chat sessions after the question",
+    distractor_paths=["api_gateway"],
+    expected_alerts=["HighErrorRate"],
+    acceptance_test=os.path.join(ACCEPTANCE, "test_f5_typo.py"),
+))
+
+# 6. Tight internal timeout --------------------------------------------------------
+_add(Fault(
+    id="f6_tight_timeout", name="Gateway -> LLM stream timeout lowered to 3 s",
+    delivery="push", incident_class="code_defect", component="gateway",
+    acceptable_classes=["configuration"], acceptable_components=["llm"],
+    true_cause=("A commit lowered the gateway's httpx timeout for the LLM stream from 120 s to 3 s. Requests "
+                "that wait longer than 3 s for the first token (queued behind another generation) fail "
+                "intermittently with ReadTimeout, for no visible reason."),
+    expected_fix="Restore the LLM stream timeout (120 s, or at least well above time-to-first-token under load).",
+    edits=[(GATEWAY,
+            '            async with telemetry.async_client("gateway", timeout=120.0) as client:\n',
+            '            async with telemetry.async_client("gateway", timeout=3.0) as client:\n')],
+    message="Don't let one slow generation hold a gateway connection for two minutes",
+    distractor_paths=["api_gateway", "llm_service"],
+    expected_alerts=["ChatRequestsFailing", "DownstreamCallFailures"],
+    acceptance_test=os.path.join(ACCEPTANCE, "test_f6_tight_timeout.py"),
+))
+
+# 7. Data: knowledge base rebuilt with the wrong embedding model -----------------
+_add(Fault(
+    id="f7_kb_wrong_embeddings", name="Knowledge base index rebuilt with the wrong embedding model",
+    delivery="data", incident_class="data_issue", component="knowledge_base",
+    acceptable_components=["chroma", "retrieval"],
+    true_cause=("A knowledge-base version whose index was embedded with llama3.2 (3072-dim) instead of "
+                "nomic-embed-text (768-dim) was loaded. Query vectors no longer match the index; the vector "
+                "store silently pads them, similarities become noise and most questions are refused as out of "
+                "scope. No code or infrastructure changed."),
+    expected_fix="Reload the previous knowledge-base version (nomic-embed-text index) with kb-loader --force.",
+    expected_alerts=["ChatAnswersRefused", "ZeroChunkRetrievals"],
+))
