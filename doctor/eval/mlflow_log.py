@@ -97,3 +97,25 @@ def log_results(results: Dict[str, Any], rows: List[Dict[str, Any]], out_dir: st
         mlf.end(child["run_id"])
     mlf.end(parent["run_id"])
     return parent["run_id"]
+
+
+def main(argv: List[str] = None) -> int:
+    """Log an evaluation that already ran (e.g. while MLflow was down):
+    python -m doctor.eval.mlflow_log doctor/eval/results/final"""
+    import argparse
+    import sys
+
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("out_dir")
+    args = ap.parse_args(argv)
+    with open(os.path.join(args.out_dir, "results.json"), encoding="utf-8") as fh:
+        results = json.load(fh)
+    rows = [json.loads(line) for line in open(os.path.join(args.out_dir, "runs.jsonl"), encoding="utf-8")
+            if line.strip()]
+    print(f"logged MLflow run {log_results(results, rows, args.out_dir)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
