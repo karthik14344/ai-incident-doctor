@@ -857,6 +857,7 @@ async def compare_models(req: ModelCompareRequest):
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
+# Server-sent events: one JSON object per 'data:' line, blank line terminated.
 def _sse(payload: Dict[str, Any]) -> str:
     return f"data: {json.dumps(payload)}\n\n"
 
