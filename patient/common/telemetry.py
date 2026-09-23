@@ -100,10 +100,13 @@ class _EmbeddingFallbackCollector:
     Ollama is unreachable or slow it silently returns meaningless vectors. The
     embedder itself is deliberately left untouched; this collector only *reads*
     its existing counter so the silent failure becomes visible on a dashboard.
+
+    One collector per process; each service that embeds adds its label to it.
+    (In a container there is one service per process; tests import several.)
     """
 
-    def __init__(self, service: str):
-        self.service = service
+    def __init__(self):
+        self.services = set()
 
     def collect(self):
         from ingestion_service.app.embedder import embedding_fallback_count
@@ -112,17 +115,17 @@ class _EmbeddingFallbackCollector:
             "knowledgeai_embedding_fallback",
             "Times the hash fallback stood in for a real embedding in this process",
             labels=["service"])
-        family.add_metric([self.service], float(embedding_fallback_count()))
+        for service in sorted(self.services):
+            family.add_metric([service], float(embedding_fallback_count()))
         yield family
 
 
-_fallback_registered = set()
+_FALLBACK_COLLECTOR = _EmbeddingFallbackCollector()
+REGISTRY.register(_FALLBACK_COLLECTOR)
 
 
 def register_embedding_fallback(service: str) -> None:
-    if service not in _fallback_registered:
-        REGISTRY.register(_EmbeddingFallbackCollector(service))
-        _fallback_registered.add(service)
+    _FALLBACK_COLLECTOR.services.add(service)
 
 
 def instrumented_embedding(service: str, text: str, model: str, base_url: str) -> List[float]:
