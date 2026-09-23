@@ -16,6 +16,10 @@
 
 name: aid
 
+# Host ports are all overridable (<NAME>_HOST_PORT in .env) so the stack can
+# coexist with other projects on the same machine. Defaults are listed in the
+# README; container-to-container traffic always uses the container ports.
+
 x-restart: &restart
   restart: unless-stopped
 
@@ -50,7 +54,7 @@ services:
     image: ${IMAGE_PREFIX:-aid}/gateway:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
     build: { <<: *patient-build, dockerfile: patient/api_gateway/Dockerfile }
     environment: *patient-env
-    ports: ["8000:8000"]
+    ports: ["${GATEWAY_HOST_PORT:-8000}:8000"]
     volumes:
       - appdata:/app/data
       - documents:/app/storage/documents
@@ -66,7 +70,7 @@ services:
     image: ${IMAGE_PREFIX:-aid}/ingestion:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
     build: { <<: *patient-build, dockerfile: patient/ingestion_service/Dockerfile }
     environment: *patient-env
-    ports: ["8001:8001"]
+    ports: ["${INGESTION_HOST_PORT:-8001}:8001"]
     volumes:
       - appdata:/app/data
       - documents:/app/storage/documents
@@ -80,7 +84,7 @@ services:
     image: ${IMAGE_PREFIX:-aid}/retrieval:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
     build: { <<: *patient-build, dockerfile: patient/retrieval_service/Dockerfile }
     environment: *patient-env
-    ports: ["8002:8002"]
+    ports: ["${RETRIEVAL_HOST_PORT:-8002}:8002"]
     mem_limit: 512m
     memswap_limit: 512m
     depends_on:
@@ -91,7 +95,7 @@ services:
     image: ${IMAGE_PREFIX:-aid}/llm:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
     build: { <<: *patient-build, dockerfile: patient/llm_service/Dockerfile }
     environment: *patient-env
-    ports: ["8003:8003"]
+    ports: ["${LLM_HOST_PORT:-8003}:8003"]
     mem_limit: 384m
     memswap_limit: 384m
 
@@ -118,7 +122,7 @@ services:
     image: chromadb/chroma:1.5.9
     volumes:
       - chroma-data:/data
-    ports: ["8010:8000"]
+    ports: ["${CHROMA_HOST_PORT:-8010}:8000"]
     mem_limit: 1g
     memswap_limit: 1g
     healthcheck:
@@ -137,7 +141,7 @@ services:
     environment:
       GATEWAY_UPSTREAM: http://gateway:8000
       DOCTOR_UPSTREAM: http://doctor:8100
-    ports: ["3001:8080"]
+    ports: ["${FRONTEND_HOST_PORT:-3001}:8080"]
     mem_limit: 64m
     depends_on:
       gateway: { condition: service_healthy }
@@ -154,7 +158,7 @@ services:
     volumes:
       - ./monitoring/prometheus:/etc/prometheus:ro
       - prometheus-data:/prometheus
-    ports: ["9090:9090"]
+    ports: ["${PROMETHEUS_HOST_PORT:-9090}:9090"]
     mem_limit: 512m
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/healthy"]
@@ -171,7 +175,7 @@ services:
     volumes:
       - ./monitoring/alertmanager:/etc/alertmanager:ro
       - alertmanager-data:/alertmanager
-    ports: ["9093:9093"]
+    ports: ["${ALERTMANAGER_HOST_PORT:-9093}:9093"]
     mem_limit: 128m
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9093/-/healthy"]
@@ -185,7 +189,7 @@ services:
     build: { <<: *patient-build, dockerfile: alert_sink/Dockerfile }
     volumes:
       - alert-log:/data
-    ports: ["9095:9095"]
+    ports: ["${ALERT_SINK_HOST_PORT:-9095}:9095"]
     mem_limit: 64m
 
   grafana:
@@ -202,7 +206,7 @@ services:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
-    ports: ["3000:3000"]
+    ports: ["${GRAFANA_HOST_PORT:-3000}:3000"]
     mem_limit: 256m
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
@@ -220,7 +224,7 @@ services:
     volumes:
       - ./monitoring/loki/loki.yml:/etc/loki/loki.yml:ro
       - loki-data:/loki
-    ports: ["3100:3100"]
+    ports: ["${LOKI_HOST_PORT:-3100}:3100"]
     mem_limit: 512m
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3100/ready"]
@@ -238,7 +242,7 @@ services:
       - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - alloy-data:/var/lib/alloy/data
-    ports: ["12345:12345"]
+    ports: ["${ALLOY_HOST_PORT:-12345}:12345"]
     mem_limit: 256m
     healthcheck:
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/12345 && printf 'GET /-/ready HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
@@ -264,7 +268,7 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-    ports: ["8080:8080"]
+    ports: ["${CADVISOR_HOST_PORT:-8080}:8080"]
     mem_limit: 256m
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
@@ -282,7 +286,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
     volumes:
       - minio-data:/data
-    ports: ["9000:9000", "9001:9001"]
+    ports: ["${MINIO_HOST_PORT:-9000}:9000", "${MINIO_CONSOLE_HOST_PORT:-9001}:9001"]
     mem_limit: 256m
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/live"]
@@ -313,7 +317,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
     volumes:
       - mlflow-data:/mlflow
-    ports: ["5000:5000"]
+    ports: ["${MLFLOW_HOST_PORT:-5000}:5000"]
     mem_limit: 512m
     depends_on:
       minio-init: { condition: service_completed_successfully }
