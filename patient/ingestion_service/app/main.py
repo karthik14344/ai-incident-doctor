@@ -37,6 +37,7 @@ class ProcessRequest(BaseModel):
     embedding_model: str = "nomic-embed-text"
     ollama_base_url: str = Field(default_factory=config.ollama_base_url)
 
+# Status moves uploaded -> extracting -> chunking -> embedding -> processed (or error).
 def update_doc_status(doc_id: str, status: str, pages: int = 0, chunks_count: int = 0, error_message: str = None):
     conn = get_db_connection()
     cursor = conn.cursor()
