@@ -218,13 +218,12 @@ REPO_QUESTIONS: List[Dict[str, Any]] = [
     {
         "id": "R05",
         "kind": "test mapping",
-        "question": "Which test files cover the voice transcription path, and what do they stub out?",
+        "question": "Which test files cover the guardrail pipeline, and which gateway module do they exercise?",
         "expected_files": [
-            "tests/test_gateway_voice.py",
-            "tests/test_voice_service.py",
-            "tests/fake_servers.py",
+            "tests/test_guardrails.py",
             "tests/conftest.py",
-            "voice_service/app/main.py",
+            "api_gateway/app/guardrails.py",
+            "api_gateway/app/main.py",
         ],
         "why_hard": "The link between a test and the code it covers is a naming convention, not text either file contains.",
     },

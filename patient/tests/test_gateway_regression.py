@@ -1,4 +1,4 @@
-"""Regression tests for the endpoints that existed before voice was added."""
+"""Regression tests for the gateway endpoints the UI and harness rely on."""
 
 LEGACY_SETTINGS = {
     "chunk_size": "800",
@@ -18,11 +18,10 @@ def test_health_still_reports_the_gateway_online(gateway_client):
     assert "timestamp" in body
 
 
-def test_system_status_keeps_its_original_keys_and_adds_voice(gateway_client):
+def test_system_status_keeps_its_original_keys(gateway_client):
     body = gateway_client.get("/api/system/status").json()
 
     assert LEGACY_STATUS_KEYS <= set(body)
-    assert "voice" in body
     assert body["gateway"] == "online"
 
 
@@ -33,52 +32,24 @@ def test_settings_expose_the_original_keys(gateway_client):
         assert body[key] == value
 
 
-def test_settings_expose_the_voice_defaults(gateway_client):
-    body = gateway_client.get("/api/settings").json()
-
-    assert body["voice_input_enabled"] == "true"
-    assert body["voice_output_enabled"] == "false"
-    assert body["stt_language"] == "hi-IN"
-    assert body["vexyl_stt_url"] == "http://localhost:8091"
-    assert body["vexyl_stt_api_key"] == ""
-
-
-def test_saving_legacy_settings_does_not_clobber_voice_settings(gateway_client):
-    """An older client posting only the six original fields must be harmless.
-
-    Before the voice fields were optional this wrote the string "None" over
-    every voice setting.
-    """
-    gateway_client.post(
-        "/api/settings",
-        json={**LEGACY_SETTINGS, "vexyl_stt_url": "http://example.test:9000"},
-    )
-
+def test_saving_settings_never_writes_the_string_none(gateway_client):
     response = gateway_client.post("/api/settings", json=LEGACY_SETTINGS)
     assert response.status_code == 200
 
     body = gateway_client.get("/api/settings").json()
-    assert body["vexyl_stt_url"] == "http://example.test:9000"
-    assert body["stt_language"] == "hi-IN"
     assert "None" not in body.values()
-
-    gateway_client.post(
-        "/api/settings",
-        json={**LEGACY_SETTINGS, "vexyl_stt_url": "http://localhost:8091"},
-    )
 
 
 def test_saving_settings_round_trips_changed_values(gateway_client):
     gateway_client.post(
         "/api/settings",
-        json={**LEGACY_SETTINGS, "top_k": "7", "stt_language": "ml-IN"},
+        json={**LEGACY_SETTINGS, "top_k": "7"},
     )
 
     body = gateway_client.get("/api/settings").json()
     assert body["top_k"] == "7"
-    assert body["stt_language"] == "ml-IN"
 
-    gateway_client.post("/api/settings", json={**LEGACY_SETTINGS, "stt_language": "hi-IN"})
+    gateway_client.post("/api/settings", json=LEGACY_SETTINGS)
 
 
 def test_documents_listing_still_works(gateway_client):

@@ -10,8 +10,7 @@ SERVICES = [
     {"name": "API Gateway", "port": 8000, "cmd": [sys.executable, "-m", "uvicorn", "api_gateway.app.main:app", "--host", "0.0.0.0", "--port", "8000"]},
     {"name": "Ingestion Service", "port": 8001, "cmd": [sys.executable, "-m", "uvicorn", "ingestion_service.app.main:app", "--host", "0.0.0.0", "--port", "8001"]},
     {"name": "Retrieval Service", "port": 8002, "cmd": [sys.executable, "-m", "uvicorn", "retrieval_service.app.main:app", "--host", "0.0.0.0", "--port", "8002"]},
-    {"name": "LLM Service", "port": 8003, "cmd": [sys.executable, "-m", "uvicorn", "llm_service.app.main:app", "--host", "0.0.0.0", "--port", "8003"]},
-    {"name": "Voice Service", "port": 8004, "cmd": [sys.executable, "-m", "uvicorn", "voice_service.app.main:app", "--host", "0.0.0.0", "--port", "8004"]}
+    {"name": "LLM Service", "port": 8003, "cmd": [sys.executable, "-m", "uvicorn", "llm_service.app.main:app", "--host", "0.0.0.0", "--port", "8003"]}
 ]
 
 processes = []
@@ -42,7 +41,6 @@ if __name__ == "__main__":
     print(" - Ingestion Service:  http://localhost:8001")
     print(" - Retrieval Service:  http://localhost:8002")
     print(" - LLM Service:        http://localhost:8003")
-    print(" - Voice Service:      http://localhost:8004")
     print("\nPress Ctrl+C to terminate all services.\n")
 
     try:

@@ -15,8 +15,7 @@ from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, FileResponse, Response
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 # Add root directory to sys.path
@@ -44,7 +43,6 @@ os.makedirs(STORAGE_DIR, exist_ok=True)
 INGESTION_SERVICE_URL = "http://localhost:8001"
 RETRIEVAL_SERVICE_URL = "http://localhost:8002"
 LLM_SERVICE_URL = "http://localhost:8003"
-VOICE_SERVICE_URL = "http://localhost:8004"
 OLLAMA_DEFAULT_URL = "http://localhost:11434"
 
 DEFAULT_SETTINGS = {
@@ -54,13 +52,6 @@ DEFAULT_SETTINGS = {
     "llm_model": "llama3.2",
     "embedding_model": "nomic-embed-text",
     "ollama_base_url": "http://localhost:11434",
-    "voice_input_enabled": "true",
-    "voice_output_enabled": "false",
-    "stt_language": "hi-IN",
-    "vexyl_stt_url": "http://localhost:8091",
-    "vexyl_stt_api_key": "",
-    "hindi_tts_url": "",
-    "hindi_tts_ref_audio": ""
 }
 
 app = FastAPI(title="KnowledgeAI API Gateway", version="1.0.0")
@@ -100,19 +91,6 @@ class SettingsRequest(BaseModel):
     llm_model: str
     embedding_model: str
     ollama_base_url: str
-    # Voice settings are optional so that older clients, which post only the
-    # six fields above, keep working and leave the voice config untouched.
-    voice_input_enabled: Optional[str] = None
-    voice_output_enabled: Optional[str] = None
-    stt_language: Optional[str] = None
-    vexyl_stt_url: Optional[str] = None
-    vexyl_stt_api_key: Optional[str] = None
-    hindi_tts_url: Optional[str] = None
-    hindi_tts_ref_audio: Optional[str] = None
-
-class SpeakRequest(BaseModel):
-    text: str
-    language: Optional[str] = "hi"
 
 class SessionCreateRequest(BaseModel):
     title: Optional[str] = "New Conversation"
@@ -148,7 +126,6 @@ async def system_status():
             "ingestion": "offline",
             "retrieval": "offline",
             "llm_service": "offline",
-            "voice": "offline",
             "ollama": "offline",
             "ollama_models": []
         }
@@ -178,14 +155,6 @@ async def system_status():
             except Exception:
                 pass
 
-            # Check Voice Service
-            try:
-                r = await client.get(f"{VOICE_SERVICE_URL}/health")
-                if r.status_code == 200:
-                    statuses["voice"] = "online"
-            except Exception:
-                pass
-
             # Check Ollama API
             try:
                 r = await client.get(f"{ollama_url.rstrip('/')}/api/tags")
@@ -204,7 +173,6 @@ async def system_status():
             "ingestion": "online",
             "retrieval": "online",
             "llm_service": "online",
-            "voice": "offline",
             "ollama": "online",
             "ollama_models": ["llama3.2:latest"]
         }
@@ -930,135 +898,6 @@ def delete_model_comparison(run_id: str):
     conn.close()
     return {"status": "deleted", "run_id": run_id}
 
-
-# ==================== VOICE (STT / TTS) API ====================
-UNREACHABLE_VOICE_SERVICE = {
-    "message": "Voice service is not running on port 8004.",
-    "fallback": "browser"
-}
-
-def _voice_error_detail(response: httpx.Response, default: str) -> Any:
-    """Unwrap the voice service's error body so the browser sees the real reason."""
-    try:
-        body = response.json()
-    except Exception:
-        return {"message": default, "fallback": "browser"}
-    detail = body.get("detail", body) if isinstance(body, dict) else body
-    if isinstance(detail, str):
-        return {"message": detail, "fallback": "browser"}
-    return detail
-
-@app.get("/api/voice/capabilities")
-async def voice_capabilities():
-    """Report which speech backends are usable, for the mic/speaker buttons.
-
-    Always answers 200: the frontend needs a usable answer even when the voice
-    service is down, so it can fall back to the browser's Web Speech APIs.
-    """
-    settings = get_settings_map()
-    params = {
-        "vexyl_url": settings.get("vexyl_stt_url", ""),
-        "vexyl_api_key": settings.get("vexyl_stt_api_key", ""),
-        "tts_url": settings.get("hindi_tts_url", ""),
-        "ref_audio": settings.get("hindi_tts_ref_audio", "")
-    }
-
-    voice_enabled = settings.get("voice_input_enabled", "true").lower() == "true"
-    auto_speak = settings.get("voice_output_enabled", "false").lower() == "true"
-
-    try:
-        async with httpx.AsyncClient(timeout=8.0, trust_env=False) as client:
-            r = await client.get(f"{VOICE_SERVICE_URL}/capabilities", params=params)
-            if r.status_code == 200:
-                caps = r.json()
-                caps["service_online"] = True
-                caps["voice_input_enabled"] = voice_enabled
-                caps["voice_output_enabled"] = auto_speak
-                caps["stt_language"] = settings.get("stt_language", "hi-IN")
-                return caps
-    except Exception as e:
-        print(f"[Gateway] Voice capabilities unavailable: {e}")
-
-    return {
-        "service": "voice",
-        "service_online": False,
-        "voice_input_enabled": voice_enabled,
-        "voice_output_enabled": auto_speak,
-        "stt_language": settings.get("stt_language", "hi-IN"),
-        "stt": {
-            "available": False,
-            "engine": "browser",
-            "reason": "Voice service is not running on port 8004."
-        },
-        "tts": {
-            "available": False,
-            "engine": "browser",
-            "reason": "Voice service is not running on port 8004."
-        },
-        "languages": []
-    }
-
-@app.post("/api/voice/transcribe")
-async def voice_transcribe(
-    file: UploadFile = File(...),
-    language_code: str = Form("hi-IN")
-):
-    settings = get_settings_map()
-    audio = await file.read()
-    if not audio:
-        raise HTTPException(status_code=400, detail="Empty audio upload.")
-
-    async with httpx.AsyncClient(timeout=180.0, trust_env=False) as client:
-        try:
-            r = await client.post(
-                f"{VOICE_SERVICE_URL}/stt/transcribe",
-                files={"file": (file.filename or "recording.wav", audio, "audio/wav")},
-                data={
-                    "language_code": language_code,
-                    "vexyl_url": settings.get("vexyl_stt_url", ""),
-                    "vexyl_api_key": settings.get("vexyl_stt_api_key", "")
-                }
-            )
-        except Exception as e:
-            print(f"[Gateway] Voice service unreachable: {e}")
-            raise HTTPException(status_code=503, detail=UNREACHABLE_VOICE_SERVICE)
-
-    if r.status_code != 200:
-        raise HTTPException(
-            status_code=r.status_code,
-            detail=_voice_error_detail(r, "Speech recognition failed.")
-        )
-
-    return r.json()
-
-@app.post("/api/voice/speak")
-async def voice_speak(req: SpeakRequest):
-    settings = get_settings_map()
-    payload = {
-        "text": req.text,
-        "language": req.language or "hi",
-        "tts_url": settings.get("hindi_tts_url", ""),
-        "ref_audio": settings.get("hindi_tts_ref_audio", "")
-    }
-
-    async with httpx.AsyncClient(timeout=300.0, trust_env=False) as client:
-        try:
-            r = await client.post(f"{VOICE_SERVICE_URL}/tts/speak", json=payload)
-        except Exception as e:
-            print(f"[Gateway] Voice service unreachable: {e}")
-            raise HTTPException(status_code=503, detail=UNREACHABLE_VOICE_SERVICE)
-
-    if r.status_code != 200:
-        raise HTTPException(
-            status_code=r.status_code,
-            detail=_voice_error_detail(r, "Speech synthesis failed.")
-        )
-
-    return Response(
-        content=r.content,
-        media_type="audio/wav",
-        headers={"X-TTS-Engine": r.headers.get("X-TTS-Engine", "unknown")}
-    )
 
 # ==================== QUERY SUGGESTIONS ====================
 @app.get("/api/suggestions")

@@ -120,14 +120,6 @@ def init_db():
         "llm_model": "llama3.2",
         "embedding_model": "nomic-embed-text",
         "ollama_base_url": "http://localhost:11434",
-        # Voice I/O (VEXYL-STT speech input + Futurix-AI Hindi TTS output)
-        "voice_input_enabled": "true",
-        "voice_output_enabled": "false",
-        "stt_language": "hi-IN",
-        "vexyl_stt_url": "http://localhost:8091",
-        "vexyl_stt_api_key": "",
-        "hindi_tts_url": "",
-        "hindi_tts_ref_audio": ""
     }
 
     for key, val in default_settings.items():

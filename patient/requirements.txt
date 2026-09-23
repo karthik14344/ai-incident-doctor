@@ -1,26 +1,23 @@
-# KnowledgeAI backend dependencies
-#
-# Install with:  pip install -r requirements.txt
+# KnowledgeAI (the patient) - backend dependencies.
+# Pinned to the versions the source project ran with, so ML behaviour is
+# unchanged. Voice (STT/TTS) dependencies were dropped with the voice service.
 
-# Web framework shared by all five microservices
-fastapi
-uvicorn[standard]
-pydantic
-python-multipart          # multipart/form-data: PDF upload + voice recordings
+# Web framework shared by the four microservices
+fastapi==0.141.1
+starlette==1.6.0
+uvicorn[standard]==0.52.1
+pydantic==2.13.4
+python-multipart          # multipart/form-data: document upload
 
-# HTTP client used for service-to-service calls, Ollama, VEXYL-STT and Hindi-TTS
-httpx
+# Service-to-service calls and Ollama
+httpx==0.28.1
 
 # Vector store and document parsing
-chromadb
-pypdf
+chromadb==1.5.9
+pypdf==6.15.0
 
-# Optional: only needed by generate_greetings_pdf.py
-reportlab
-
-# CPU / memory sampling for the Week-4 evaluation's resource metrics.
-# GPU figures come from nvidia-smi, which needs no Python package.
-psutil
+# Evaluation harness resource sampling (CPU / memory)
+psutil==7.2.2
 
 # Testing
-pytest
+pytest==9.1.1
