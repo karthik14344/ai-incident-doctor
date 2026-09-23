@@ -3,6 +3,8 @@ import os
 import json
 from datetime import datetime
 
+from common import config
+
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "app.db")
 
 def get_db_connection():
@@ -119,7 +121,7 @@ def init_db():
         "top_k": "4",
         "llm_model": "llama3.2",
         "embedding_model": "nomic-embed-text",
-        "ollama_base_url": "http://localhost:11434",
+        "ollama_base_url": config.ollama_base_url(),
     }
 
     for key, val in default_settings.items():

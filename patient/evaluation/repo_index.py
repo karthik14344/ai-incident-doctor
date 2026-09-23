@@ -24,12 +24,13 @@ the argument for the repository-level tooling covered next week.
 
 import os
 import sys
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
+from common import config
 from ingestion_service.app.embedder import get_embedding
 from ingestion_service.app.vector_store import (
     add_chunks_to_vector_store, get_chroma_client, get_or_create_collection,
@@ -103,9 +104,10 @@ def chunk_source(path: str, root: str = BASE_DIR) -> List[Dict[str, Any]]:
 
 def build(collection_name: str = REPO_COLLECTION,
           embedding_model: str = "nomic-embed-text",
-          ollama_base_url: str = "http://localhost:11434",
+          ollama_base_url: Optional[str] = None,
           root: str = BASE_DIR) -> Dict[str, Any]:
     """Index the repository into its own ChromaDB collection."""
+    ollama_base_url = ollama_base_url or config.ollama_base_url()
     client = get_chroma_client()
     try:
         client.delete_collection(collection_name)
@@ -290,7 +292,7 @@ def score_answer(answer: str, expected_files: List[str]) -> Dict[str, Any]:
 def run_repo_questions(models: List[str], top_k: int = 8, max_tokens: int = 700,
                        temperature: float = 0.2, seed: int = 42,
                        embedding_model: str = "nomic-embed-text",
-                       ollama_base_url: str = "http://localhost:11434",
+                       ollama_base_url: Optional[str] = None,
                        emit=None) -> Dict[str, Any]:
     """Ask every repository question of every model over the code index.
 
@@ -298,6 +300,7 @@ def run_repo_questions(models: List[str], top_k: int = 8, max_tokens: int = 700,
     answer spans six files cannot be answered from four chunks, and starving it
     would test the budget rather than the architecture.
     """
+    ollama_base_url = ollama_base_url or config.ollama_base_url()
     from evaluation.pipeline import generate, retrieve  # local: avoids a cycle
 
     emit = emit or (lambda _e: None)

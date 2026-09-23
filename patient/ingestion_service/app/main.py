@@ -4,10 +4,12 @@ import sqlite3
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from common import config
 
 from ingestion_service.app.pdf_processor import extract_text_from_pdf
 from ingestion_service.app.chunker import create_chunks
@@ -33,7 +35,7 @@ class ProcessRequest(BaseModel):
     chunk_size: int = 800
     chunk_overlap: int = 100
     embedding_model: str = "nomic-embed-text"
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = Field(default_factory=config.ollama_base_url)
 
 def update_doc_status(doc_id: str, status: str, pages: int = 0, chunks_count: int = 0, error_message: str = None):
     conn = get_db_connection()

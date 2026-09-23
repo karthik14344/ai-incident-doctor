@@ -17,7 +17,9 @@ import httpx
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-GATEWAY = "http://localhost:8000"
+from common import config  # noqa: E402
+
+GATEWAY = config.required("GATEWAY_URL")
 SESSION = "session_ratelimit_flood"
 BURST = 8
 

@@ -2,11 +2,13 @@ import os
 import sys
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 
 # Add project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from common import config
 
 from ingestion_service.app.embedder import get_embedding
 from ingestion_service.app.vector_store import query_vector_store
@@ -26,7 +28,7 @@ class QueryRequest(BaseModel):
     collection_name: str = "default"
     top_k: int = 4
     embedding_model: str = "nomic-embed-text"
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = Field(default_factory=config.ollama_base_url)
 
 def assemble_context(chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Turn ranked chunks into the prompt context block and the source list.

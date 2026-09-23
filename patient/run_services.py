@@ -16,7 +16,7 @@ SERVICES = [
 processes = []
 
 def run_service(service):
-    print(f"[*] Starting {service['name']} on http://localhost:{service['port']}...")
+    print(f"[*] Starting {service['name']} on port {service['port']}...")
     proc = subprocess.Popen(service["cmd"], cwd=BASE_DIR)
     processes.append(proc)
     proc.wait()
@@ -37,10 +37,8 @@ if __name__ == "__main__":
         time.sleep(1)
 
     print(f"\n[+] All {len(SERVICES)} Microservices are running!")
-    print(" - API Gateway:        http://localhost:8000")
-    print(" - Ingestion Service:  http://localhost:8001")
-    print(" - Retrieval Service:  http://localhost:8002")
-    print(" - LLM Service:        http://localhost:8003")
+    for s in SERVICES:
+        print(f" - {s['name']:<20} port {s['port']}")
     print("\nPress Ctrl+C to terminate all services.\n")
 
     try:

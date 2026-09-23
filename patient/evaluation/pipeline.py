@@ -32,7 +32,9 @@ from llm_service.app.main import DEFAULT_SYSTEM_PROMPT, build_prompt, resolve_mo
 
 from evaluation.resources import ResourceSampler
 
-OLLAMA_DEFAULT_URL = "http://localhost:11434"
+from common import config
+
+OLLAMA_DEFAULT_URL = config.ollama_base_url()
 
 
 def retrieve(question: str, collection_name: str, top_k: int,

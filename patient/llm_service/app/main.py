@@ -10,7 +10,7 @@ import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 
 # The comparison page reports CPU / GPU / memory consumption, which has to be
@@ -18,6 +18,7 @@ from typing import Optional, List, Dict, Any
 # only place that knows exactly when a timed run starts and stops.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from evaluation.resources import ResourceSampler
+from common import config
 
 app = FastAPI(title="LLM Service", version="1.0.0")
 
@@ -33,7 +34,7 @@ class GenerateRequest(BaseModel):
     question: str
     context: str
     model: str = "llama3.2"
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = Field(default_factory=config.ollama_base_url)
     system_prompt: Optional[str] = None
     stream: bool = True
 
@@ -42,7 +43,7 @@ class BenchmarkRequest(BaseModel):
     question: str
     context: str
     model: str
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = Field(default_factory=config.ollama_base_url)
     system_prompt: Optional[str] = None
     # Bounded + deterministic so every model in a comparison gets equal treatment.
     max_tokens: int = 512

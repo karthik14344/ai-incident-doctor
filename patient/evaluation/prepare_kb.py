@@ -19,13 +19,14 @@ Run directly to (re)build it::
 
 import os
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from ingestion_service.app.chunker import create_chunks
+from common import config
 from ingestion_service.app.embedder import get_embedding
 from ingestion_service.app.vector_store import (
     add_chunks_to_vector_store, get_chroma_client, get_or_create_collection,
@@ -65,8 +66,9 @@ def collection_status(collection_name: str = EVAL_COLLECTION) -> Dict[str, Any]:
 
 def build(collection_name: str = EVAL_COLLECTION,
           embedding_model: str = "nomic-embed-text",
-          ollama_base_url: str = "http://localhost:11434") -> Dict[str, Any]:
+          ollama_base_url: Optional[str] = None) -> Dict[str, Any]:
     """Drop and rebuild the evaluation collection from POLICY_CORPUS."""
+    ollama_base_url = ollama_base_url or config.ollama_base_url()
     client = get_chroma_client()
     try:
         client.delete_collection(collection_name)

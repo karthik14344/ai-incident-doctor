@@ -7,6 +7,7 @@ from datetime import datetime
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 
+from common import config
 from api_gateway.app.db import init_db, get_db_connection
 from ingestion_service.app.chunker import create_chunks
 from ingestion_service.app.embedder import get_embedding
@@ -50,7 +51,7 @@ def seed():
         
         embeddings = []
         for chunk in chunks:
-            emb = get_embedding(chunk["text"])
+            emb = get_embedding(chunk["text"], base_url=config.ollama_base_url())
             embeddings.append(emb)
             chunk_id = f"{doc_id}_c{chunk['chunk_index']}"
 

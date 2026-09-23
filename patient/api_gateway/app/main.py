@@ -22,6 +22,7 @@ from pydantic import BaseModel
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(BASE_DIR)
 
+from common import config
 from api_gateway.app.db import get_db_connection, init_db
 from api_gateway.app.metrics import evaluate_answer, summarise_run
 from api_gateway.app.suggestions import suggest_queries
@@ -40,10 +41,12 @@ GUARDRAILS = guardrails.GuardrailPipeline()
 STORAGE_DIR = os.path.join(BASE_DIR, "storage", "documents")
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
-INGESTION_SERVICE_URL = "http://localhost:8001"
-RETRIEVAL_SERVICE_URL = "http://localhost:8002"
-LLM_SERVICE_URL = "http://localhost:8003"
-OLLAMA_DEFAULT_URL = "http://localhost:11434"
+# Addresses are configuration (common/config.py), never literals: in Docker the
+# services are reached by container name and Ollama runs on another machine.
+INGESTION_SERVICE_URL = config.service_url("ingestion")
+RETRIEVAL_SERVICE_URL = config.service_url("retrieval")
+LLM_SERVICE_URL = config.service_url("llm")
+OLLAMA_DEFAULT_URL = config.ollama_base_url()
 
 DEFAULT_SETTINGS = {
     "chunk_size": "800",
@@ -51,7 +54,7 @@ DEFAULT_SETTINGS = {
     "top_k": "4",
     "llm_model": "llama3.2",
     "embedding_model": "nomic-embed-text",
-    "ollama_base_url": "http://localhost:11434",
+    "ollama_base_url": OLLAMA_DEFAULT_URL,
 }
 
 app = FastAPI(title="KnowledgeAI API Gateway", version="1.0.0")
