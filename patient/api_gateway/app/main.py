@@ -506,8 +506,7 @@ async def chat_stream(req: ChatRequest):
     }
 
     retrieval_data = {}
-    # Retrieval answers in ~30 ms; fail fast rather than hold the chat request.
-    async with telemetry.async_client("gateway", timeout=0.05) as client:
+    async with telemetry.async_client("gateway", timeout=30.0) as client:
         try:
             r = await client.post(f"{RETRIEVAL_SERVICE_URL}/retrieve", json=retrieval_payload)
             if r.status_code == 200:
