@@ -116,7 +116,36 @@ tests:
       - eval_time: 3m
         alertname: DownstreamCallFailures
         exp_alerts:
-          - exp_labels: { severity: warning, service: gateway, target: retrieval }
+          - exp_labels: { severity: warning, service: gateway, target: retrieval, pattern: outage }
             exp_annotations:
               summary: "calls from gateway to retrieval are failing"
               description: "Calls from gateway to retrieval have kept failing for at least a minute (0.20 failures/s)."
+
+  - name: a low but persistent 5xx rate (a bug on some inputs) pages
+    interval: 15s
+    input_series:
+      # 0.6 req/s in total, about 5% failing, every minute
+      - series: 'knowledgeai_http_requests_total{service="gateway", endpoint="/api/chat", method="POST", status="200", job="gateway"}'
+        values: '0+9x60'
+      - series: 'knowledgeai_http_requests_total{service="gateway", endpoint="/api/chat", method="POST", status="500", job="gateway"}'
+        values: '0+0.5x60'
+    alert_rule_test:
+      - eval_time: 8m
+        alertname: HighErrorRate
+        exp_alerts:
+          - exp_labels: { severity: warning, service: gateway }
+            exp_annotations:
+              summary: "gateway is answering 5.263% of requests with 5xx"
+              description: "More than 3% of requests to gateway failed with 5xx over 5 minutes, in at least 4 of those minutes."
+
+  - name: a deploy's burst of 5xx does not page HighErrorRate
+    interval: 15s
+    input_series:
+      - series: 'knowledgeai_http_requests_total{service="gateway", endpoint="/api/chat", method="POST", status="200", job="gateway"}'
+        values: '0+9x60'
+      - series: 'knowledgeai_http_requests_total{service="gateway", endpoint="/api/chat", method="POST", status="500", job="gateway"}'
+        values: '0x20 0+6x2 12x38'
+    alert_rule_test:
+      - eval_time: 12m
+        alertname: HighErrorRate
+        exp_alerts: []

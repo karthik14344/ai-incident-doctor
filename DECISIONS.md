@@ -412,3 +412,21 @@ applied to `main` by hand.
   retrieval**; RESULTS.md reports it separately from incidents recorded after the
   change. The most-recent-deploy baseline uses the same scope, so it is not
   handicapped by it.
+- **D-77. Error alerts look for persistence, not continuity.** The typo fault
+  produced HTTP 500s on ~5% of gateway requests (35 of 672 in 17 minutes), but at
+  this traffic some minutes had none, so a rule needing 2 unbroken minutes above 5%
+  never fired - the D-72 hardening had made it deaf to low-rate bugs. Now
+  `HighErrorRate` and `ChatRequestsFailing` fire when more than 3% of requests fail
+  over 5 minutes *and* failures occur in at least 4 of those 5 minutes; a deploy's
+  burst touches one or two. `DownstreamCallFailures` has two forms, `pattern:
+  outage` (continuous, pages within a minute) and `pattern: intermittent` (4 of 5
+  minutes). promtool tests cover a persistent 5% (pages) and a deploy burst (quiet).
+  That first typo run is kept as `_no-alert-f5-r1-error-rule-too-slow` and not
+  counted.
+- **D-78. When monitoring misses a fault, a user files a ticket.** If no alert
+  fires within a fault's timeout, the runner files a ticket with the symptom a user
+  would report (never the cause, `faults/catalog.py: TICKET_TEXT`) and a rough time.
+  The doctor must locate the window itself. Such runs are recorded with
+  `trigger: ticket` and `monitoring_missed: true`, and both the miss and the ticket
+  diagnosis are reported. A ticket is a person reporting a symptom, so it does not
+  break D-42 (changes never wake the doctor).

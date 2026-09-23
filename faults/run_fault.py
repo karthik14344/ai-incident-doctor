@@ -151,6 +151,45 @@ def revert_environment(fault: Fault) -> None:
         kb_swap(None, force=True)
 
 
+# ---------------------------------------------------------------- the human fallback
+
+def file_ticket(fault: Fault, timeline: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """A person reporting what they see. Not a deploy and not a push: the hard rule
+    (DECISIONS D-42) is that changes never wake the doctor; symptoms do."""
+    from faults.catalog import TICKET_TEXT
+    from faults.common import doctor_url, http
+
+    minutes = max(1, round((time.time() - parse_ts(timeline["t_break"])) / 60))
+    body = {"text": TICKET_TEXT.get(fault.id, "The assistant is not working properly."),
+            "since": f"about {minutes} minutes ago"}
+    try:
+        out = http(f"{doctor_url()}/ticket", "POST", body)
+    except Exception as exc:
+        log(f"ticket failed: {exc}")
+        return None
+    timeline["ticket_filed_at"] = iso()
+    timeline["ticket"] = {**body, "response": out}
+    timeline["trigger"] = "ticket"
+    return out if out and out.get("incident_id") else None
+
+
+def wait_report_id(incident_id: str, timeout: float = 1500) -> Optional[Dict[str, Any]]:
+    from faults.common import doctor_url, http
+
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            detail = http(f"{doctor_url()}/api/incidents/{incident_id}")
+            status = (detail.get("incident") or {}).get("status")
+            if status in ("ok", "failed", "interrupted"):
+                summary = next((i for i in http(f"{doctor_url()}/api/incidents") if i["id"] == incident_id), {})
+                return {"summary": summary, "detail": detail}
+        except Exception:
+            pass
+        time.sleep(10)
+    return None
+
+
 # ---------------------------------------------------------------- the run
 
 def wait_resolved(first_alert: Dict[str, Any], timeout: float = 900) -> Optional[str]:
@@ -170,7 +209,8 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
     run_id = f"{fault_id}-{label or time.strftime('%m%d%H%M')}"
     run_dir = os.path.join(RUNS_DIR, run_id)
     timeline: Dict[str, Any] = {"run_id": run_id, "fault_id": fault_id, "delivery": fault.delivery,
-                                "variant": variant if fault.delivery == "push" else None, "started": iso()}
+                                "variant": variant if fault.delivery == "push" else None, "started": iso(),
+                                "trigger": "alert"}
     truth = {**fault.ground_truth(), "run_id": run_id, "guilty_commit": None, "guilty_kb_version": None}
     write_json(os.path.join(run_dir, "timeline.json"), timeline)
     log(f"=== {run_id}: {fault.name} ({fault.delivery})")
@@ -219,7 +259,23 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
             else:
                 log("no doctor report within the timeout")
         else:
-            log("NO ALERT within the timeout - fault did not reproduce")
+            # Monitoring missed it (or the fault did not reproduce). A user notices
+            # and files a ticket in symptom terms - the doctor has to find the time
+            # window itself. Recorded as trigger=ticket, monitoring_missed=True.
+            timeline["monitoring_missed"] = True
+            log("NO ALERT within the timeout - filing a user ticket")
+            filed = file_ticket(fault, timeline)
+            if filed:
+                report = wait_report_id(filed["incident_id"])
+                if report:
+                    meta = report["detail"].get("incident") or {}
+                    timeline["incident_id"] = filed["incident_id"]
+                    timeline["t_report"] = meta.get("report_finished")
+                    timeline["doctor_s"] = round(parse_ts(meta["report_finished"]) - parse_ts(timeline["ticket_filed_at"]), 1)                         if meta.get("report_finished") else None
+                    inc = report["summary"]
+                    log(f"doctor ticket report {inc['id']}: {inc['incident_class']} / {(inc.get('top_cause') or '')[:80]} "
+                        f"({timeline['doctor_s']}s after the ticket)")
+                    export_incident(inc["id"], run_dir)
 
         if neighbour:
             neighbour.stop()

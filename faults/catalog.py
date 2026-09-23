@@ -217,3 +217,17 @@ _add(Fault(
                  "the KB from the full corpus before publishing).",
     expected_alerts=["ChatAnswersRefused"],
 ))
+
+
+# What a user would say if monitoring missed the fault - the symptom as seen from
+# the chat window, never the cause. Used by the ticket fallback in run_fault.
+TICKET_TEXT = {
+    "f1_embed_timeout": "Answers have been wrong or unrelated to my question for a while now.",
+    "f2_capacity": "The assistant has become extremely slow; answers take over a minute.",
+    "f3_retrieval_down": "The assistant says it has nothing relevant in the documents, for every question.",
+    "f3b_retrieval_bad_address": "The assistant says it has nothing relevant in the documents, for every question.",
+    "f4_memory_leak": "Searches sometimes fail and the assistant seems to be restarting.",
+    "f5_typo": "Some of my searches fail with an error while others work fine.",
+    "f6_tight_timeout": "Every now and then an answer fails with an error, for no obvious reason.",
+    "f7_kb_missing_docs": "It no longer answers questions about the library, scholarships or placements.",
+}

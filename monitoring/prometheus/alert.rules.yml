@@ -43,47 +43,65 @@ groups:
 
   - name: knowledgeai-errors
     rules:
+      # Errors that persist, whether steady or intermittent. A deploy recreating
+      # containers produces errors in one or two consecutive minutes; a real bug
+      # produces them in (nearly) every minute, even at a low rate. So: more than 3%
+      # of requests over 5 minutes AND errors in at least 4 of the last 5 minutes.
       - alert: HighErrorRate
         expr: |
           (
-            sum by (service) (rate(knowledgeai_http_requests_total{status=~"5..", endpoint!="/metrics"}[1m]))
-            / sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[1m]))
-          ) > 0.05
-        # A deploy recreating containers causes ~20 s of errors. With a 1-minute
-        # window and 2 minutes of "for", errors must persist well beyond that.
-        for: 2m
+            sum by (service) (rate(knowledgeai_http_requests_total{status=~"5..", endpoint!="/metrics"}[5m]))
+            / sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[5m]))
+          ) > 0.03
+          and on (service)
+          count_over_time((sum by (service) (increase(knowledgeai_http_requests_total{status=~"5..", endpoint!="/metrics"}[1m])) > 0)[5m:1m]) >= 4
+        for: 1m
         labels:
           severity: warning
         annotations:
           summary: "{{ $labels.service }} is answering {{ $value | humanizePercentage }} of requests with 5xx"
-          description: "Share of 5xx responses from {{ $labels.service }} has stayed above 5% for 2 minutes."
+          description: "More than 3% of requests to {{ $labels.service }} failed with 5xx over 5 minutes, in at least 4 of those minutes."
 
       - alert: ChatRequestsFailing
         expr: |
           (
-            sum(rate(knowledgeai_chat_answers_total{outcome="error"}[2m]))
-            / sum(rate(knowledgeai_chat_answers_total[2m]))
-          ) > 0.05
-        for: 2m
+            sum(rate(knowledgeai_chat_answers_total{outcome="error"}[5m]))
+            / sum(rate(knowledgeai_chat_answers_total[5m]))
+          ) > 0.03
+          and on ()
+          count_over_time((sum(increase(knowledgeai_chat_answers_total{outcome="error"}[1m])) > 0)[5m:1m]) >= 4
+        for: 1m
         labels:
           severity: warning
           service: gateway
         annotations:
           summary: "{{ $value | humanizePercentage }} of chat requests ended in an error"
-          description: "Share of chat answers that ended in an error has stayed above 5% for 2 minutes."
+          description: "More than 3% of chat answers ended in an error over 5 minutes, in at least 4 of those minutes."
 
       - alert: DownstreamCallFailures
-        # Failures in every 30 s window for a full minute: a deploy's ~20 s blip
-        # does not qualify, an outage or a steady stream of failures does.
+        # Outage pattern: failures in every 30 s window for a full minute.
         expr: sum by (service, target) (rate(knowledgeai_downstream_failures_total[30s])) > 0
         for: 1m
         labels:
           severity: warning
+          pattern: outage
         annotations:
           summary: "calls from {{ $labels.service }} to {{ $labels.target }} are failing"
           description: >-
             Calls from {{ $labels.service }} to {{ $labels.target }} have kept failing
             for at least a minute ({{ $value | printf "%.2f" }} failures/s).
+
+      - alert: DownstreamCallFailures
+        # Intermittent pattern: some failures in at least 4 of the last 5 minutes.
+        expr: count_over_time((sum by (service, target) (increase(knowledgeai_downstream_failures_total[1m])) > 0)[5m:1m]) >= 4
+        labels:
+          severity: warning
+          pattern: intermittent
+        annotations:
+          summary: "calls from {{ $labels.service }} to {{ $labels.target }} are failing intermittently"
+          description: >-
+            Calls from {{ $labels.service }} to {{ $labels.target }} failed in
+            {{ $value }} of the last 5 minutes.
 
       - alert: OllamaCallFailures
         expr: sum by (service, operation) (rate(knowledgeai_ollama_failures_total{reason!="fallback"}[30s])) > 0
