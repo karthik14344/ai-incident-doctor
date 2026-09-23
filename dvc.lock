@@ -21,8 +21,8 @@ stages:
       size: 5498
     - path: patient/kb/build_kb.py
       hash: md5
-      md5: 59e61a730082202a0283f89af67fefa7
-      size: 6026
+      md5: 73c364590412cd355e730d1d4b16bb05
+      size: 6583
     outs:
     - path: kb/documents
       hash: md5
