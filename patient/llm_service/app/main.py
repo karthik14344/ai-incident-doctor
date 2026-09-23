@@ -61,6 +61,7 @@ For general greetings (such as "hi", "hello", "hey", "good morning"), respond wi
 For factual questions, use the provided context from retrieved documents to answer accurately and cite specific source details or page numbers when relevant.
 Do NOT invent facts outside the provided context."""
 
+# Ollama resolves bare model names to ':latest' anyway, but explicit tags make logs unambiguous.
 def resolve_model_tag(model: str) -> str:
     """Ollama needs an explicit tag; settings/UI usually store the bare name."""
     name = (model or "").strip()
