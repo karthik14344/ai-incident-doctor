@@ -14,9 +14,9 @@ from typing import Dict, List
 # counter around a call and flag any result it moved.
 _FALLBACK_COUNT = 0
 
-# Embedding calls normally return in well under a second; give up after 10 s
-# so a stuck Ollama cannot hold a request thread for most of a minute.
-EMBED_TIMEOUT_S = 10.0
+# Cold nomic-embed-text can take ~15 s to load on first use. The old 10 s
+# timeout turned that first query into silent garbage instead of a slow answer.
+EMBED_TIMEOUT_S = 45.0
 
 
 def embedding_fallback_count() -> int:
