@@ -53,6 +53,10 @@ from ingestion_service.app.embedder import embedding_fallback_count, get_embeddi
 from ingestion_service.app.vector_store import add_chunks_to_vector_store  # noqa: E402
 
 CHAT_COLLECTION = "default"
+# KB_INCLUDE_DOCS=a.pdf,b.pdf builds the chat collection from a subset of the
+# corpus (e.g. to publish only reviewed documents). Default: every document.
+_INCLUDE = [d.strip() for d in (os.environ.get("KB_INCLUDE_DOCS") or "").split(",") if d.strip()]
+CHAT_DOCS = [d for d in POLICY_CORPUS if not _INCLUDE or d["filename"] in _INCLUDE]
 EMBEDDING_MODEL = os.environ.get("KB_EMBEDDING_MODEL") or "nomic-embed-text"
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 100
@@ -62,7 +66,7 @@ def kb_version() -> str:
     """Content hash of everything that determines the index."""
     h = hashlib.sha256()
     h.update(f"{EMBEDDING_MODEL}|{CHUNK_SIZE}|{CHUNK_OVERLAP}".encode())
-    for doc in POLICY_CORPUS:
+    for doc in CHAT_DOCS:
         h.update(doc["doc_id"].encode())
         for page in doc["pages"]:
             h.update(page["text"].encode("utf-8"))
@@ -80,7 +84,7 @@ def build() -> dict:
     documents, chunk_rows = [], []
 
     # "default" collection - identical to seed_sample_docs.seed()
-    for doc in POLICY_CORPUS:
+    for doc in CHAT_DOCS:
         file_path = os.path.join(DOCS_DIR, doc["filename"])
         with open(file_path, "w", encoding="utf-8", newline="\n") as fh:
             fh.write("\n\n".join(p["text"] for p in doc["pages"]))
