@@ -25,3 +25,7 @@ Uploads go through the Documents page. Processing runs in the ingestion service;
 ## Reading the operations dashboard
 
 Request rate and in-flight requests show demand; p95 latency and error rate show how well it is being served. Read them together.
+
+## Rate limiting
+
+The gateway limits requests per chat session. A burst from one browser tab is refused by the rate-limit guardrail, which is expected behaviour.
