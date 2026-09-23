@@ -13,3 +13,10 @@ def test_empty_pages_produce_no_chunks():
     from ingestion_service.app.chunker import create_chunks
 
     assert create_chunks([{"page": 1, "text": ""}, {"page": 2, "text": ""}]) == []
+
+
+def test_bare_model_names_get_the_latest_tag():
+    from llm_service.app.main import resolve_model_tag
+
+    assert resolve_model_tag("llama3.2") == "llama3.2:latest"
+    assert resolve_model_tag("llama3.2:1b") == "llama3.2:1b"
