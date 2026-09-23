@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Secrets - never commit. Every variable is documented in .env.example.
+.env
+.env.*
+!.env.example
+
+# Runtime state (databases, vector stores, logs written by the stack)
+patient/data/
+patient/chroma_data/
+*.db
+*.sqlite3
+*.log
+runtime/
+doctor/data/
+
+# Uploaded documents get hash-prefixed names; only the seed documents are tracked
+patient/storage/documents/doc_*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.claude/
