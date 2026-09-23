@@ -30,13 +30,12 @@ groups:
           description: "The process start time reported by {{ $labels.job }} changed {{ $value }} times within 15 minutes."
 
       - alert: ContainerOOMKilled
-        expr: increase(container_oom_events_total{container_label_com_docker_compose_service=~"gateway|ingestion|retrieval|llm"}[10m]) > 0
+        expr: increase(aid_container_oom_kills_total{service=~"gateway|ingestion|retrieval|llm"}[10m]) > 0
         labels:
           severity: critical
-          service: "{{ $labels.container_label_com_docker_compose_service }}"
         annotations:
-          summary: "{{ $labels.container_label_com_docker_compose_service }} container recorded an out-of-memory kill"
-          description: "cAdvisor counted {{ $value }} OOM events for this container in the last 10 minutes."
+          summary: "{{ $labels.service }} container recorded an out-of-memory kill"
+          description: "Docker reported {{ $value | printf \"%.0f\" }} OOM kills of this container in the last 10 minutes."
 
   - name: knowledgeai-errors
     rules:
@@ -126,17 +125,15 @@ groups:
       - alert: ContainerMemoryNearLimit
         expr: |
           (
-            container_memory_working_set_bytes{container_label_com_docker_compose_service=~"gateway|ingestion|retrieval|llm"}
-            / container_spec_memory_limit_bytes{container_label_com_docker_compose_service=~"gateway|ingestion|retrieval|llm"}
+            aid_container_memory_usage_bytes{service=~"gateway|ingestion|retrieval|llm"}
+            / (aid_container_memory_limit_bytes{service=~"gateway|ingestion|retrieval|llm"} > 0)
           ) > 0.85
-          and container_spec_memory_limit_bytes > 0
         for: 1m
         labels:
           severity: warning
-          service: "{{ $labels.container_label_com_docker_compose_service }}"
         annotations:
-          summary: "{{ $labels.container_label_com_docker_compose_service }} is using {{ $value | humanizePercentage }} of its memory limit"
-          description: "Container working-set memory has been above 85% of the configured limit for 1 minute."
+          summary: "{{ $labels.service }} is using {{ $value | humanizePercentage }} of its memory limit"
+          description: "Container memory has been above 85% of the configured limit for 1 minute."
 
   - name: knowledgeai-retrieval-quality
     rules:

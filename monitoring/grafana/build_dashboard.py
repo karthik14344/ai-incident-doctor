@@ -44,8 +44,8 @@ panels = [
     ], "short", 12, 8),
     ts(5, "Memory per service", [
         ("knowledgeai_process_resident_memory_bytes", "RSS {{service}}"),
-        ('container_memory_working_set_bytes{container_label_com_docker_compose_service=~"gateway|ingestion|retrieval|llm"}',
-         "container {{container_label_com_docker_compose_service}}"),
+        ('aid_container_memory_usage_bytes{service=~"gateway|ingestion|retrieval|llm"}', "container {{service}}"),
+        ('aid_container_memory_limit_bytes{service=~"gateway|ingestion|retrieval|llm"}', "limit {{service}}"),
     ], "bytes", 0, 16),
     ts(6, "Embedding fallback counter", [
         ("knowledgeai_embedding_fallback_total", "total {{service}}"),

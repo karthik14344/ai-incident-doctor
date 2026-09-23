@@ -289,8 +289,17 @@
         },
         {
           "refId": "B",
-          "expr": "container_memory_working_set_bytes{container_label_com_docker_compose_service=~\"gateway|ingestion|retrieval|llm\"}",
-          "legendFormat": "container {{container_label_com_docker_compose_service}}",
+          "expr": "aid_container_memory_usage_bytes{service=~\"gateway|ingestion|retrieval|llm\"}",
+          "legendFormat": "container {{service}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "aid_container_memory_limit_bytes{service=~\"gateway|ingestion|retrieval|llm\"}",
+          "legendFormat": "limit {{service}}",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"

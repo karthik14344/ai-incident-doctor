@@ -254,11 +254,12 @@ services:
 
   cadvisor:
     <<: *restart
-    image: gcr.io/cadvisor/cadvisor:v0.52.1
+    image: ghcr.io/google/cadvisor:v0.53.0
     privileged: true
     devices: ["/dev/kmsg"]
     command:
-      - --docker_only=true
+      - --docker_only=false
+      - --raw_cgroup_prefix_whitelist=/docker/
       - --housekeeping_interval=10s
       - --enable_metrics=cpu,memory,oom_event
       - --store_container_labels=true
@@ -275,6 +276,19 @@ services:
       interval: 15s
       timeout: 5s
       retries: 3
+
+  container-exporter:
+    # Per-container memory, limit, restarts and OOM kills from the Docker API.
+    # cAdvisor stays for host-level series but cannot see containers under
+    # Docker 29's containerd image store (DECISIONS.md).
+    <<: *restart
+    image: ${IMAGE_PREFIX:-aid}/container-exporter:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    build: { <<: *patient-build, dockerfile: container_exporter/Dockerfile }
+    environment:
+      COMPOSE_PROJECT: aid
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    mem_limit: 64m
 
   # ------------------------------------------------------------ ML ops
   minio:
