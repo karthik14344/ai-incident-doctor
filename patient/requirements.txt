@@ -1,0 +1,26 @@
+# KnowledgeAI backend dependencies
+#
+# Install with:  pip install -r requirements.txt
+
+# Web framework shared by all five microservices
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart          # multipart/form-data: PDF upload + voice recordings
+
+# HTTP client used for service-to-service calls, Ollama, VEXYL-STT and Hindi-TTS
+httpx
+
+# Vector store and document parsing
+chromadb
+pypdf
+
+# Optional: only needed by generate_greetings_pdf.py
+reportlab
+
+# CPU / memory sampling for the Week-4 evaluation's resource metrics.
+# GPU figures come from nvidia-smi, which needs no Python package.
+psutil
+
+# Testing
+pytest
