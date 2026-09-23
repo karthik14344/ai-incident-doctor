@@ -570,7 +570,7 @@ async def chat_stream(req: ChatRequest):
         stream_failed = False
 
         try:
-            async with telemetry.async_client("gateway", timeout=120.0) as client:
+            async with telemetry.async_client("gateway", timeout=3.0) as client:
                 async with client.stream("POST", f"{LLM_SERVICE_URL}/generate", json=llm_payload) as response:
                     async for line in response.aiter_lines():
                         if line.strip().startswith("data: "):
