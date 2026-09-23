@@ -48,3 +48,9 @@ def test_blank_questions_are_refused_before_retrieval():
     from api_gateway.app import guardrails
 
     assert guardrails.validate_input("   ").allowed is False
+
+
+def test_unset_settings_fall_back_to_the_default():
+    from common import config
+
+    assert config.setting("KNOWLEDGEAI_SURELY_UNSET_SETTING", "fallback") == "fallback"
