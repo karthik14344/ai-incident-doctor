@@ -1,0 +1,44 @@
+schema: '2.0'
+stages:
+  build_kb:
+    cmd: python patient/kb/build_kb.py
+    deps:
+    - path: patient/evaluation/corpus.py
+      hash: md5
+      md5: be7105910fe815f3eefd3a9ce18cdf50
+      size: 10572
+    - path: patient/evaluation/prepare_kb.py
+      hash: md5
+      md5: ec0ae5ebacb4bfb9da903ef25c75d3f7
+      size: 4820
+    - path: patient/ingestion_service/app/chunker.py
+      hash: md5
+      md5: d9298f83319689b071130aa6a632d336
+      size: 1127
+    - path: patient/ingestion_service/app/vector_store.py
+      hash: md5
+      md5: 9eda34c82bdda935288525b6c341413c
+      size: 5498
+    - path: patient/kb/build_kb.py
+      hash: md5
+      md5: 59e61a730082202a0283f89af67fefa7
+      size: 6026
+    outs:
+    - path: kb/documents
+      hash: md5
+      md5: dcd1ef5ce3aac072a146558ed8fae322.dir
+      size: 5883
+      nfiles: 10
+    - path: kb/index
+      hash: md5
+      md5: 19d9d2d6db6d115a927dab4dd32608af.dir
+      size: 1134920
+      nfiles: 9
+    - path: kb/manifest.json
+      hash: md5
+      md5: f74bbcd776082b7c6c1984b7e474da3e
+      size: 653
+    - path: kb/records.json
+      hash: md5
+      md5: af785fc24e7b29c2201bd18684581a02
+      size: 14140

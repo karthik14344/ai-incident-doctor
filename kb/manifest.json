@@ -1,0 +1,30 @@
+{
+  "kb_version": "38ba55c908d1",
+  "built_at": "2026-09-23T04:51:57.053809+00:00",
+  "embedding_model": "nomic-embed-text",
+  "chunk_size": 800,
+  "chunk_overlap": 100,
+  "collections": {
+    "default": {
+      "documents": 10,
+      "chunks": 21
+    },
+    "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+    }
+  },
+  "documents": [
+    "academic_calendar.pdf",
+    "attendance_policy.pdf",
+    "exam_policy.pdf",
+    "grievance_redressal.pdf",
+    "hostel_rules.pdf",
+    "lab_safety.pdf",
+    "library_rules.pdf",
+    "placement_policy.pdf",
+    "scholarship_policy.pdf",
+    "welcome_guide.txt"
+  ],
+  "embedding_fallbacks_during_build": 0
+}

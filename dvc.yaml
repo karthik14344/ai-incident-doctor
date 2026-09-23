@@ -1,0 +1,21 @@
+# The knowledge base is data, so it is versioned by DVC rather than git.
+#   dvc repro build_kb   rebuild (needs Ollama for embeddings)
+#   dvc push / dvc pull  sync with the MinIO remote in the compose stack
+# kb/manifest.json is small and stays in git (cache: false), so the live
+# kb_version is readable straight from the commit history.
+stages:
+  build_kb:
+    cmd: python patient/kb/build_kb.py
+    deps:
+      - patient/kb/build_kb.py
+      - patient/evaluation/corpus.py
+      - patient/evaluation/prepare_kb.py
+      - patient/ingestion_service/app/chunker.py
+      - patient/ingestion_service/app/vector_store.py
+    outs:
+      - kb/documents
+      - kb/index
+      - kb/records.json
+    metrics:
+      - kb/manifest.json:
+          cache: false

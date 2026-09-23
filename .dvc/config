@@ -1,0 +1,5 @@
+[core]
+    remote = minio
+    autostage = true
+['remote "minio"']
+    url = s3://dvc/knowledge-base
