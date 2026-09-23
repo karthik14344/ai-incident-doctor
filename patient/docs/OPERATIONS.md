@@ -37,3 +37,7 @@ Every deploy is tagged with its git SHA. The deploy script rolls back automatica
 ## Ollama model list
 
 The Settings page lists the models Ollama has installed. Only llama3.2 is used for chat by default; the Model Comparison page can benchmark the others.
+
+## Backups
+
+The SQLite database lives in the appdata volume and the vector index in chroma-data. Snapshot both volumes together so documents and vectors stay consistent.
