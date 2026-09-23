@@ -67,6 +67,7 @@ def resolve_model_tag(model: str) -> str:
     name = (model or "").strip()
     return name if ":" in name else f"{name}:latest"
 
+# Greetings skip retrieval context entirely - there is nothing in the documents to cite.
 def is_greeting_question(q: str) -> bool:
     clean_q = q.strip().lower().strip("!.,?")
     greetings = {"hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "hi there", "hello there"}
