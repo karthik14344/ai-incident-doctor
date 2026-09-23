@@ -30,38 +30,10 @@ jobs:
         run: |
           pip install -r patient/requirements.txt
           if [ -f doctor/requirements.txt ]; then pip install -r doctor/requirements.txt; fi
-          pip install ruff==0.15.22 yamllint==1.37.1
+          pip install -r requirements-dev.txt
 
-      - name: ruff
-        run: ruff check .
-
-      - name: yamllint
-        run: yamllint -c .yamllint.yml .
-
-      - name: patient tests
-        working-directory: patient
-        # conftest.py pins every service address; nothing is listening there.
-        run: python -m pytest -q -p no:cacheprovider
-
-      - name: alert-sink tests
-        working-directory: alert_sink
-        run: python -m pytest -q -p no:cacheprovider
-
-      - name: doctor tests
-        if: hashFiles('doctor/tests/**') != ''
-        run: python -m pytest -q -p no:cacheprovider doctor/tests
-
-      - name: promtool and amtool
-        run: |
-          docker run --rm --entrypoint sh -v "$PWD/monitoring/prometheus:/etc/prometheus" -w /etc/prometheus \
-            prom/prometheus:v3.5.0 -c "promtool check config prometheus.yml && promtool test rules alert.rules.test.yml"
-          docker run --rm --entrypoint amtool -v "$PWD/monitoring/alertmanager:/etc/alertmanager" \
-            prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.yml
-
-      - name: compose file is valid
-        run: |
-          cp .env.example .env
-          IMAGE_TAG=ci docker compose config --quiet
+      - name: Lint and test (the same script the local pipeline runs)
+        run: sh scripts/pipeline/verify.sh
 
   # Job 2: deploy. Only pushes to main, never pull requests, and only on the
   # self-hosted runner on the HP Pavilion (label "pavilion").
@@ -82,10 +54,10 @@ jobs:
       - name: Machine configuration
         run: cp "$AID_HOME/.env" .env
 
-      - name: Knowledge base
+      - name: Deploy (the same script the local pipeline runs)
+        env:
+          PIPELINE: github
+          DEPLOY_REASON: "github run ${{ github.run_id }} (${{ github.actor }})"
         run: |
           python3 -m pip install --user -q -r requirements-dev.txt
-          python3 -m dvc pull || python3 -m dvc repro build_kb
-
-      - name: Build, deploy, smoke test (rolls back on failure)
-        run: python3 deploy/deploy.py --reason "ci run ${{ github.run_id }} (${{ github.actor }})"
+          sh scripts/pipeline/deploy.sh "$GITHUB_SHA"

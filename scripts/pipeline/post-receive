@@ -1,0 +1,53 @@
+#!/bin/sh
+# post-receive hook of the local pipeline remote (runtime/pipeline.git).
+#
+# This tracked file is the real hook; scripts/pipeline/init_local_pipeline.sh
+# copies it into the bare repo, and verify.sh fails if the installed copy has
+# drifted from this one.
+#
+# For a push to main it runs job 1 (verify.sh) and, only if that passed, job 2
+# (deploy.sh <sha>) - synchronously, so `git push` returns when the deploy is
+# done, bounded by PIPELINE_TIMEOUT_S. All output is tee'd to
+# runtime/pipeline-logs/<sha>.log and the log path is printed on success and on
+# failure, so a stuck or broken build is diagnosable.
+#
+# The pipeline ends at the deploy record. It never calls the incident doctor.
+
+# Inside a hook GIT_DIR points at the bare repo; the jobs need the workspace.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_QUARANTINE_PATH GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES
+
+HOOKS_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(cd "$HOOKS_DIR/../../.." && pwd)"      # runtime/pipeline.git/hooks -> repo root
+TIMEOUT="${PIPELINE_TIMEOUT_S:-2400}"
+ZERO=0000000000000000000000000000000000000000
+
+while read -r old new ref; do
+  [ "$ref" = "refs/heads/main" ] || continue
+  [ "$new" = "$ZERO" ] && continue
+
+  mkdir -p "$REPO/runtime/pipeline-logs"
+  LOG="$REPO/runtime/pipeline-logs/$new.log"
+  STATUS="$LOG.status"
+  STARTED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "pipeline: $new - log: $LOG"
+
+  {
+    cd "$REPO" \
+      && timeout "$TIMEOUT" sh scripts/pipeline/verify.sh \
+      && PIPELINE=local timeout "$TIMEOUT" sh scripts/pipeline/deploy.sh "$new"
+    echo $? > "$STATUS"
+  } 2>&1 | tee "$LOG"
+
+  CODE="$(cat "$STATUS" 2>/dev/null || echo 1)"
+  FINISHED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '{"sha": "%s", "ref": "%s", "pipeline": "local", "started": "%s", "finished": "%s", "exit": %s, "log": "%s"}\n' \
+    "$new" "$ref" "$STARTED" "$FINISHED" "$CODE" "runtime/pipeline-logs/$new.log" >> "$REPO/runtime/pipeline_runs.jsonl"
+  if [ "$CODE" = "0" ]; then
+    echo "pipeline: SUCCESS for $new - log: $LOG"
+  elif [ "$CODE" = "124" ]; then
+    echo "pipeline: TIMED OUT after ${TIMEOUT}s for $new - log: $LOG"
+  else
+    echo "pipeline: FAILED (exit $CODE) for $new - log: $LOG"
+  fi
+done
+exit 0

@@ -99,13 +99,28 @@ def test_since_a_clock_time_starts_before_it():
 def test_no_deploy_or_pipeline_code_ever_calls_the_doctor():
     """A git push must never wake the doctor. Nothing in deploy/ may reference
     the doctor's entry points or its URL."""
-    for root, _, files in os.walk(os.path.join(REPO_ROOT, "deploy")):
-        for name in files:
-            if not name.endswith((".py", ".sh")) and name != "post-receive":
-                continue
-            text = open(os.path.join(root, name), encoding="utf-8").read()
-            for forbidden in ("/incident", "/ticket", "DOCTOR_URL", "DOCTOR_INCIDENT_URL", "app.replay"):
-                assert forbidden not in text, f"{name} references {forbidden}"
+    checked = 0
+    for top in ("deploy", os.path.join("scripts", "pipeline")):
+        for root, _, files in os.walk(os.path.join(REPO_ROOT, top)):
+            for name in files:
+                if not name.endswith((".py", ".sh")) and name != "post-receive":
+                    continue
+                checked += 1
+                text = open(os.path.join(root, name), encoding="utf-8").read()
+                for forbidden in ("/incident", "/ticket", "DOCTOR_URL", "DOCTOR_INCIDENT_URL", "app.replay"):
+                    assert forbidden not in text, f"{name} references {forbidden}"
+    assert checked >= 5  # deploy.py, verify.sh, deploy.sh, post-receive, init script
+
+
+def test_deploy_records_say_which_pipeline_made_them():
+    text = open(os.path.join(REPO_ROOT, "deploy", "deploy.py"), encoding="utf-8").read()
+    assert '"pipeline": args.pipeline' in text
+    assert 'choices=["local", "github", "manual"]' in text
+    hook = open(os.path.join(REPO_ROOT, "scripts", "pipeline", "post-receive"), encoding="utf-8").read()
+    assert "PIPELINE=local" in hook
+    wf = open(os.path.join(REPO_ROOT, ".github", "workflows", "ci.yml"), encoding="utf-8").read()
+    assert "PIPELINE: github" in wf
+    assert "scripts/pipeline/verify.sh" in wf and "scripts/pipeline/deploy.sh" in wf
 
 
 def test_the_workflow_never_calls_the_doctor():

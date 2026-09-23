@@ -16,7 +16,10 @@ The deploy log (runtime/deploys.jsonl, or DEPLOY_LOG_PATH) is what the incident
 doctor uses to narrow down which change caused a failure:
 
     {"ts", "git_sha", "short_sha", "previous_sha", "commits", "services_changed",
-     "kb_version", "outcome", "duration_s", "reason", "host"}
+     "kb_version", "outcome", "duration_s", "reason", "pipeline", "host"}
+
+`pipeline` is local (the bare-remote stand-in), github (Actions on the Pavilion
+runner) or manual (run by hand). Called by scripts/pipeline/deploy.sh.
 """
 
 import argparse
@@ -206,6 +209,9 @@ def append_record(record: dict) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--reason", default="manual")
+    ap.add_argument("--pipeline", choices=["local", "github", "manual"], default="manual",
+                    help="which pipeline produced this deploy; recorded so results from the local "
+                         "stand-in and from GitHub Actions are never mixed silently")
     ap.add_argument("--allow-dirty", action="store_true", help="for local experiments only")
     ap.add_argument("--no-build", action="store_true")
     args = ap.parse_args()
@@ -262,6 +268,7 @@ def main() -> int:
         "smoke_test": smoke,
         "duration_s": round(time.time() - started, 1),
         "reason": args.reason,
+        "pipeline": args.pipeline,
         "host": socket.gethostname(),
     }
     append_record(record)

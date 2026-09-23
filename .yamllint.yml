@@ -3,6 +3,7 @@ ignore: |
   **/node_modules/
   .venv/
   kb/
+  runtime/
   patient/frontend/
 rules:
   line-length: { max: 160 }
