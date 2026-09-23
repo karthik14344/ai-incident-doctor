@@ -199,15 +199,17 @@ _add(Fault(
     acceptance_test=os.path.join(ACCEPTANCE, "test_f6_tight_timeout.py"),
 ))
 
-# 7. Data: knowledge base rebuilt with the wrong embedding model -----------------
+# 7. Data: a knowledge-base version with most documents missing ------------------
+PARTIAL_KB_DOCS = "attendance_policy.pdf,exam_policy.pdf,hostel_rules.pdf,welcome_guide.txt"
 _add(Fault(
-    id="f7_kb_wrong_embeddings", name="Knowledge base index rebuilt with the wrong embedding model",
+    id="f7_kb_missing_docs", name="Knowledge-base version published with 6 of 10 documents missing",
     delivery="data", incident_class="data_issue", component="knowledge_base",
     acceptable_components=["chroma", "retrieval"],
-    true_cause=("A knowledge-base version whose index was embedded with llama3.2 (3072-dim) instead of "
-                "nomic-embed-text (768-dim) was loaded. Query vectors no longer match the index; the vector "
-                "store silently pads them, similarities become noise and most questions are refused as out of "
-                "scope. No code or infrastructure changed."),
-    expected_fix="Reload the previous knowledge-base version (nomic-embed-text index) with kb-loader --force.",
-    expected_alerts=["ChatAnswersRefused", "ZeroChunkRetrievals"],
+    true_cause=("A knowledge-base version built from only 4 of the 10 policy documents (library, scholarship, "
+                "lab safety, placement, grievance and calendar missing) was loaded into the live index. "
+                "Questions about the missing policies find nothing relevant and are refused as out of scope. "
+                "No code or infrastructure changed."),
+    expected_fix="Reload the previous complete knowledge-base version with kb-loader --force (and rebuild "
+                 "the KB from the full corpus before publishing).",
+    expected_alerts=["ChatAnswersRefused"],
 ))
