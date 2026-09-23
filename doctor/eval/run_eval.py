@@ -201,6 +201,16 @@ def main(argv=None) -> int:
     cache: Dict[str, Any] = {}
     skipped = []
     done_keys = {}
+    # Resume: rows already in runs.jsonl (same out dir) are reused, not re-run.
+    previous = {}
+    if os.path.exists(runs_path):
+        for line in open(runs_path, encoding="utf-8"):
+            try:
+                r = json.loads(line)
+            except ValueError:
+                continue
+            previous[(r["arm"], r["model"], r["incident"], r["repeat"])] = {k: v for k, v in r.items() if k != "report"}
+        print(f"resuming: {len(previous)} runs already recorded in {runs_path}")
 
     # deterministic baseline and retrieval-only numbers
     baseline_rows, retrieval_rows = [], []
@@ -233,6 +243,10 @@ def main(argv=None) -> int:
                 key = (arm, provider.label, inc["name"], rep)
                 if key in done_keys:  # the ablation's full arm doubles as a model-comparison row
                     rows.append({**done_keys[key], "comparison": comparison})
+                    continue
+                if key in previous:
+                    done_keys[key] = {**previous[key], "comparison": comparison}
+                    rows.append(done_keys[key])
                     continue
                 report = reasoner.diagnose(inc["bundle"], arm=arm, providers=[provider],
                                            verify_fix=not args.no_verify and cfg.get("verify", True),

@@ -235,5 +235,55 @@ def index_commits(commits: List[Dict[str, Any]], settings: Settings = SETTINGS) 
     return idx
 
 
-def incident_index(settings: Settings = SETTINGS, name: str = "incidents") -> Index:
-    return Index(name, settings)
+class SmallIndex:
+    """Exact cosine search over a handful of documents, stored as JSON.
+
+    Past incidents number in the tens. ChromaDB lost the HNSW segment of such a
+    small collection mid-evaluation ("Nothing found on disk"), so this index keeps
+    the vectors in one JSON file and searches them exhaustively - deterministic,
+    and nothing that can be half-written.
+    """
+
+    def __init__(self, name: str, settings: Settings = SETTINGS):
+        self.settings = settings
+        self.path = os.path.join(settings.data_dir, f"{name}.json")
+        self.items: Dict[str, Dict[str, Any]] = {}
+        if os.path.exists(self.path):
+            import json
+            with open(self.path, encoding="utf-8") as fh:
+                self.items = json.load(fh)
+
+    def _save(self) -> None:
+        import json
+        import tempfile
+        os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        fd, tmp = tempfile.mkstemp(dir=os.path.dirname(self.path), prefix=".idx.")
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(self.items, fh)
+        os.replace(tmp, self.path)
+
+    def ids(self) -> set:
+        return set(self.items)
+
+    def add(self, ids: List[str], texts: List[str], metadatas: List[Dict[str, Any]]) -> int:
+        todo = [(i, t, m) for i, t, m in zip(ids, texts, metadatas) if i not in self.items]
+        if not todo:
+            return 0
+        vectors = embed([t for _, t, _ in todo], settings=self.settings)
+        for (i, t, m), v in zip(todo, vectors):
+            self.items[i] = {"text": t, "meta": m, "vector": v}
+        self._save()
+        return len(todo)
+
+    def query(self, text: str, k: int = 5, where: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        if not self.items:
+            return []
+        vec = embed([text], query=True, settings=self.settings)[0]
+        scored = [{"id": i, "text": it["text"], "meta": it["meta"], "similarity": round(cosine(vec, it["vector"]), 4)}
+                  for i, it in self.items.items()
+                  if not where or all(it["meta"].get(key) == val for key, val in where.items())]
+        return sorted(scored, key=lambda h: -h["similarity"])[:k]
+
+
+def incident_index(settings: Settings = SETTINGS, name: str = "incidents") -> SmallIndex:
+    return SmallIndex(name, settings)
