@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 
+# Chunk sizes are in characters, not tokens; token_count is a whitespace word count.
 def create_chunks(pages_data: List[Dict[str, Any]], chunk_size: int = 800, chunk_overlap: int = 100) -> List[Dict[str, Any]]:
     """
     Chunks page text with specified chunk size and overlap.
