@@ -26,8 +26,10 @@ patient/chroma_data/
 runtime/
 doctor/data/
 
-# Uploaded documents get hash-prefixed names; only the seed documents are tracked
-patient/storage/documents/doc_*
+# Runtime document store (uploads and seed output). The knowledge-base
+# documents are versioned by DVC under kb/, not by git.
+patient/storage/documents/*
+!patient/storage/documents/.gitkeep
 
 # Editors / OS
 .vscode/
