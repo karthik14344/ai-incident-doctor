@@ -17,3 +17,7 @@ The live knowledge-base version is the `kb_version` label on `knowledgeai_build_
 ## Slow first answer after a restart
 
 The first chat after Ollama loads a model can take tens of seconds; this is model load time, not a fault. Subsequent answers are fast.
+
+## Uploading documents
+
+Uploads go through the Documents page. Processing runs in the ingestion service; the document status moves from uploaded to processed.
