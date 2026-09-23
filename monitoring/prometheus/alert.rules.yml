@@ -46,48 +46,51 @@ groups:
       - alert: HighErrorRate
         expr: |
           (
-            sum by (service) (rate(knowledgeai_http_requests_total{status=~"5..", endpoint!="/metrics"}[2m]))
-            / sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[2m]))
+            sum by (service) (rate(knowledgeai_http_requests_total{status=~"5..", endpoint!="/metrics"}[1m]))
+            / sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[1m]))
           ) > 0.05
-        # 1 m: a deploy recreating containers causes ~20 s of errors and must not page.
-        for: 1m
+        # A deploy recreating containers causes ~20 s of errors. With a 1-minute
+        # window and 2 minutes of "for", errors must persist well beyond that.
+        for: 2m
         labels:
           severity: warning
         annotations:
           summary: "{{ $labels.service }} is answering {{ $value | humanizePercentage }} of requests with 5xx"
-          description: "Share of 5xx responses from {{ $labels.service }} over the last 2 minutes is above 5%."
+          description: "Share of 5xx responses from {{ $labels.service }} has stayed above 5% for 2 minutes."
 
       - alert: ChatRequestsFailing
         expr: |
           (
-            sum(rate(knowledgeai_chat_answers_total{outcome="error"}[3m]))
-            / sum(rate(knowledgeai_chat_answers_total[3m]))
-          ) > 0.02
-        for: 30s
+            sum(rate(knowledgeai_chat_answers_total{outcome="error"}[2m]))
+            / sum(rate(knowledgeai_chat_answers_total[2m]))
+          ) > 0.05
+        for: 2m
         labels:
           severity: warning
           service: gateway
         annotations:
           summary: "{{ $value | humanizePercentage }} of chat requests ended in an error"
-          description: "Chat requests whose answer stream ended in an error, over the last 3 minutes, above 2%."
+          description: "Share of chat answers that ended in an error has stayed above 5% for 2 minutes."
 
       - alert: DownstreamCallFailures
-        expr: sum by (service, target) (increase(knowledgeai_downstream_failures_total[2m])) > 0
-        for: 20s
+        # Failures in every 30 s window for a full minute: a deploy's ~20 s blip
+        # does not qualify, an outage or a steady stream of failures does.
+        expr: sum by (service, target) (rate(knowledgeai_downstream_failures_total[30s])) > 0
+        for: 1m
         labels:
           severity: warning
         annotations:
           summary: "calls from {{ $labels.service }} to {{ $labels.target }} are failing"
-          description: "{{ $value | printf \"%.0f\" }} failed calls from {{ $labels.service }} to {{ $labels.target }} in the last 2 minutes."
+          description: "Calls from {{ $labels.service }} to {{ $labels.target }} have kept failing for at least a minute ({{ $value | printf \"%.2f\" }} failures/s)."
 
       - alert: OllamaCallFailures
-        expr: sum by (service, operation) (increase(knowledgeai_ollama_failures_total{reason!="fallback"}[2m])) > 0
-        for: 20s
+        expr: sum by (service, operation) (rate(knowledgeai_ollama_failures_total{reason!="fallback"}[30s])) > 0
+        for: 1m
         labels:
           severity: warning
         annotations:
           summary: "Ollama {{ $labels.operation }} calls from {{ $labels.service }} are failing"
-          description: "{{ $value | printf \"%.0f\" }} failed Ollama {{ $labels.operation }} calls in the last 2 minutes."
+          description: "Ollama {{ $labels.operation }} calls have kept failing for at least a minute ({{ $value | printf \"%.2f\" }} failures/s)."
 
   - name: knowledgeai-latency-and-load
     rules:
@@ -104,6 +107,7 @@ groups:
         for: 1m
         labels:
           severity: warning
+          path: generation
         annotations:
           summary: "p95 latency of {{ $labels.service }} {{ $labels.endpoint }} is {{ $value | printf \"%.1f\" }}s"
           description: "95th percentile request duration over the last 2 minutes is above the 40 s threshold."
@@ -118,6 +122,7 @@ groups:
         for: 1m
         labels:
           severity: warning
+          path: retrieval
         annotations:
           summary: "p95 latency of {{ $labels.service }} {{ $labels.endpoint }} is {{ $value | printf \"%.1f\" }}s"
           description: "95th percentile request duration over the last 2 minutes is above the 5 s threshold."

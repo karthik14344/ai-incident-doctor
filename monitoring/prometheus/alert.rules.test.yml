@@ -96,3 +96,27 @@ tests:
             exp_annotations:
               summary: "66.67% of chat questions were refused as outside the documents"
               description: "Share of chat answers refused by the scope guardrail over the last 5 minutes is above 30%."
+
+  - name: a 20-second burst of failed calls (a deploy) does not page
+    interval: 10s
+    input_series:
+      - series: 'knowledgeai_downstream_failures_total{service="gateway", target="retrieval", job="gateway"}'
+        values: '0 0 0 3 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6'
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: DownstreamCallFailures
+        exp_alerts: []
+
+  - name: calls that keep failing do page
+    interval: 10s
+    input_series:
+      - series: 'knowledgeai_downstream_failures_total{service="gateway", target="retrieval", job="gateway"}'
+        values: '0+2x20'
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: DownstreamCallFailures
+        exp_alerts:
+          - exp_labels: { severity: warning, service: gateway, target: retrieval }
+            exp_annotations:
+              summary: "calls from gateway to retrieval are failing"
+              description: "Calls from gateway to retrieval have kept failing for at least a minute (0.20 failures/s)."

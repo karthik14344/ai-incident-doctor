@@ -11,7 +11,7 @@ step "patient tests" sh -c "cd patient && \"$PY\" -m pytest -q -p no:cacheprovid
 step "alert-sink tests" sh -c "cd alert_sink && \"$PY\" -m pytest -q -p no:cacheprovider"
 step "doctor tests" "$PY" -m pytest -q -p no:cacheprovider doctor/tests
 step promtool docker run --rm --entrypoint sh -v "$HOST_PWD/monitoring/prometheus:/etc/prometheus" \
-  -w /etc/prometheus prom/prometheus:v3.5.0 -c "promtool check config prometheus.yml && promtool test rules alert.rules.test.yml"
+  -w /etc/prometheus prom/prometheus:v3.5.0 -c "promtool check config prometheus.yml && promtool check rules alert.rules.yml && promtool test rules alert.rules.test.yml"
 step amtool docker run --rm --entrypoint amtool -v "$HOST_PWD/monitoring/alertmanager:/etc/alertmanager" \
   prom/alertmanager:v0.28.1 check-config /etc/alertmanager/alertmanager.yml
 [ -f .env ] || cp .env.example .env
