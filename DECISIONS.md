@@ -396,3 +396,19 @@ applied to `main` by hand.
   in flight did not saturate the model (p95 ~12 s): Ollama runs several requests in
   parallel. The first f2 run is recorded as "did not reproduce". At 4/s with 96 in
   flight, throughput caps at 1.37/s and p95 reaches 75-88 s.
+- **D-75. Push faults must pass the linter too.** The first typo fault read an
+  undefined name, which ruff's pyflakes check in the pipeline rejects - it could
+  never have shipped. It is now an attribute typo (`req.qestion`), which no linter
+  sees and which fails only at run time. `faults.selfcheck` runs ruff with the
+  repository config on every faulty copy, as well as the tests.
+- **D-76. The doctor searches only the patient's changes.** Replaying the first
+  timeout-regression incident showed the guilty commit ranked 11th of 45 in the
+  time filter, below ten commits to the doctor and its docs (same repository, same
+  deploys, and naturally full of "timeout", "fallback", "embedding"). The doctor's
+  own code and tooling (`doctor/`, `loadgen/`) are now outside the system under
+  diagnosis, and lexical overlap is length-normalised (divided by the square root
+  of the commit's distinct terms). The guilty commit then ranks 1st of 26. **That
+  incident was used to find the problem, so it is not a held-out test for
+  retrieval**; RESULTS.md reports it separately from incidents recorded after the
+  change. The most-recent-deploy baseline uses the same scope, so it is not
+  handicapped by it.
