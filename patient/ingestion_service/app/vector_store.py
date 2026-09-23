@@ -2,9 +2,20 @@ import os
 import chromadb
 from typing import List, Dict, Any
 
-CHROMA_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "chroma_data")
+from common import config
+
+# Local runs keep the original embedded store in chroma_data/. In compose the
+# ingestion, retrieval and gateway containers share one ChromaDB server instead
+# (CHROMA_HOST set): three processes opening the same on-disk store is unsafe.
+CHROMA_DATA_DIR = config.setting(
+    "CHROMA_DATA_DIR",
+    os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "chroma_data"),
+)
 
 def get_chroma_client():
+    host = config.setting("CHROMA_HOST")
+    if host:
+        return chromadb.HttpClient(host=host, port=int(config.setting("CHROMA_PORT", "8000")))
     os.makedirs(CHROMA_DATA_DIR, exist_ok=True)
     return chromadb.PersistentClient(path=CHROMA_DATA_DIR)
 
