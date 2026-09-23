@@ -9,8 +9,11 @@
 # Ollama is NOT here. The patient reaches it over the network at
 # OLLAMA_BASE_URL - on the Pavilion that is this laptop's LAN address.
 #
-# Images are tagged with the git SHA being deployed (IMAGE_TAG), never only
-# "latest". deploy/deploy.py sets IMAGE_TAG, KB_VERSION and APP_GIT_SHA; to
+# Images are tagged with a git SHA, never only "latest". The patient services
+# carry the SHA being deployed (IMAGE_TAG). The doctor, alert-sink,
+# container-exporter, mlflow and frontend carry the SHA of the last commit that
+# changed their own code (<NAME>_IMAGE_TAG, set by deploy/deploy.py), so a patient
+# deploy does not restart the doctor in the middle of a diagnosis. deploy/deploy.py sets IMAGE_TAG, KB_VERSION and APP_GIT_SHA; to
 # bring the stack up by hand:
 #   IMAGE_TAG=$(git rev-parse --short HEAD) APP_GIT_SHA=$(git rev-parse HEAD) docker compose up -d --build
 
@@ -137,7 +140,7 @@ services:
 
   frontend:
     <<: *restart
-    image: ${IMAGE_PREFIX:-aid}/frontend:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    image: ${IMAGE_PREFIX:-aid}/frontend:${FRONTEND_IMAGE_TAG:-${IMAGE_TAG:?set IMAGE_TAG to a git SHA}}
     build: { <<: *patient-build, dockerfile: patient/frontend/Dockerfile }
     environment:
       GATEWAY_UPSTREAM: http://gateway:8000
@@ -186,7 +189,7 @@ services:
 
   alert-sink:
     <<: *restart
-    image: ${IMAGE_PREFIX:-aid}/alert-sink:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    image: ${IMAGE_PREFIX:-aid}/alert-sink:${ALERT_SINK_IMAGE_TAG:-${IMAGE_TAG:?set IMAGE_TAG to a git SHA}}
     build: { <<: *patient-build, dockerfile: alert_sink/Dockerfile }
     environment:
       # Every firing alert is pushed here as soon as it is logged.
@@ -286,7 +289,7 @@ services:
     # cAdvisor stays for host-level series but cannot see containers under
     # Docker 29's containerd image store (DECISIONS.md).
     <<: *restart
-    image: ${IMAGE_PREFIX:-aid}/container-exporter:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    image: ${IMAGE_PREFIX:-aid}/container-exporter:${CONTAINER_EXPORTER_IMAGE_TAG:-${IMAGE_TAG:?set IMAGE_TAG to a git SHA}}
     build: { <<: *patient-build, dockerfile: container_exporter/Dockerfile }
     environment:
       COMPOSE_PROJECT: aid
@@ -327,7 +330,7 @@ services:
 
   mlflow:
     <<: *restart
-    image: ${IMAGE_PREFIX:-aid}/mlflow:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    image: ${IMAGE_PREFIX:-aid}/mlflow:${MLFLOW_IMAGE_TAG:-${IMAGE_TAG:?set IMAGE_TAG to a git SHA}}
     build: { <<: *patient-build, dockerfile: monitoring/mlflow/Dockerfile }
     environment:
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000
@@ -347,7 +350,7 @@ services:
     # volume. Reasoning goes to DOCTOR_PROVIDER (a cloud API), so it keeps
     # working when the patient's Ollama is what broke.
     <<: [*restart, *host-gateway]
-    image: ${IMAGE_PREFIX:-aid}/doctor:${IMAGE_TAG:?set IMAGE_TAG to a git SHA}
+    image: ${IMAGE_PREFIX:-aid}/doctor:${DOCTOR_IMAGE_TAG:-${IMAGE_TAG:?set IMAGE_TAG to a git SHA}}
     build: { <<: *patient-build, dockerfile: doctor/Dockerfile }
     environment:
       DOCTOR_PROMETHEUS_URL: http://prometheus:9090

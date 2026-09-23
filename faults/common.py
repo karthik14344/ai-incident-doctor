@@ -153,7 +153,8 @@ def compose(*args: str, extra_env: Optional[Dict[str, str]] = None, check: bool 
     live = deploy_record(last_deployed_sha()) if last_deployed_sha() else None
     env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
     if live:
-        env.update({"IMAGE_TAG": live["short_sha"], "APP_GIT_SHA": live["git_sha"], "KB_VERSION": live["kb_version"]})
+        env.update({"IMAGE_TAG": live["short_sha"], "APP_GIT_SHA": live["git_sha"], "KB_VERSION": live["kb_version"],
+                    **(live.get("component_tags") or {})})
     env.update(extra_env or {})
     r = subprocess.run(["docker", "compose", *args], cwd=REPO, capture_output=True, text=True, env=env)
     if check and r.returncode != 0:

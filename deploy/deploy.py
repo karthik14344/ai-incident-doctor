@@ -59,6 +59,29 @@ PATH_TO_SERVICES = [
 ]
 
 
+# Components that are not the patient get the SHA of the last commit that changed
+# their own code, so deploying the patient does not recreate them - above all the
+# doctor, which must not be restarted mid-diagnosis by the thing it watches.
+COMPONENT_TAGS = {
+    "DOCTOR_IMAGE_TAG": ["doctor", "loadgen", "patient/requirements.txt"],
+    "ALERT_SINK_IMAGE_TAG": ["alert_sink"],
+    "CONTAINER_EXPORTER_IMAGE_TAG": ["container_exporter"],
+    "MLFLOW_IMAGE_TAG": ["monitoring/mlflow"],
+    "FRONTEND_IMAGE_TAG": ["patient/frontend"],
+}
+SERVICE_TAG_VARS = {"doctor": "DOCTOR_IMAGE_TAG", "alert-sink": "ALERT_SINK_IMAGE_TAG",
+                    "container-exporter": "CONTAINER_EXPORTER_IMAGE_TAG", "mlflow": "MLFLOW_IMAGE_TAG",
+                    "frontend": "FRONTEND_IMAGE_TAG"}
+
+
+def component_tags(sha: str) -> Dict[str, str]:
+    tags = {}
+    for var, paths in COMPONENT_TAGS.items():
+        last = git("log", "-1", "--format=%H", sha, "--", *paths)
+        tags[var] = (last or sha)[:7]
+    return tags
+
+
 def read_env_file() -> Dict[str, str]:
     values = {}
     path = os.path.join(REPO, ".env")
@@ -244,7 +267,8 @@ def main() -> int:
     prev = last_good_sha()
     kb = kb_version()
     change = changed_services(prev, sha)
-    env = {"IMAGE_TAG": short, "APP_GIT_SHA": sha, "KB_VERSION": kb}
+    tags = component_tags(sha)
+    env = {"IMAGE_TAG": short, "APP_GIT_SHA": sha, "KB_VERSION": kb, **tags}
 
     outcome, error, smoke = "success", None, None
     try:
@@ -262,10 +286,12 @@ def main() -> int:
         outcome = "failed"
         if prev:
             print(f"deploy of {short} failed ({error}); rolling back to {prev[:7]}", flush=True)
-            prev_env = {"IMAGE_TAG": prev[:7], "APP_GIT_SHA": prev, "KB_VERSION": last_kb_version() or kb}
+            prev_env = {"IMAGE_TAG": prev[:7], "APP_GIT_SHA": prev, "KB_VERSION": last_kb_version() or kb,
+                        **component_tags(prev)}
             # Only services that have an image at the previous SHA can go back to it;
             # a service added by this deploy has none and is simply left alone.
-            restorable = [s for s in built_services() if image_exists(s, prev[:7])]
+            restorable = [s for s in built_services()
+                          if image_exists(s, prev_env.get(SERVICE_TAG_VARS.get(s, ""), prev[:7]))]
             if restorable:
                 rollback = compose(prev_env, "up", "-d", "--no-build", *restorable, check=False)
                 outcome = "rolled_back" if rollback.returncode == 0 else "rollback_failed"
@@ -281,6 +307,7 @@ def main() -> int:
         "services_changed": change["services"],
         "files_changed": change["files"][:200],
         "kb_version": kb,
+        "component_tags": tags,
         "outcome": outcome,
         "error": error,
         "smoke_test": smoke,
