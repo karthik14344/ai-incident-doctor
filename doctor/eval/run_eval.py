@@ -130,6 +130,7 @@ def aggregate(rows: List[Dict[str, Any]], repeats: int) -> Dict[str, Any]:
     out["fix_verified"] = spread(lambda rs: _mean([float(r["score"]["fix_verified"]) for r in code_rows(rs)]))
     out["fix_acceptance_passed"] = spread(
         lambda rs: _mean([float(r["score"]["fix_acceptance_passed"]) for r in code_rows(rs)]))
+    out["fix_edit_reversed"] = spread(lambda rs: _mean([float(r["score"].get("fix_edit_reversed", False)) for r in code_rows(rs)]))
     out["reasoning_s"] = spread(lambda rs: _mean([r["score"]["reasoning_s"] for r in rs]))
     out["tokens_per_incident"] = spread(lambda rs: _mean(
         [r["score"]["prompt_tokens"] + r["score"]["completion_tokens"] for r in rs]))

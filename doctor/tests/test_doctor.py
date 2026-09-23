@@ -277,3 +277,11 @@ def test_timestamps_of_any_precision_parse(value):
     from app.collectors import parse_ts
 
     assert abs(parse_ts(value) - parse_ts("2026-09-23T05:53:25Z")) < 1
+
+
+def test_a_reversed_edit_is_applied_the_other_way_and_flagged(tiny_repo):
+    repo, sha = tiny_repo  # the file contains TIMEOUT = 10.0
+    out = fixes.edits_to_diff(repo, sha, [{"file": "patient/svc/mod.py", "find": "TIMEOUT = 45.0",
+                                           "replace": "TIMEOUT = 10.0"}])
+    assert "+TIMEOUT = 45.0" in out["diff"]
+    assert any("REVERSED_EDIT_CORRECTED" in p for p in out["problems"])

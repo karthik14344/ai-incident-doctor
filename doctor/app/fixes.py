@@ -41,6 +41,12 @@ def apply_edits_to_text(text: str, edits: List[Dict[str, str]]) -> Tuple[str, Li
         if not find:
             problems.append("empty 'find'")
             continue
+        if find not in text and replace and replace in text:
+            # A common small-model mistake: copying the guilty diff's direction
+            # (old -> new) instead of writing the fix (new -> old). Applied inverted
+            # and recorded, so the rate at which this happens is reported.
+            find, replace = replace, find
+            problems.append(f"REVERSED_EDIT_CORRECTED: applied the edit the other way round ({find[:60]!r})")
         count = text.count(find)
         if count == 0:
             # Tolerate indentation drift: match ignoring leading/trailing whitespace per line.

@@ -40,6 +40,8 @@ def score(diagnosis: Optional[Dict[str, Any]], report: Dict[str, Any], truth: Di
         "fix_verified": verification.get("status") == "verified",
         "fix_acceptance_passed": bool((verification.get("acceptance") or {}).get("passed")),
         "fix_diff_applied": bool(verification.get("applied")),
+        "fix_edit_reversed": any("REVERSED_EDIT_CORRECTED" in p
+                                 for p in (((diagnosis or {}).get("fix") or {}).get("edit_problems") or [])),
         "prompt_tokens": (report.get("usage") or {}).get("prompt_tokens", 0),
         "completion_tokens": (report.get("usage") or {}).get("completion_tokens", 0),
         "cost_usd": (report.get("usage") or {}).get("cost_usd", 0.0),
