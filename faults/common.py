@@ -211,10 +211,14 @@ def wait_alert(since_iso: str, names: Optional[List[str]] = None, timeout: float
                stop: Optional[Callable[[], bool]] = None) -> Optional[Dict[str, Any]]:
     """First firing alert (of the given names, if any) received after since_iso."""
     deadline = now() + timeout
+    t_since = parse_ts(since_iso)
     while now() < deadline:
         for a in alerts_since(since_iso):
+            # Only alerts whose condition began after the break: one still firing
+            # from something earlier (a deploy blip) is not this fault's symptom.
+            began_after = bool(a.get("startsAt")) and parse_ts(a["startsAt"]) >= t_since - 2
             if a.get("status") == "firing" and (not names or a.get("alertname") in names) \
-                    and (a.get("labels") or {}).get("severity") in ("warning", "critical"):
+                    and (a.get("labels") or {}).get("severity") in ("warning", "critical") and began_after:
                 return a
         if stop and stop():
             return None
@@ -226,20 +230,32 @@ def doctor_url() -> str:
     return setting("DOCTOR_URL").rstrip("/")
 
 
-def wait_report(since_iso: str, timeout: float = 1200) -> Optional[Dict[str, Any]]:
-    """The doctor's incident opened after since_iso, once its report is finished.
-    (Read-only: the doctor was woken by the alert, not by this script.)"""
+def incident_id_for(alert: Dict[str, Any]) -> str:
+    """The id the doctor gives the incident this alert opens (same formula as
+    doctor/app/evidence.incident_id; duplicated so this script needs no doctor code)."""
+    import hashlib
+    key = f"{alert.get('alertname')}|{json.dumps(alert.get('labels', {}), sort_keys=True)}|{alert.get('startsAt')}"
+    return "inc_" + hashlib.sha1(key.encode()).hexdigest()[:10]
+
+
+def wait_report(alert: Dict[str, Any], timeout: float = 1500) -> Optional[Dict[str, Any]]:
+    """The finished report of the incident this alert opened (or was joined to).
+    Read-only: the doctor was woken by the alert, not by this script."""
     deadline = now() + timeout
-    since = parse_ts(since_iso)
+    own = incident_id_for(alert)
     while now() < deadline:
         try:
-            for inc in http(f"{doctor_url()}/api/incidents"):
-                started = inc.get("started")
-                if started and parse_ts(started) >= since - 1200 and inc.get("status") in ("ok", "failed"):
-                    detail = http(f"{doctor_url()}/api/incidents/{inc['id']}")
-                    received = (detail.get("incident") or {}).get("received_at")
-                    if received and parse_ts(received) >= since:
-                        return {"summary": inc, "detail": detail}
+            listing = http(f"{doctor_url()}/api/incidents")
+            target = next((i for i in listing if i["id"] == own), None)
+            if target is None:  # joined to an incident that was still open
+                for inc in listing:
+                    meta = (http(f"{doctor_url()}/api/incidents/{inc['id']}").get("incident") or {})
+                    if any(j.get("alertname") == alert.get("alertname") and j.get("startsAt") == alert.get("startsAt")
+                           for j in meta.get("joined_alerts", [])):
+                        target = inc
+                        break
+            if target and target.get("status") in ("ok", "failed", "interrupted"):
+                return {"summary": target, "detail": http(f"{doctor_url()}/api/incidents/{target['id']}")}
         except Exception:
             pass
         time.sleep(10)

@@ -49,7 +49,8 @@ groups:
             sum by (service) (rate(knowledgeai_http_requests_total{status=~"5..", endpoint!="/metrics"}[2m]))
             / sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[2m]))
           ) > 0.05
-        for: 30s
+        # 1 m: a deploy recreating containers causes ~20 s of errors and must not page.
+        for: 1m
         labels:
           severity: warning
         annotations:

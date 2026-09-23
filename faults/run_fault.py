@@ -204,7 +204,7 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
             timeline["unnoticed_s"] = round(parse_ts(alert["startsAt"]) - parse_ts(timeline["t_break"]), 1)
             timeline["expected_alert"] = alert["alertname"] in fault.expected_alerts
             log(f"alert {alert['alertname']} after {timeline['unnoticed_s']}s")
-            report = wait_report(timeline["t_break"])
+            report = wait_report(alert)
             if report:
                 inc = report["summary"]
                 timeline["incident_id"] = inc["id"]
