@@ -32,7 +32,7 @@ def parse_ts(value: Any) -> float:
     if "." in text:  # Python < 3.11 cannot parse nanoseconds
         head, _, rest = text.partition(".")
         frac = re.match(r"\d+", rest).group(0)
-        text = f"{head}.{frac[:6]}{rest[len(frac):]}"
+        text = f"{head}.{frac[:6].ljust(6, '0')}{rest[len(frac):]}"
     dt = datetime.fromisoformat(text)
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)

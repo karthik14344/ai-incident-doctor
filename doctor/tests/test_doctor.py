@@ -269,3 +269,11 @@ def test_python_chunking_is_by_function_and_keeps_imports():
     names = {c["name"] for c in chunks}
     assert {"f", "C", "<module>"} <= names
     assert all("os" in c["imports"] and "x" in c["imports"] for c in chunks)
+
+
+@pytest.mark.parametrize("value", ["2026-09-23T05:53:25.51+00:00", "2026-09-23T05:53:25Z",
+                                   "2026-09-23T05:53:25.123456789Z", "2026-09-23T05:53:25.9Z"])
+def test_timestamps_of_any_precision_parse(value):
+    from app.collectors import parse_ts
+
+    assert abs(parse_ts(value) - parse_ts("2026-09-23T05:53:25Z")) < 1
