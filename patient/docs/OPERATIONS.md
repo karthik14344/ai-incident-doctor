@@ -21,3 +21,7 @@ The first chat after Ollama loads a model can take tens of seconds; this is mode
 ## Uploading documents
 
 Uploads go through the Documents page. Processing runs in the ingestion service; the document status moves from uploaded to processed.
+
+## Reading the operations dashboard
+
+Request rate and in-flight requests show demand; p95 latency and error rate show how well it is being served. Read them together.
