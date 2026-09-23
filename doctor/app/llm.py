@@ -129,13 +129,13 @@ class OpenAICompatible(Provider):
 
 
 class OllamaNative(Provider):
-    NUM_CTX = 16384
-
     def _call(self, system, user, schema, max_tokens, temperature, seed) -> Completion:
+        from app.settings import SETTINGS
+
         body = {"model": self.cfg.model, "stream": False, "format": schema,
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-                "options": {"num_ctx": self.NUM_CTX, "temperature": temperature, "num_predict": max_tokens,
-                            "seed": seed}}
+                "options": {"num_ctx": SETTINGS.ollama_num_ctx, "temperature": temperature,
+                            "num_predict": max_tokens, "seed": seed}}
         try:
             r = httpx.post(f"{self.cfg.base_url}/api/chat", json=body, timeout=self.timeout_s, trust_env=False)
         except (httpx.TimeoutException, httpx.TransportError) as exc:

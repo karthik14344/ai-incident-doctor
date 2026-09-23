@@ -32,7 +32,8 @@ def _normalise(obj: Dict[str, Any], candidates: List[str]) -> Dict[str, Any]:
     return obj
 
 
-def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget, seed: int = 7) -> Dict[str, Any]:
+def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget, seed: int = 7,
+          max_tokens: int = 2500) -> Dict[str, Any]:
     provider = make_provider(cfg)
     usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "cost_usd": 0.0, "seconds": 0.0}
 
@@ -43,7 +44,7 @@ def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget, seed: 
         usage["cost_usd"] = round(usage["cost_usd"] + c.cost_usd, 6)
         usage["seconds"] = round(usage["seconds"] + c.seconds, 2)
 
-    comp = provider.complete(built["system"], built["user"], DIAGNOSIS_SCHEMA, budget, seed=seed)
+    comp = provider.complete(built["system"], built["user"], DIAGNOSIS_SCHEMA, budget, seed=seed, max_tokens=max_tokens)
     account(comp)
     repaired, errors = False, []
     try:
@@ -54,7 +55,7 @@ def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget, seed: 
     if errors:
         repaired = True
         comp2 = provider.complete(built["system"], built["user"] + "\n\n" + prompt.repair(comp.text, errors),
-                                  DIAGNOSIS_SCHEMA, budget, seed=seed)
+                                  DIAGNOSIS_SCHEMA, budget, seed=seed, max_tokens=max_tokens)
         account(comp2)
         try:
             obj2 = parse_json(comp2.text)
@@ -96,7 +97,7 @@ def diagnose(bundle: Dict[str, Any], arm: str = "logs_commits_incidents",
     attempts, outcome = [], None
     for cfg in providers:
         try:
-            outcome = _call(cfg, built, budget, seed=seed)
+            outcome = _call(cfg, built, budget, seed=seed, max_tokens=settings.max_completion_tokens)
             break
         except (ProviderError, BudgetExceeded, ValueError) as exc:
             attempts.append({"provider": cfg.label, "error": f"{type(exc).__name__}: {str(exc)[:300]}"})

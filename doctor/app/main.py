@@ -171,6 +171,11 @@ def catch_up() -> None:
 
 @app.on_event("startup")
 def _start() -> None:
+    # The work queue is in memory; anything mid-flight when the doctor stopped
+    # will never finish. Say so rather than leaving it "open" forever.
+    for inc in store.list_incidents():
+        if inc["status"] in ("open", "collecting", "diagnosing"):
+            _update(inc["id"], status="interrupted", error="the doctor restarted before this incident finished")
     threading.Thread(target=worker, daemon=True).start()
     if SETTINGS.auto_diagnose and SETTINGS.alert_sink_url:
         threading.Thread(target=catch_up, daemon=True).start()

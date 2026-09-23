@@ -119,6 +119,12 @@ class Settings:
     baseline_s: int = field(default_factory=lambda: int(get("DOCTOR_BASELINE_S", "1800")))
     max_calls_per_run: int = field(default_factory=lambda: int(get("DOCTOR_MAX_CALLS_PER_RUN", "6")))
     max_prompt_tokens: int = field(default_factory=lambda: int(get("DOCTOR_MAX_PROMPT_TOKENS", "6500")))
+    max_completion_tokens: int = field(default_factory=lambda: int(get("DOCTOR_MAX_COMPLETION_TOKENS", "2500")))
+    # Context size for the local Ollama provider. When the doctor shares an
+    # Ollama with the patient and uses the same model, set this to the patient's
+    # context (4096) - a different num_ctx makes Ollama reload the model on every
+    # switch, which starves the app being diagnosed (measured: 35 s per chat).
+    ollama_num_ctx: int = field(default_factory=lambda: int(get("DOCTOR_OLLAMA_NUM_CTX", "16384")))
     auto_diagnose: bool = field(default_factory=lambda: get("DOCTOR_AUTO_DIAGNOSE", "true").lower() == "true")
 
     @property
