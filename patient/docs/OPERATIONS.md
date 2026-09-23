@@ -29,3 +29,7 @@ Request rate and in-flight requests show demand; p95 latency and error rate show
 ## Rate limiting
 
 The gateway limits requests per chat session. A burst from one browser tab is refused by the rate-limit guardrail, which is expected behaviour.
+
+## Rolling back
+
+Every deploy is tagged with its git SHA. The deploy script rolls back automatically when the smoke test fails; to roll back by hand, redeploy the previous SHA.
