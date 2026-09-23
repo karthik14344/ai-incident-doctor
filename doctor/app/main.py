@@ -93,6 +93,9 @@ def accept_alert(alert: Dict[str, Any], trigger: str = "alert") -> Dict[str, Any
                 {"alertname": alert.get("alertname"), "startsAt": alert["startsAt"]}])
             return {"status": "joined", "incident_id": current["id"]}
         incident_id = evidence.incident_id(alert)
+        if _meta(incident_id):
+            # Already handled before a restart (the in-memory set does not survive one).
+            return {"status": "duplicate", "incident_id": incident_id}
         _open[service] = {"id": incident_id, "t": t}
     ready_at = t + SETTINGS.incident_after_s + 15 if trigger == "alert" else time.time()
     _update(incident_id, id=incident_id, trigger=trigger, status="open", alert=alert, service=service,
