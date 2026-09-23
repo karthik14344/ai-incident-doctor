@@ -135,6 +135,21 @@ def compose(env: Dict[str, str], *args: str, check: bool = True) -> subprocess.C
     return subprocess.run(cmd, cwd=REPO, env={**os.environ, **env}, check=check)
 
 
+def built_services() -> List[str]:
+    """Compose services whose image this repository builds (tagged per SHA)."""
+    out = subprocess.run(["docker", "compose", "config", "--format", "json"], cwd=REPO,
+                         env={**os.environ, "IMAGE_TAG": "x"}, capture_output=True, text=True, check=True).stdout
+    services = json.loads(out)["services"]
+    return sorted(name for name, svc in services.items() if svc.get("build"))
+
+
+def image_exists(service: str, tag: str) -> bool:
+    prefix = setting("IMAGE_PREFIX", "aid")
+    image = {"kb-loader": "ingestion"}.get(service, service)
+    return subprocess.run(["docker", "image", "inspect", f"{prefix}/{image}:{tag}"],
+                          capture_output=True).returncode == 0
+
+
 def http_json(url: str, method: str = "GET", body: Optional[dict] = None,
               headers: Optional[dict] = None, timeout: float = 30):
     data = json.dumps(body).encode() if body is not None else None
@@ -224,8 +239,14 @@ def main() -> int:
         if prev:
             print(f"deploy of {short} failed ({error}); rolling back to {prev[:7]}", flush=True)
             prev_env = {"IMAGE_TAG": prev[:7], "APP_GIT_SHA": prev, "KB_VERSION": last_kb_version() or kb}
-            rollback = compose(prev_env, "up", "-d", "--remove-orphans", check=False)
-            outcome = "rolled_back" if rollback.returncode == 0 else "rollback_failed"
+            # Only services that have an image at the previous SHA can go back to it;
+            # a service added by this deploy has none and is simply left alone.
+            restorable = [s for s in built_services() if image_exists(s, prev[:7])]
+            if restorable:
+                rollback = compose(prev_env, "up", "-d", "--no-build", *restorable, check=False)
+                outcome = "rolled_back" if rollback.returncode == 0 else "rollback_failed"
+            else:
+                outcome = "rollback_failed"
 
     record = {
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
