@@ -13,3 +13,7 @@ Every service writes one JSON line per request to stdout. Grafana's Loki datasou
 ## Checking the knowledge base version
 
 The live knowledge-base version is the `kb_version` label on `knowledgeai_build_info` and in `kb/manifest.json` of the deployed commit.
+
+## Slow first answer after a restart
+
+The first chat after Ollama loads a model can take tens of seconds; this is model load time, not a fault. Subsequent answers are fast.
