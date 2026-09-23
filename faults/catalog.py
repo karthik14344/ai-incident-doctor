@@ -164,19 +164,21 @@ _add(Fault(
 
 # 5. A typo on a path only some inputs take ---------------------------------------
 _add(Fault(
-    id="f5_typo", name="NameError when titling a chat session from a keyword query",
+    id="f5_typo", name="AttributeError when titling a chat session from a keyword query",
     delivery="push", incident_class="code_defect", component="gateway",
+    # An attribute typo, not an undefined name: pyflakes (ruff, in CI) rejects an
+    # undefined name, which the first version of this fault was - it never shipped.
     true_cause=("A commit changed how new chat sessions are titled; the branch for questions without a '?' "
-                "refers to an undefined name (qestion), so keyword-style queries crash with NameError (HTTP 500) "
-                "while normal questions work."),
-    expected_fix="Fix the variable name (qestion -> req.question) in the session-title branch.",
+                "reads req.qestion, an attribute that does not exist, so keyword-style queries crash with "
+                "AttributeError (HTTP 500) while normal questions work. Linters do not see attribute typos."),
+    expected_fix="Fix the attribute name (req.qestion -> req.question) in the session-title branch.",
     edits=[(GATEWAY,
             '        title = req.question[:30] + ("..." if len(req.question) > 30 else "")\n',
             '        # Name the conversation after the question itself, not its first 30 characters.\n'
             '        if "?" in req.question:\n'
             '            title = req.question.split("?")[0].strip()[:60] + "?"\n'
             '        else:\n'
-            '            title = req.question.strip()[:60] + ("..." if len(qestion) > 60 else "")\n')],
+            '            title = req.question.strip()[:60] + ("..." if len(req.qestion) > 60 else "")\n')],
     message="Title new chat sessions after the question",
     distractor_paths=["api_gateway"],
     expected_alerts=["HighErrorRate"],

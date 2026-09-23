@@ -1,7 +1,8 @@
 """Check every push fault before using it:
 
-  * the existing test suite still PASSES with the fault applied - the bug is
-    subtle enough to get through CI, which is why it reaches production;
+  * the linter (ruff, with the repo's config) and the existing test suite still
+    PASS with the fault applied - the bug is subtle enough to get through CI,
+    which is why it reaches production;
   * the fault's acceptance test FAILS with the fault applied, and passes
     without it - so it really detects the fault, and a fix that passes it
     really fixed it.
@@ -53,13 +54,17 @@ def check(fault) -> dict:
                     text = open(full, encoding="utf-8").read()
                     assert old in text, f"{fault.id}: anchor not found in {path}"
                     open(full, "w", encoding="utf-8", newline="\n").write(text.replace(old, new, 1))
+            # Lint exactly as CI does (repo config, so embedder.py stays excluded).
+            shutil.copy(os.path.join(REPO, "pyproject.toml"), os.path.join(tmp, "pyproject.toml"))
+            lint = subprocess.run([PY, "-m", "ruff", "check", "patient"], cwd=tmp, capture_output=True, text=True)
+            out[f"{label}_lint_passes"] = lint.returncode == 0
             out[f"{label}_suite_passes"] = pytest(tmp, "tests")
             if fault.acceptance_test:
                 shutil.copy(fault.acceptance_test, os.path.join(tmp, "patient", "tests", "test_acceptance.py"))
                 out[f"{label}_acceptance_passes"] = pytest(tmp, "tests/test_acceptance.py")
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
-    out["ok"] = (out["healthy_suite_passes"] and out["faulty_suite_passes"]
+    out["ok"] = (out["healthy_suite_passes"] and out["faulty_suite_passes"] and out["faulty_lint_passes"]
                  and out.get("healthy_acceptance_passes", True) and not out.get("faulty_acceptance_passes", False))
     return out
 
