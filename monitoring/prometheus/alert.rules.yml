@@ -90,19 +90,36 @@ groups:
 
   - name: knowledgeai-latency-and-load
     rules:
+      # Thresholds are ~2.4x the healthy p95 measured on the development laptop
+      # under the background traffic (chat 16.9 s, search 0.29 s): llama3.2 on a
+      # shared GPU is slow even when nothing is wrong. Re-measure on the Pavilion.
       - alert: HighLatencyP95
         expr: |
           histogram_quantile(0.95,
             sum by (le, service, endpoint) (
-              rate(knowledgeai_http_request_duration_seconds_bucket{endpoint=~"/api/chat|/api/retrieval/search|/retrieve|/generate"}[2m])
+              rate(knowledgeai_http_request_duration_seconds_bucket{endpoint=~"/api/chat|/generate"}[2m])
             )
-          ) > 15
+          ) > 40
         for: 1m
         labels:
           severity: warning
         annotations:
           summary: "p95 latency of {{ $labels.service }} {{ $labels.endpoint }} is {{ $value | printf \"%.1f\" }}s"
-          description: "95th percentile request duration over the last 2 minutes is above the 15 s threshold."
+          description: "95th percentile request duration over the last 2 minutes is above the 40 s threshold."
+
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le, service, endpoint) (
+              rate(knowledgeai_http_request_duration_seconds_bucket{endpoint=~"/api/retrieval/search|/retrieve"}[2m])
+            )
+          ) > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 latency of {{ $labels.service }} {{ $labels.endpoint }} is {{ $value | printf \"%.1f\" }}s"
+          description: "95th percentile request duration over the last 2 minutes is above the 5 s threshold."
 
       - alert: NoTraffic
         expr: sum(rate(knowledgeai_http_requests_total{service="gateway", endpoint="/api/chat"}[30m])) == 0
