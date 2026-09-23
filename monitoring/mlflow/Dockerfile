@@ -8,4 +8,4 @@ EXPOSE 5000
 HEALTHCHECK --interval=20s --timeout=5s --start-period=30s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=4)" || exit 1
 # --serve-artifacts proxies artifact uploads, so clients need no S3 credentials.
-CMD ["sh", "-c", "exec mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////mlflow/mlflow.db --artifacts-destination s3://mlflow/artifacts --serve-artifacts --allowed-hosts '*'"]
+CMD ["sh", "-c", "exec mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////mlflow/mlflow.db --artifacts-destination s3://mlflow/artifacts --serve-artifacts"]
