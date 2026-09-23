@@ -19,5 +19,8 @@ pypdf==6.15.0
 # Evaluation harness resource sampling (CPU / memory)
 psutil==7.2.2
 
+# Operational metrics (common/telemetry.py)
+prometheus-client==0.23.1
+
 # Testing
 pytest==9.1.1
