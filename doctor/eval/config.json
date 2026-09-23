@@ -1,0 +1,14 @@
+{
+  "incidents_dir": "incidents/recorded",
+  "repeats": 3,
+  "arms": ["logs_only", "logs_commits", "logs_commits_incidents"],
+  "primary": {"provider": "glm", "model": "glm-4.6"},
+  "local_primary": {"provider": "ollama", "model": "llama3"},
+  "models": [
+    {"provider": "glm", "model": "glm-4.6"},
+    {"provider": "ollama", "model": "llama3.2"},
+    {"provider": "ollama", "model": "llama3"}
+  ],
+  "verify": true,
+  "replay_settings": {"ollama_num_ctx": 16384, "max_prompt_tokens": 6500, "max_completion_tokens": 2500}
+}
