@@ -14,7 +14,8 @@ WORKDIR /srv
 
 COPY patient/requirements.txt /tmp/patient-requirements.txt
 COPY doctor/requirements.txt /tmp/doctor-requirements.txt
-RUN pip install --no-cache-dir -r /tmp/patient-requirements.txt -r /tmp/doctor-requirements.txt
+# Generous timeout/retries: the Pavilion builds over Wi-Fi.
+RUN pip install --no-cache-dir --default-timeout=120 --retries 10 \n    -r /tmp/patient-requirements.txt -r /tmp/doctor-requirements.txt
 
 COPY doctor/app ./app
 COPY loadgen ./loadgen
