@@ -9,3 +9,7 @@ Restart one service with `docker compose restart <service>`; the gateway tolerat
 ## Where the logs are
 
 Every service writes one JSON line per request to stdout. Grafana's Loki datasource has them; filter with `| json | level="ERROR"` to see only failures.
+
+## Checking the knowledge base version
+
+The live knowledge-base version is the `kb_version` label on `knowledgeai_build_info` and in `kb/manifest.json` of the deployed commit.
