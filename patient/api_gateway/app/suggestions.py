@@ -15,6 +15,7 @@ _ORG_PREFIX = re.compile(
 )
 
 
+# Suggestions are built from stored chunk text only; no model call is made while typing.
 def suggest_queries(q: str, collection_name: str = "default", limit: int = 5) -> List[str]:
     query = (q or "").strip()
     if len(query) < 2:
