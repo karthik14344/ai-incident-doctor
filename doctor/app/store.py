@@ -2,9 +2,17 @@
 
 import json
 import os
+import tempfile
+import threading
 from typing import Any, Dict, List, Optional
 
 from app.settings import SETTINGS, Settings
+
+# The worker, the catch-up poll and request handlers all write incident files.
+# Unsynchronised writes to one file interleaved and corrupted it ("Extra data"),
+# which killed a diagnosis; writes are now serialised and atomic (temp + rename),
+# so a reader sees either the old file or the new one, never a mixture.
+_WRITE_LOCK = threading.RLock()
 
 
 def _dir(settings: Settings, incident_id: str) -> str:
@@ -14,20 +22,33 @@ def _dir(settings: Settings, incident_id: str) -> str:
 def save(incident_id: str, name: str, content: Any, settings: Settings = SETTINGS) -> str:
     path = os.path.join(_dir(settings, incident_id), name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8", newline="\n") as fh:
-        if isinstance(content, str):
-            fh.write(content)
-        else:
-            json.dump(content, fh, indent=1, default=str)
+    text = content if isinstance(content, str) else json.dumps(content, indent=1, default=str)
+    with _WRITE_LOCK:
+        fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path), prefix=f".{name}.")
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(text)
+        os.replace(tmp, path)
     return path
+
+
+def update(incident_id: str, name: str, fields: Dict[str, Any], settings: Settings = SETTINGS) -> Dict[str, Any]:
+    """Read-modify-write of a JSON file under the lock."""
+    with _WRITE_LOCK:
+        current = load(incident_id, name, settings) or {}
+        merged = {**current, **fields}
+        save(incident_id, name, merged, settings)
+        return merged
 
 
 def load(incident_id: str, name: str, settings: Settings = SETTINGS) -> Optional[Any]:
     path = os.path.join(_dir(settings, incident_id), name)
     if not os.path.exists(path):
         return None
-    with open(path, encoding="utf-8") as fh:
-        return fh.read() if name.endswith(".md") else json.load(fh)
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return fh.read() if name.endswith(".md") else json.load(fh)
+    except ValueError:  # a file damaged before writes were made atomic
+        return None
 
 
 def list_incidents(settings: Settings = SETTINGS) -> List[Dict[str, Any]]:

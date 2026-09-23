@@ -67,9 +67,7 @@ def _meta(incident_id: str) -> Dict[str, Any]:
 
 
 def _update(incident_id: str, **fields: Any) -> Dict[str, Any]:
-    meta = {**_meta(incident_id), **fields}
-    store.save(incident_id, "incident.json", meta)
-    return meta
+    return store.update(incident_id, "incident.json", fields)
 
 
 def accept_alert(alert: Dict[str, Any], trigger: str = "alert") -> Dict[str, Any]:

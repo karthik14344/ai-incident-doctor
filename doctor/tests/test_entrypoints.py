@@ -155,3 +155,24 @@ def test_main_module_has_exactly_the_documented_trigger_routes():
     posts = [d.args[0].value for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
              for d in n.decorator_list if isinstance(d, ast.Call) and getattr(d.func, "attr", "") == "post"]
     assert sorted(posts) == ["/api/incidents/{incident_id}/resolve", "/incident", "/ticket"]
+
+
+def test_concurrent_incident_updates_never_corrupt_the_file(tmp_path, monkeypatch):
+    import threading
+
+    from app import store
+
+    monkeypatch.setattr(store.SETTINGS, "data_dir", str(tmp_path))
+
+    def writer(n):
+        for i in range(200):
+            store.update("inc_race", "incident.json", {f"k{n}": i, "status": "open"})
+
+    threads = [threading.Thread(target=writer, args=(n,)) for n in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    final = store.load("inc_race", "incident.json")
+    assert final is not None
+    assert all(final[f"k{n}"] == 199 for n in range(4))

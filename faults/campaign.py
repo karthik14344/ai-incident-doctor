@@ -42,7 +42,19 @@ def main() -> int:
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--cooldown", type=int, default=720)
     ap.add_argument("--round", default=None, help="only runs with this label (r1/r2)")
+    ap.add_argument("--background", action="store_true",
+                    help="also run the normal background traffic in this process (one process = less memory)")
     args = ap.parse_args()
+    if args.background:
+        import threading
+
+        from faults.background_traffic import CHAT, SEARCH, loop
+        until = time.time() + 24 * 3600
+        out = os.path.join(REPO, "runtime", "background_traffic.jsonl")
+        for profile in (CHAT, SEARCH):
+            threading.Thread(target=loop, args=(profile, until, out), daemon=True).start()
+        log("background traffic running inside the campaign process; settling 600 s first")
+        time.sleep(600)
     plan = [p for p in PLAN if (not args.only or p[0] in args.only) and (not args.round or p[2] == args.round)]
     record = os.path.join(REPO, "runtime", "campaign.jsonl")
     for i, (fault, variant, label) in enumerate(plan):
