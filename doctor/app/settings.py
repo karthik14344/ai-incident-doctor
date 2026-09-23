@@ -103,6 +103,13 @@ class Settings:
     alert_sink_url: Optional[str] = field(default_factory=lambda: get("DOCTOR_ALERT_SINK_URL") or get("ALERT_SINK_URL"))
     deploy_log_path: str = field(default_factory=lambda: get(
         "DOCTOR_DEPLOY_LOG", get("DEPLOY_LOG_PATH", os.path.join(REPO_ROOT_DEFAULT, "runtime", "deploys.jsonl"))))
+    kb_load_log_path: str = field(default_factory=lambda: get(
+        "DOCTOR_KB_LOAD_LOG", os.path.join(os.path.dirname(get(
+            "DOCTOR_DEPLOY_LOG", get("DEPLOY_LOG_PATH", os.path.join(REPO_ROOT_DEFAULT, "runtime", "deploys.jsonl")))),
+            "kb_loads.jsonl")))
+    ignore_paths: tuple = field(default_factory=lambda: tuple(
+        p.strip() for p in get("DOCTOR_IGNORE_PATHS", "faults/,incidents/,doctor/eval/,RESULTS.md").split(",")
+        if p.strip()))
     embed_model: str = field(default_factory=lambda: get("DOCTOR_EMBED_MODEL", "nomic-embed-text"))
     # How far before the alert a deploy can be and still be a suspect.
     deploy_lookback_s: int = field(default_factory=lambda: int(get("DOCTOR_DEPLOY_LOOKBACK_S", str(6 * 3600))))

@@ -135,7 +135,14 @@ def build(bundle: Dict[str, Any], arm: str, ranked: Optional[Dict[str, Any]] = N
           max_tokens: int = 6500) -> Dict[str, Any]:
     assert arm in ARMS, arm
     alert = bundle["alert"]
-    sections = [
+    ticket = alert.get("ticket")
+    sections = [] if not ticket else [
+        ("USER REPORT (no alert fired; a person reported this)",
+         f"{ticket['text']}\nrough time given: {ticket.get('since') or 'none'}\n"
+         f"onset located at {alert.get('startsAt')} from: "
+         + ("; ".join(f"{s['metric']} rose from {s['baseline']} to {s['value']}" for s in ticket.get("onset_signals", []))
+            or "no metric departed from its baseline in the searched range"))]
+    sections += [
         ("ALERT", f"{alert.get('alertname')} labels={json.dumps(alert.get('labels', {}))}\n"
                   f"summary: {(alert.get('annotations') or {}).get('summary')}\n"
                   f"description: {(alert.get('annotations') or {}).get('description')}\nstartsAt: {alert.get('startsAt')}"),
@@ -153,6 +160,10 @@ def build(bundle: Dict[str, Any], arm: str, ranked: Optional[Dict[str, Any]] = N
     candidates: List[str] = []
     if arm in ("logs_commits", "logs_commits_incidents"):
         sections.append(("DEPLOYS BEFORE THE ALERT", _fmt_deploys(bundle)))
+        sections.append(("KNOWLEDGE-BASE VERSIONS LOADED BEFORE THE ALERT",
+                         "\n".join(f"- {k['ts']} kb {k.get('previous')} -> {k['kb_version']} "
+                                   f"collections={k.get('collections')}" for k in bundle.get("kb_changes", []))
+                         or "(no knowledge-base change in the lookback window)"))
         top = (ranked or {}).get("ranked", [])
         candidates = [r["sha"] for r in top]
         sections.append(("CANDIDATE COMMITS (the only SHAs you may name; ranked by retrieval)",

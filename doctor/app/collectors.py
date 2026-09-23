@@ -205,9 +205,14 @@ def collect_metrics(settings: Settings, incident: Tuple[float, float],
                 continue
             for s in result:
                 key = ",".join(f"{k}={v}" for k, v in sorted(s["metric"].items()) if k not in ("job", "instance")) or "all"
-                summary = _series_summary([float(v) for _, v in s["values"]])
+                points = [(float(t), float(v)) for t, v in s["values"]]
+                summary = _series_summary([v for _, v in points])
                 if summary:
                     series.setdefault(key, {})[window] = summary
+                    # The raw series is kept in the snapshot so a replay has the
+                    # same evidence the live diagnosis had.
+                    series[key][f"{window}_points"] = [[int(t), round(v, 5)] for t, v in points
+                                                       if v == v and abs(v) != float("inf")]
         out[name] = {"meaning": meaning, "series": series}
     return out
 
@@ -238,6 +243,20 @@ def deploys_before(records: List[Dict[str, Any]], t: float, lookback_s: float) -
     return {"in_window": window, "live": live}
 
 
+def read_kb_loads(settings: Settings = SETTINGS) -> List[Dict[str, Any]]:
+    """Knowledge-base versions loaded into the live index (written by kb-loader)."""
+    path = settings.kb_load_log_path
+    if not path or not os.path.exists(path):
+        return []
+    out = []
+    for line in open(path, encoding="utf-8"):
+        try:
+            out.append(json.loads(line))
+        except ValueError:
+            continue
+    return out
+
+
 # ---------------------------------------------------------------- git
 
 def git(repo: str, *args: str) -> str:
@@ -248,10 +267,21 @@ def git(repo: str, *args: str) -> str:
 DIFF_CHARS_PER_FILE = 2500
 
 
+def ignored(path: str, settings: Settings = SETTINGS) -> bool:
+    """Paths that belong to the experimenter, not the system under diagnosis.
+
+    Fault-injection scripts, recorded incidents with their ground truth and the
+    evaluation harness live in this repository for convenience, but they are
+    not part of anything that is deployed. If the doctor could read their diffs
+    it would be reading the answer key, so it never sees them.
+    """
+    return any(path == p.rstrip("/") or path.startswith(p) for p in settings.ignore_paths)
+
+
 def commit_info(repo: str, sha: str, with_diff: bool = True) -> Dict[str, Any]:
     fmt = "%H%x1f%an%x1f%aI%x1f%s%x1f%b"
     full, author, date, subject, body = git(repo, "show", "-s", f"--format={fmt}", sha).split("\x1f", 4)
-    files = [f for f in git(repo, "show", "--format=", "--name-only", sha).splitlines() if f]
+    files = [f for f in git(repo, "show", "--format=", "--name-only", sha).splitlines() if f and not ignored(f)]
     info = {"sha": full.strip(), "author": author, "date": date, "ts": parse_ts(date),
             "subject": subject, "body": body.strip()[:800], "files": []}
     for path in files:
@@ -275,6 +305,8 @@ def commits_for_deploys(repo: str, deploys: List[Dict[str, Any]]) -> List[Dict[s
                 info = commit_info(repo, sha)
             except subprocess.CalledProcessError:
                 continue
+            if not info["files"]:
+                continue  # touched only experimenter paths; not part of the system
             info["deployed_in"] = d["short_sha"]
             info["deployed_at"] = d["ts"]
             out.append(info)

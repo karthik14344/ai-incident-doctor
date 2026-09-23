@@ -79,6 +79,9 @@ def collect(alert: Dict[str, Any], settings: Settings = SETTINGS,
                 if excerpt:
                     sources.append(excerpt)
 
+    kb_changes = [k for k in C.read_kb_loads(settings)
+                  if t_alert - settings.deploy_lookback_s <= C.parse_ts(k["ts"]) <= t_alert]
+
     baseline_sigs = {g["signature"] for g in baseline_logs}
     for g in logs:
         g["new_in_incident"] = g["signature"] not in baseline_sigs
@@ -99,6 +102,7 @@ def collect(alert: Dict[str, Any], settings: Settings = SETTINGS,
         "latest_deploy": latest_any,
         "latest_commit": latest_commit,
         "candidate_commits": commits,
+        "kb_changes": kb_changes,
         "sources": sources[:6],
         "collector_errors": errors,
         "deploy_lookback_s": settings.deploy_lookback_s,
