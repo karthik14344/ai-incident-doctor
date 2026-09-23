@@ -33,6 +33,11 @@ from datetime import datetime, timezone
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PY = sys.executable
 
+# A post-receive hook runs with GIT_DIR etc. pointing at the bare remote;
+# every git call below must see the workspace repository instead.
+for _var in [v for v in os.environ if v.startswith("GIT_")]:
+    del os.environ[_var]
+
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")

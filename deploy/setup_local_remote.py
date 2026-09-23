@@ -19,6 +19,7 @@ BARE = os.path.join(REPO, "runtime", "pipeline.git")
 
 HOOK = """#!/bin/sh
 # Installed by deploy/setup_local_remote.py. Runs the pipeline for pushes to main.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_QUARANTINE_PATH
 while read old new ref; do
   if [ "$ref" = "refs/heads/main" ] && [ "$new" != "0000000000000000000000000000000000000000" ]; then
     mkdir -p "{repo}/runtime/pipeline"
