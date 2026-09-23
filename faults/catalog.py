@@ -102,7 +102,9 @@ _add(Fault(
                 "so requests queue and latency climbs. No deploy is involved."),
     expected_fix="Bound concurrency at the gateway with a queue/semaphore and shed load (429) beyond it; "
                  "scale generation capacity. No code change caused this.",
-    load={"mode": "chat", "rate": 1.2, "concurrency": 32, "duration": 360},
+    # Calibrated: 1.2/s did not saturate (p95 ~12 s; Ollama serves requests in parallel).
+    # At 4/s with 96 in flight throughput caps at ~1.37/s and p95 reaches ~75-88 s.
+    load={"mode": "chat", "rate": 4.0, "concurrency": 96, "duration": 300, "timeout": 240},
     expected_alerts=["HighLatencyP95"],
 ))
 
