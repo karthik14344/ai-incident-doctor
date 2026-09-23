@@ -34,3 +34,11 @@ def test_factual_prompts_carry_the_context():
 
     prompt = build_prompt("What is the fee?", "CONTEXT-MARKER")
     assert "RETRIEVED DOCUMENT CONTEXT" in prompt and "CONTEXT-MARKER" in prompt
+
+
+def test_no_chunks_gives_an_explicit_empty_context():
+    from retrieval_service.app.main import assemble_context
+
+    out = assemble_context([])
+    assert out["assembled_context"] == "No relevant document chunks found."
+    assert out["sources"] == []
