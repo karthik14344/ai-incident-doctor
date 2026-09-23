@@ -13,7 +13,8 @@ from conftest import REPO_ROOT
 
 
 @pytest.fixture
-def client(monkeypatch):
+def client(monkeypatch, tmp_path):
+    monkeypatch.setattr(main.SETTINGS, "data_dir", str(tmp_path))  # a fresh incident store per test
     queued = []
     monkeypatch.setattr(main, "_work", type("Q", (), {"put": lambda self, x: queued.append(x),
                                                      "qsize": lambda self: len(queued)})())
