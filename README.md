@@ -20,6 +20,196 @@ what changes when the patient moves to the second laptop.
 
 ---
 
+## The whole flow, box by box
+
+Read this chart from top to bottom. Each box is one step, and it names the
+folder or file that does that step, so you can go from a box straight to the
+code. The numbers after a colon (`:8000`) are the default ports. On the
+development laptop every port is 10000 higher (`:18000`), as explained under
+[Ports](#ports).
+
+**What happens to a change, and to a problem:**
+
+```text
+                          YOU CHANGE THE CODE
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 1. PUSH the change                                                 |
+|                                                                    |
+|   git push pipeline main   (on this laptop)                        |
+|   git push origin main     (GitHub, once it is set up)             |
+|   files: scripts/pipeline/post-receive, .github/workflows/ci.yml   |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 2. CHECK it  (stops here if anything fails)                        |
+|                                                                    |
+|   lint, all tests, alert-rule tests, config checks                 |
+|   file:  scripts/pipeline/verify.sh                                |
++--------------------------------------------------------------------+
+                                   |
+                                   |  all checks pass
+                                   v
++--------------------------------------------------------------------+
+| 3. INSTALL it                                                      |
+|                                                                    |
+|   build images labelled with the version, start them, smoke test   |
+|   files: scripts/pipeline/deploy.sh -> deploy/deploy.py            |
+|   record: runtime/deploys.jsonl                                    |
+|   ** the pipeline ENDS here. It never wakes the doctor. **         |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 4. THE APP RUNS  (KnowledgeAI)            folder: patient/         |
+|                                                                    |
+|   website (frontend)          :3001                                |
+|     -> gateway                :8000                                |
+|          -> retrieval :8002   -> ChromaDB (documents) :8010        |
+|          -> llm       :8003   -> Ollama (AI model)    :11434       |
+|          -> ingestion :8001                                        |
+|   documents: kb/  (versioned with DVC, stored in MinIO :9000)      |
++--------------------------------------------------------------------+
+                                   |
+                                   |  numbers (metrics) and diary lines (logs)
+                                   v
++--------------------------------------------------------------------+
+| 5. WATCHING                               folder: monitoring/      |
+|                                                                    |
+|   Prometheus :9090   collects numbers, checks 16 alarm rules       |
+|                      rules: monitoring/prometheus/alert.rules.yml  |
+|   Loki :3100 + Alloy collects the diary lines (logs)               |
+|   Grafana :3000      dashboards to look at                         |
++--------------------------------------------------------------------+
+                                   |
+                                   |  SOMETHING BREAKS and a rule fires
+                                   v
++--------------------------------------------------------------------+
+| 6. ALARM                                                           |
+|                                                                    |
+|   Alertmanager :9093  ->  alert-sink :9095                         |
+|   alert-sink saves the alarm, then sends it to the doctor          |
+|   folders: monitoring/alertmanager/, alert_sink/                   |
++--------------------------------------------------------------------+
+                                   |
+  (b) PERSON REPORTS           (a) ALARM              (c) REPLAY
+  a problem (ticket)           automatic              for testing
+  POST /ticket, or the      POST /incident            python -m app.replay
+  Incidents page form                                 (from doctor/)
+           |                       |                           |
+           +-----------------------+---------------------------+
+                                   |
+                                   |  these three are the ONLY ways to wake it
+                                   v
++--------------------------------------------------------------------+
+| 7. DOCTOR WAKES UP                  :8100  folder: doctor/         |
+|                                                                    |
+|   opens an incident and waits for the problem window to close      |
+|   file:  doctor/app/main.py   (ticket time-finding: ticket.py)     |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 8. COLLECT THE CLUES                                               |
+|                                                                    |
+|   error messages, numbers before vs during, recent installs,       |
+|   recent code changes, the code named in the errors                |
+|   files: doctor/app/collectors.py, evidence.py                     |
+|   saved as: doctor/data/incidents/<id>/bundle.json                 |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 9. SEARCH                                                          |
+|                                                                    |
+|   rank the code changes most likely to blame, the related code,    |
+|   and similar past problems                                        |
+|   files: doctor/app/retrieval.py, indexes.py                       |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 10. WORK OUT THE CAUSE                                             |
+|                                                                    |
+|   ask the AI model: online model (GLM), or local Ollama as backup  |
+|   answer: what went wrong, what kind of problem, which change      |
+|           (or none), and a suggested repair                        |
+|   files: doctor/app/prompt.py, reasoner.py, llm.py, schema.py      |
++--------------------------------------------------------------------+
+                                   |
+                                   v
+                   Too many users for the machine?
+                     YES -> blame no code change;
+                            suggest more capacity
+                     NO  -> go on to the repair
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 11. TEST THE REPAIR ON A SPARE COPY                                |
+|                                                                    |
+|   copy the code at the running version, apply the repair,          |
+|   run the tests. The live app is NEVER touched.                    |
+|   files: doctor/app/fixes.py, verify.py                            |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| 12. REPORT                                                         |
+|                                                                    |
+|   cause, evidence, suggested repair, and whether it passed         |
+|   see it: Incidents page on the website :3001                      |
+|   files: doctor/app/report.py, store.py                            |
++--------------------------------------------------------------------+
+                                   |
+                                   |  a person reads it and decides what to do
+                                   v
+                       YOU FIX THE REAL APP
+```
+
+**How the doctor was tested (the numbers in RESULTS.md):**
+
+```text
++--------------------------------------------------------------------+
+| A. BREAK IT ON PURPOSE                     folder: faults/         |
+|                                                                    |
+|   8 planned problems: bad code, broken surroundings, missing docs  |
+|   files: faults/catalog.py, run_fault.py, campaign.py              |
+|   (the app, alarms and doctor run for real: boxes 1-12 above)      |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| B. SAVE EACH REAL PROBLEM                                          |
+|                                                                    |
+|   clues, the true answer, the timeline, the doctor's live report   |
+|   folder: incidents/recorded/<problem>-r<run>/                     |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| C. REPLAY AND SCORE  (nothing live is touched)                     |
+|                                                                    |
+|   16 problems x 4 setups x 3 repeats = 192 scored replays          |
+|   command: python -m doctor.eval.run_eval                          |
+|   files: doctor/eval/run_eval.py, scoring.py, config.json          |
++--------------------------------------------------------------------+
+                                   |
+                                   v
++--------------------------------------------------------------------+
+| D. RESULTS                                                         |
+|                                                                    |
+|   RESULTS.md, doctor/eval/results/final/                           |
+|   MLflow :5000  (the same results, browsable)                      |
++--------------------------------------------------------------------+
+```
+
+The same system is drawn below as a connection diagram, showing which part
+talks to which.
+
+---
+
 ## How it fits together
 
 ```mermaid
