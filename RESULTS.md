@@ -7,20 +7,28 @@ DECISIONS.md D-47..D-51). Nothing here was measured on the Pavilion or with
 GitHub Actions. Those numbers must be produced there and reported separately
 (PAVILION.md), never merged into these tables.
 
-**No cloud model was evaluated.** This machine had no `DOCTOR_API_KEY`, so the GLM
-rows are empty. The ablation instead runs on the larger local model, llama3 (8B),
-as a stand-in (D-67). With a key in `.env`, `python -m doctor.eval.run_eval` fills
-in the GLM rows with no other change.
+**Two evaluations, the same 16 recorded incidents:**
 
-The one command that produced every table below is:
+1. **Local models** (`doctor/eval/results/final/`). The evidence ablation runs on
+   llama3 (8B), with llama3.2 (3B) for comparison. This was run before any online
+   key was available (D-67), and most of the tables below come from it.
+2. **Online model: GLM-4.5-Flash** (`doctor/eval/results/glm/`), on Z.ai's free
+   tier. It runs the same ablation, and its model comparison puts GLM next to both
+   llama models. The llama rows there are the same replays, reused rather than
+   re-run: same snapshots, prompts, settings and seeds, and no code change since
+   touches them (D-82..D-84). See
+   [Online model: GLM-4.5-Flash](#online-model-glm-45-flash).
+
+The commands that produced them are:
 
 ```
-python -m doctor.eval.run_eval --out doctor/eval/results/final
+python -m doctor.eval.run_eval --out doctor/eval/results/final   # local models
+python -m doctor.eval.run_eval --out doctor/eval/results/glm     # GLM + the model comparison
 ```
 
-Its outputs are `results.md` (tables), `results.json` (every aggregate) and
-`runs.jsonl` (192 scored replays, each with its full report). They are in
-`doctor/eval/results/final/`. The same run is in MLflow: experiment
+Each folder holds `results.md` (tables), `results.json` (every aggregate) and
+`runs.jsonl` (every scored replay, with its full report). The local-model run is
+in MLflow: experiment
 `incident-doctor-evaluation`, parent run `eval-20260924-084116`, with one child
 run per configuration and one grandchild per repeat. It was logged afterwards
 with `python -m doctor.eval.mlflow_log doctor/eval/results/final`, because
@@ -172,8 +180,72 @@ mislead.
 | llama3, logs + commits + past incidents | 11.1 | 11.0k | $0 |
 | llama3.2, logs + commits + past incidents | 5.5 | 10.6k | $0 |
 
-The cloud cost column is computed from token counts and per-token prices. It
-stays at $0 until a cloud model is run.
+The cost column is computed from token counts and per-token prices. For the local
+models it is $0.
+
+---
+
+## Online model: GLM-4.5-Flash
+
+GLM-4.5-Flash ran on Z.ai's free tier, with thinking disabled so that its answer
+fits the same 2,500-token allowance the local models get (D-84). There were 144
+replays: 3 evidence arms x 16 incidents x 3 repeats. The service was busy for
+none of them (0 unscored, D-83). In 3 replays the answer was unusable even after
+the repair step, and those are scored as failures.
+
+### Head to head, full evidence (logs + commits + past incidents)
+
+| | GLM-4.5-Flash (online) | llama3 8B (local) | llama3.2 3B (local) |
+|---|---|---|---|
+| **Environment faults: right cause (acc@1)** | **0.56** | 0.17 | 0.28 |
+| Environment faults: right cause in top 3 | **0.89** | 0.17 | 0.44 |
+| Environment faults: wrongly blamed a commit | **0.11** | 0.67 | 0.22 |
+| Push faults: exact guilty commit (acc@1) | **0.38** | 0.33 | 0.04 |
+| Push faults: fix passes the test suite | **0.75** | 0.33 | 0.08 |
+| Push faults: fix passes the fault's own acceptance test | **0.71** | 0.29 | 0.08 |
+| All faults: right kind of problem (class) | **0.81** | 0.69 | 0.58 |
+| Seconds per diagnosis | 54.7 | 11.1 | 5.5 |
+| Tokens per diagnosis | 14.2k | 11.0k | 10.6k |
+
+**Findings:**
+- **GLM is the strongest on every accuracy measure.**
+  - On environment faults, the real score, it named the right cause over three
+    times as often as llama3 (0.56 vs 0.17).
+  - It blamed a commit that was not guilty in only 11% of runs, against llama3's
+    67%.
+- **Its fixes mostly work.**
+  - 71% of GLM's push-fault fixes passed the fault's own acceptance test, against
+    29% for llama3.
+  - None needed the reversed-edit correction (D-81): 0 of 72 push replays. The
+    71% is entirely its own work.
+- **Retrieval, not the model, now limits push faults.**
+  - The guilty commit reached the prompt's top 5 in 5 of 8 push incidents, so
+    0.62 is the ceiling.
+  - GLM named it every time in 3 of those 5 (f1 in both runs and f6 r1, all
+    3/3 repeats). It missed f5 r1 and f6 r2.
+  - The memory leak (f4) never reached the top 5 (rank 7 and 11), so no model
+    could name it.
+- **Commit evidence did not mislead GLM the way it misled llama3.** On
+  environment faults, adding commits raised GLM's false attribution only from 0.00
+  to 0.17, where llama3's went from 0.00 to 0.83.
+- **Past incidents helped GLM tell kinds of problem apart.** They raised its
+  environment-fault class accuracy from 0.33 to 0.83.
+- **The data fault is still not understood.** GLM gets 0.50 "right cause" on f7,
+  but only because the scorer credits the right component for faults with no
+  guilty commit. Its explanations were "ChromaDB connection failure / hostname
+  resolution issue". In no replay did it say that documents were missing, and its
+  class was right 0 times in 18. In f7 r2 it blamed the earlier 0.05 s timeout
+  commit instead. This fault class needs better evidence (for example the KB
+  version and document count in the prompt), not a better model.
+- **It is slower.** It took about 55 s per diagnosis on the free tier, against
+  11 s for local llama3. Live, that would add roughly 45 s to the ~100 s
+  alert -> report time measured with llama3.2.
+- **Cost.** The cost column in `results/glm` shows about $0.01 per diagnosis. That
+  is glm-4.6 list pricing, the only GLM price in the doctor's table.
+  GLM-4.5-Flash is free, so the evaluation actually cost $0.
+
+The full GLM ablation (all three evidence arms, per delivery type) is in
+`doctor/eval/results/glm/results.md`, and also at the end of this file.
 
 ---
 
@@ -222,15 +294,22 @@ doctor (llama3.2, 4k context, D-63).
   with a 4k context, a budget forced by sharing one GPU with the patient (D-63).
   It answered "capacity" in 12 of them. This is the main reason the replay
   evaluation exists: the same evidence, replayed with a 16k context, scores well
-  above this. A cloud model, which is the intended setup, would not compete with
-  the patient for the GPU at all.
+  above this. An online model, which is the intended setup, would not compete
+  with the patient for the GPU at all. Replayed on the same evidence, GLM-4.5-Flash
+  got the class right in 81% of runs.
 
 ---
 
 ## What these numbers do not show
 
-- **No cloud model.** The GLM/cloud vs local comparison is unmeasured. llama3 (8B)
-  stands in for the primary model.
+- **One online model, on a free tier.** GLM-4.5-Flash is Z.ai's free model. The
+  larger paid GLM models, Gemini and Claude were not evaluated.
+  - Gemini: the free key allows 20 requests a day, and the paid project was
+    refused access.
+  - Claude: the key had no credit, and was later revoked.
+  - GLM's answers are checked only against the example layout in the prompt,
+    because Z.ai ignores a JSON schema (D-83, D-84).
+  - The live campaign itself ran with the local llama3.2, not GLM.
 - **Only the local pipeline.** Every run went through the local bare-repo pipeline
   on one laptop. The GitHub Actions + self-hosted Pavilion path is the same
   scripts (D-48). It has not been run, and its break -> alert times will differ,
@@ -301,6 +380,103 @@ Not run: glm:glm-4.6 (no API key configured)
 | ablation: logs_commits_incidents / ollama:llama3 | 0.23 (0.19-0.31) | 0.23 (0.19-0.31) | 0.69 (0.62-0.75) | 0.75 (0.62-0.88) | 0.62 (0.62-0.62) | 0.33 (0.25-0.38) | 0.29 (0.25-0.38) | 11.12 (9.62-13.91) | 10958.96 (10327.62-11292.00) | 0.00 (0.00-0.00) |
 | ablation: logs_commits / ollama:llama3 | 0.10 (0.06-0.12) | 0.10 (0.06-0.12) | 0.54 (0.50-0.56) | 0.83 (0.75-0.88) | 0.62 (0.62-0.62) | 0.25 (0.25-0.25) | 0.25 (0.25-0.25) | 11.61 (8.80-15.99) | 10965.44 (10321.56-11293.94) | 0.00 (0.00-0.00) |
 | ablation: logs_only / ollama:llama3 | 0.21 (0.19-0.25) | 0.21 (0.19-0.25) | 0.65 (0.56-0.69) | 0.00 (0.00-0.00) | 0.00 (0.00-0.00) | 0.25 (0.25-0.25) | 0.25 (0.25-0.25) | 8.75 (7.05-11.54) | 5918.21 (5700.25-6041.50) | 0.00 (0.00-0.00) |
+| models: logs_commits_incidents / ollama:llama3 | 0.23 (0.19-0.31) | 0.23 (0.19-0.31) | 0.69 (0.62-0.75) | 0.75 (0.62-0.88) | 0.62 (0.62-0.62) | 0.33 (0.25-0.38) | 0.29 (0.25-0.38) | 11.12 (9.62-13.91) | 10958.96 (10327.62-11292.00) | 0.00 (0.00-0.00) |
+| models: logs_commits_incidents / ollama:llama3.2 | 0.17 (0.12-0.25) | 0.25 (0.19-0.31) | 0.58 (0.50-0.69) | 0.17 (0.12-0.25) | 0.62 (0.62-0.62) | 0.08 (0.00-0.12) | 0.08 (0.00-0.12) | 5.51 (3.94-6.98) | 10621.15 (10299.00-11260.44) | 0.00 (0.00-0.00) |
+
+#### Commit retrieval (push faults)
+
+| incident | time-filtered candidates | guilty in time filter | guilty in top-5 after rerank | rank |
+|---|---|---|---|---|
+| f1_embed_timeout-r1 | 26 | True | True | 1 |
+| f5_typo-r1 | 22 | True | True | 4 |
+| f6_tight_timeout-r1 | 33 | True | True | 1 |
+| f4_memory_leak-r1 | 37 | True | False | 11 |
+| f1_embed_timeout-r2 | 32 | True | True | 1 |
+| f5_typo-r2 | 37 | True | False | 7 |
+| f6_tight_timeout-r2 | 42 | True | True | 2 |
+| f4_memory_leak-r2 | 46 | True | False | 7 |
+
+Guilty commit inside the most recent deploy (deploy-level baseline hit rate, push faults): 0.50
+
+#### Live runs: time unnoticed and time to report
+
+| incident | delivery | first alert | expected alert? | break -> alert (s) | alert -> report (s) |
+|---|---|---|---|---|---|
+| f3_retrieval_down-r1 | environment | DownstreamCallFailures | True | 33.0 | 139.0 |
+| f1_embed_timeout-r1 | push | EmbeddingFallbackActive | True | 103.6 | 162.4 |
+| f2_capacity-r1 | environment | HighLatencyP95 | True | 113.5 | 376.5 |
+| f5_typo-r1 | push | HighErrorRate | True | 620.0 | 96.0 |
+| f3b_retrieval_bad_address-r1 | environment | DownstreamCallFailures | True | 79.0 | 96.0 |
+| f6_tight_timeout-r1 | push | DownstreamCallFailures | True | 323.0 | 102.0 |
+| f7_kb_missing_docs-r1 | data | - | None | - | 29.0 |
+| f4_memory_leak-r1 | push | MemoryClimbing | True | 821.2 | 104.8 |
+| f2_capacity-r2 | environment | HighLatencyP95 | True | 108.5 | 246.5 |
+| f1_embed_timeout-r2 | push | EmbeddingFallbackActive | True | 142.6 | 139.4 |
+| f5_typo-r2 | push | HighErrorRate | True | 323.0 | 101.0 |
+| f3_retrieval_down-r2 | environment | ServiceDown | True | 47.9 | 97.1 |
+| f6_tight_timeout-r2 | push | DownstreamCallFailures | True | 321.0 | 105.0 |
+| f7_kb_missing_docs-r2 | data | - | None | - | 32.0 |
+| f4_memory_leak-r2 | push | MemoryClimbing | True | 877.2 | 105.8 |
+| f3b_retrieval_bad_address-r2 | environment | DownstreamCallFailures | True | 77.0 | 101.0 |
+
+---
+
+## Full generated tables: GLM-4.5-Flash evaluation
+
+These come from `doctor/eval/results/glm/results.md`, unedited. The `models:`
+rows for llama3 and llama3.2 are the same replays as in the local-model tables
+above, reused.
+
+### Evaluation (GLM) 20260924-141418
+
+Incidents: 16; repeats per configuration: 3; ablation model: `glm:glm-4.5-flash` (cloud).
+Cells show the mean over repeats with the (min-max) range across repeats.
+
+#### environment faults (no guilty commit) - the real score
+
+| | acc@1 | acc@3 | class | false attr. | guilty retrieved | fix verified (suite) | fix correct (acceptance) | reasoning s | tokens | cost $ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| baseline: blame most recent deploy | 0.00 | 0.00 | 0.00 | 1.00 | - | - | - | - | 0.00 | 0.00 |
+| ablation: logs_commits_incidents / glm:glm-4.5-flash | 0.56 (0.50-0.67) | 0.89 (0.83-1.00) | 0.83 (0.83-0.83) | 0.11 (0.00-0.17) | - | - | - | 47.32 (41.29-50.93) | 14524.50 (13592.17-15062.00) | 0.01 (0.01-0.01) |
+| ablation: logs_commits / glm:glm-4.5-flash | 0.44 (0.33-0.50) | 0.72 (0.67-0.83) | 0.33 (0.33-0.33) | 0.17 (0.17-0.17) | - | - | - | 45.81 (42.50-49.11) | 13977.50 (13495.83-14923.83) | 0.01 (0.01-0.01) |
+| ablation: logs_only / glm:glm-4.5-flash | 0.44 (0.33-0.50) | 0.72 (0.67-0.83) | 0.78 (0.67-0.83) | 0.00 (0.00-0.00) | - | - | - | 44.71 (41.35-49.85) | 9642.94 (9002.33-9983.50) | 0.01 (0.01-0.01) |
+| models: logs_commits_incidents / glm:glm-4.5-flash | 0.56 (0.50-0.67) | 0.89 (0.83-1.00) | 0.83 (0.83-0.83) | 0.11 (0.00-0.17) | - | - | - | 47.32 (41.29-50.93) | 14524.50 (13592.17-15062.00) | 0.01 (0.01-0.01) |
+| models: logs_commits_incidents / ollama:llama3 | 0.17 (0.00-0.33) | 0.17 (0.00-0.33) | 1.00 (1.00-1.00) | 0.67 (0.50-0.83) | - | - | - | 7.99 (6.71-9.40) | 10387.33 (9933.33-11289.50) | 0.00 (0.00-0.00) |
+| models: logs_commits_incidents / ollama:llama3.2 | 0.28 (0.17-0.33) | 0.44 (0.33-0.67) | 0.67 (0.50-0.83) | 0.22 (0.17-0.33) | - | - | - | 4.48 (3.70-5.96) | 9582.00 (8726.67-10013.00) | 0.00 (0.00-0.00) |
+
+#### data faults (guilty knowledge-base version, no commit)
+
+| | acc@1 | acc@3 | class | false attr. | guilty retrieved | fix verified (suite) | fix correct (acceptance) | reasoning s | tokens | cost $ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| baseline: blame most recent deploy | 0.00 | 0.00 | 0.00 | 1.00 | - | - | - | - | 0.00 | 0.00 |
+| ablation: logs_commits_incidents / glm:glm-4.5-flash | 0.50 (0.50-0.50) | 1.00 (1.00-1.00) | 0.00 (0.00-0.00) | 0.50 (0.50-0.50) | - | - | - | 54.16 (40.62-79.30) | 12229.67 (7949.50-16552.50) | 0.01 (0.01-0.01) |
+| ablation: logs_commits / glm:glm-4.5-flash | 0.17 (0.00-0.50) | 0.83 (0.50-1.00) | 0.00 (0.00-0.00) | 0.67 (0.50-1.00) | - | - | - | 63.81 (51.73-85.92) | 12355.50 (8179.50-16548.50) | 0.01 (0.01-0.01) |
+| ablation: logs_only / glm:glm-4.5-flash | 0.67 (0.50-1.00) | 0.67 (0.50-1.00) | 0.00 (0.00-0.00) | 0.00 (0.00-0.00) | - | - | - | 121.61 (98.56-156.21) | 7083.67 (5259.00-10700.50) | 0.01 (0.00-0.01) |
+| models: logs_commits_incidents / glm:glm-4.5-flash | 0.50 (0.50-0.50) | 1.00 (1.00-1.00) | 0.00 (0.00-0.00) | 0.50 (0.50-0.50) | - | - | - | 54.16 (40.62-79.30) | 12229.67 (7949.50-16552.50) | 0.01 (0.01-0.01) |
+| models: logs_commits_incidents / ollama:llama3 | 0.00 (0.00-0.00) | 0.00 (0.00-0.00) | 0.00 (0.00-0.00) | 1.00 (1.00-1.00) | - | - | - | 13.29 (8.49-20.52) | 8700.00 (7384.50-11318.00) | 0.00 (0.00-0.00) |
+| models: logs_commits_incidents / ollama:llama3.2 | 0.33 (0.00-0.50) | 0.50 (0.50-0.50) | 1.00 (1.00-1.00) | 0.00 (0.00-0.00) | - | - | - | 4.94 (3.98-6.50) | 11186.83 (11158.50-11242.50) | 0.00 (0.00-0.00) |
+
+#### push faults (guilty commit; the deploy record nearly gives it away)
+
+| | acc@1 | acc@3 | class | false attr. | guilty retrieved | fix verified (suite) | fix correct (acceptance) | reasoning s | tokens | cost $ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| baseline: blame most recent deploy | 0.00 | 0.00 | 1.00 | - | - | 0.00 | 0.00 | - | 0.00 | 0.00 |
+| ablation: logs_commits_incidents / glm:glm-4.5-flash | 0.38 (0.38-0.38) | 0.38 (0.38-0.38) | 1.00 (1.00-1.00) | - | 0.62 (0.62-0.62) | 0.75 (0.75-0.75) | 0.71 (0.62-0.75) | 60.30 (56.74-66.64) | 14542.08 (14517.50-14563.38) | 0.01 (0.01-0.01) |
+| ablation: logs_commits / glm:glm-4.5-flash | 0.38 (0.38-0.38) | 0.38 (0.38-0.38) | 1.00 (1.00-1.00) | - | 0.62 (0.62-0.62) | 0.71 (0.62-0.75) | 0.71 (0.62-0.75) | 58.91 (55.04-64.75) | 14565.12 (14495.38-14659.38) | 0.01 (0.01-0.01) |
+| ablation: logs_only / glm:glm-4.5-flash | 0.00 (0.00-0.00) | 0.00 (0.00-0.00) | 0.46 (0.38-0.50) | - | 0.00 (0.00-0.00) | 0.25 (0.25-0.25) | 0.25 (0.25-0.25) | 55.75 (50.44-60.51) | 10536.96 (10108.12-10778.38) | 0.01 (0.01-0.01) |
+| models: logs_commits_incidents / glm:glm-4.5-flash | 0.38 (0.38-0.38) | 0.38 (0.38-0.38) | 1.00 (1.00-1.00) | - | 0.62 (0.62-0.62) | 0.75 (0.75-0.75) | 0.71 (0.62-0.75) | 60.30 (56.74-66.64) | 14542.08 (14517.50-14563.38) | 0.01 (0.01-0.01) |
+| models: logs_commits_incidents / ollama:llama3 | 0.33 (0.25-0.38) | 0.33 (0.25-0.38) | 0.62 (0.50-0.75) | - | 0.62 (0.62-0.62) | 0.33 (0.25-0.38) | 0.29 (0.25-0.38) | 12.92 (9.09-18.65) | 11952.42 (11287.38-13218.38) | 0.00 (0.00-0.00) |
+| models: logs_commits_incidents / ollama:llama3.2 | 0.04 (0.00-0.12) | 0.04 (0.00-0.12) | 0.42 (0.38-0.50) | - | 0.62 (0.62-0.62) | 0.08 (0.00-0.12) | 0.08 (0.00-0.12) | 6.42 (4.12-7.86) | 11259.08 (10303.38-12221.50) | 0.00 (0.00-0.00) |
+
+#### all faults together (for reference only - mixes easy and hard cases)
+
+| | acc@1 | acc@3 | class | false attr. | guilty retrieved | fix verified (suite) | fix correct (acceptance) | reasoning s | tokens | cost $ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| baseline: blame most recent deploy | 0.00 | 0.00 | 0.50 | 1.00 | - | 0.00 | 0.00 | - | 0.00 | 0.00 |
+| ablation: logs_commits_incidents / glm:glm-4.5-flash | 0.46 (0.44-0.50) | 0.65 (0.62-0.69) | 0.81 (0.81-0.81) | 0.21 (0.12-0.25) | 0.62 (0.62-0.62) | 0.75 (0.75-0.75) | 0.71 (0.62-0.75) | 54.67 (49.57-57.50) | 14246.44 (13893.12-14922.56) | 0.01 (0.01-0.01) |
+| ablation: logs_commits / glm:glm-4.5-flash | 0.38 (0.38-0.38) | 0.56 (0.50-0.62) | 0.62 (0.62-0.62) | 0.29 (0.25-0.38) | 0.62 (0.62-0.62) | 0.71 (0.62-0.75) | 0.71 (0.62-0.75) | 54.62 (52.39-57.26) | 14068.56 (13331.06-14994.69) | 0.01 (0.01-0.01) |
+| ablation: logs_only / glm:glm-4.5-flash | 0.25 (0.19-0.31) | 0.35 (0.31-0.44) | 0.52 (0.44-0.56) | 0.00 (0.00-0.00) | 0.00 (0.00-0.00) | 0.25 (0.25-0.25) | 0.25 (0.25-0.25) | 59.84 (55.97-63.44) | 9770.04 (9399.50-10455.38) | 0.01 (0.01-0.01) |
+| models: logs_commits_incidents / glm:glm-4.5-flash | 0.46 (0.44-0.50) | 0.65 (0.62-0.69) | 0.81 (0.81-0.81) | 0.21 (0.12-0.25) | 0.62 (0.62-0.62) | 0.75 (0.75-0.75) | 0.71 (0.62-0.75) | 54.67 (49.57-57.50) | 14246.44 (13893.12-14922.56) | 0.01 (0.01-0.01) |
 | models: logs_commits_incidents / ollama:llama3 | 0.23 (0.19-0.31) | 0.23 (0.19-0.31) | 0.69 (0.62-0.75) | 0.75 (0.62-0.88) | 0.62 (0.62-0.62) | 0.33 (0.25-0.38) | 0.29 (0.25-0.38) | 11.12 (9.62-13.91) | 10958.96 (10327.62-11292.00) | 0.00 (0.00-0.00) |
 | models: logs_commits_incidents / ollama:llama3.2 | 0.17 (0.12-0.25) | 0.25 (0.19-0.31) | 0.58 (0.50-0.69) | 0.17 (0.12-0.25) | 0.62 (0.62-0.62) | 0.08 (0.00-0.12) | 0.08 (0.00-0.12) | 5.51 (3.94-6.98) | 10621.15 (10299.00-11260.44) | 0.00 (0.00-0.00) |
 
