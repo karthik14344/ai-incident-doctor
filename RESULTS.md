@@ -20,7 +20,11 @@ python -m doctor.eval.run_eval --out doctor/eval/results/final
 
 Its outputs are `results.md` (tables), `results.json` (every aggregate) and
 `runs.jsonl` (192 scored replays, each with its full report). They are in
-`doctor/eval/results/final/`.
+`doctor/eval/results/final/`. The same run is in MLflow: experiment
+`incident-doctor-evaluation`, parent run `eval-20260924-084116`, with one child
+run per configuration and one grandchild per repeat. It was logged afterwards
+with `python -m doctor.eval.mlflow_log doctor/eval/results/final`, because
+Docker had been stopped during the replays to free memory.
 
 ---
 
