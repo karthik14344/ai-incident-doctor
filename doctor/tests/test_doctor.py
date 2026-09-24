@@ -340,3 +340,4 @@ def test_schema_capable_providers_are_sent_the_schema(monkeypatch):
     assert sent["response_format"] == {"type": "json_schema", "json_schema": {"name": "diagnosis", "schema": schema}}
     llm.OpenAICompatible(ProviderConfig("glm", "m", api_key="k"))._call("s", "u", schema, 10, 0.2, 1)
     assert sent["response_format"] == {"type": "json_object"}
+    assert sent["extra_body"] == {"thinking": {"type": "disabled"}}

@@ -484,3 +484,14 @@ applied to `main` by hand.
   its count stated, and re-run when the command is run again. Measured limit: the
   Gemini free tier allows 20 requests per model per day, far below the ~150-170
   a full evaluation needs.
+- **D-84. GLM runs with thinking disabled.** GLM-4.5-Flash (Z.ai free tier) thinks
+  before answering by default. On a real doctor prompt (f3, ~5,100 tokens) the
+  thinking used the whole 2,500-token answer allowance and left an empty answer
+  after 78 s. With `thinking: {"type": "disabled"}` the same prompt gave a complete,
+  parseable diagnosis in 28 s. The first 3-incident trial failed 3/3 with thinking
+  on, and the second scored acc@1 3/3 with it off. The local models do not think,
+  so disabling it also keeps the model comparison even. GLM's answers are still
+  checked only against the example layout in the prompt (`json_object`); Z.ai
+  ignored `json_schema` in a direct test. A wrong enum value ("increased" for
+  "rose") is corrected by the existing one-shot repair step. Paid GLM models on the
+  same key answer "insufficient balance", so only `glm-4.5-flash` is evaluated.

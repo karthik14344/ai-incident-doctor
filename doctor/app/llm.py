@@ -105,6 +105,12 @@ class Provider:
 # (4/4 schema-valid answers, against 0/3 usable with json_object; D-83).
 STRUCTURED_OUTPUT_PROVIDERS = {"gemini", "openai"}
 
+# Extra request fields per provider. GLM's flash models think by default; on a
+# real doctor prompt the thinking used the whole 2,500-token allowance and left
+# an empty answer (78 s), while with thinking disabled the answer was complete in
+# 28 s. The local models do not think either, so this keeps the comparison even (D-84).
+PROVIDER_EXTRA_BODY = {"glm": {"thinking": {"type": "disabled"}}}
+
 
 class OpenAICompatible(Provider):
     def _call(self, system, user, schema, max_tokens, temperature, seed) -> Completion:
@@ -123,7 +129,7 @@ class OpenAICompatible(Provider):
         try:
             r = client.chat.completions.create(
                 model=self.cfg.model, temperature=temperature, max_tokens=max_tokens,
-                response_format=response_format,
+                response_format=response_format, extra_body=PROVIDER_EXTRA_BODY.get(self.cfg.provider),
                 messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
         except (openai.RateLimitError, openai.APITimeoutError, openai.APIConnectionError,
                 openai.InternalServerError) as exc:
