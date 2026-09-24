@@ -65,6 +65,21 @@ def load_incidents(root: str) -> List[Dict[str, Any]]:
     return sorted(out, key=lambda i: i["bundle"].get("t_alert", 0))
 
 
+_UNAVAILABLE = ("503", "429", "high demand", "RateLimitError", "APITimeoutError", "APIConnectionError",
+                "InternalServerError")
+
+
+def provider_unavailable(report: Dict[str, Any]) -> bool:
+    """The model never answered because the service was busy or unreachable.
+
+    Such a replay measures the service's availability, not the model's
+    diagnosis, so it is not scored: it is re-run on resume (D-83)."""
+    if report.get("status") != "failed":
+        return False
+    failures = report.get("provider_failures") or []
+    return bool(failures) and all(any(m in str(f.get("error", "")) for m in _UNAVAILABLE) for f in failures)
+
+
 def provider_for(spec: Dict[str, str]) -> Optional[ProviderConfig]:
     provider, model = spec["provider"], spec["model"]
     if provider == "ollama":
@@ -209,6 +224,8 @@ def main(argv=None) -> int:
                 r = json.loads(line)
             except ValueError:
                 continue
+            if r.get("unavailable"):
+                continue  # the service was busy: try this replay again
             previous[(r["arm"], r["model"], r["incident"], r["repeat"])] = {k: v for k, v in r.items() if k != "report"}
         print(f"resuming: {len(previous)} runs already recorded in {runs_path}")
 
@@ -257,7 +274,8 @@ def main(argv=None) -> int:
                        "repeat": rep, "truth": truth, "score": s,
                        "top": ((report.get("diagnosis") or {}).get("hypotheses") or [{}])[0],
                        "incident_class": (report.get("diagnosis") or {}).get("incident_class"),
-                       "status": report.get("status"), "error": report.get("error")}
+                       "status": report.get("status"), "error": report.get("error"),
+                       "unavailable": provider_unavailable(report)}
                 done_keys[key] = row
                 rows.append(row)
                 with open(runs_path, "a", encoding="utf-8") as fh:
@@ -283,8 +301,13 @@ def main(argv=None) -> int:
                                                  if r["truth"]["delivery"] == d and r["truth"].get("guilty_commit")])
                                        for d in DELIVERIES},
                "retrieval": retrieval_rows, "live_timings": live, "groups": {}}
+    unavailable = [r for r in rows if r.get("unavailable")]
+    results["unavailable"] = [{"model": r["model"], "arm": r["arm"], "incident": r["incident"], "repeat": r["repeat"]}
+                              for r in unavailable]
     groups: Dict[str, List[Dict[str, Any]]] = {}
     for r in rows:
+        if r.get("unavailable"):
+            continue
         groups.setdefault(f"{r['comparison']}|{r['arm']}|{r['model']}", []).append(r)
     for k, rs in groups.items():
         results["groups"][k] = by_delivery(rs, repeats)

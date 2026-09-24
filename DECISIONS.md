@@ -469,3 +469,18 @@ applied to `main` by hand.
   `get`), so the replays before and after the change use identical embeddings.
   The one visible difference is that HNSW search was approximate and this search
   is exact. At these sizes the two return the same neighbours.
+- **D-83. Online models get the answer schema, and a busy service is not a wrong
+  answer.** In a first Gemini trial (gemini-3.6-flash, free tier), no answer was
+  usable when the model was only asked for "a JSON object". Local models are held
+  to the exact schema through Ollama's `format`, and online models were not. In a
+  direct test, Gemini's OpenAI-compatible endpoint honours
+  `response_format: json_schema`: 4 of 4 answers were schema-valid. Providers
+  that support it (`gemini`, `openai`) are now sent the same schema. The same
+  trial exposed a bug: when both the first answer and the repaired answer broke
+  the schema, the report could come back `ok`. It is now a failure. This never
+  happened in the llama results (0 such rows). Finally, a replay where the service
+  never answered (HTTP 503 "high demand", 429 quota, timeouts) measures the
+  service, not the model. It is marked `unavailable`, left out of the tables with
+  its count stated, and re-run when the command is run again. Measured limit: the
+  Gemini free tier allows 20 requests per model per day, far below the ~150-170
+  a full evaluation needs.

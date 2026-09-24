@@ -304,3 +304,39 @@ def test_json_index_is_exact_persistent_and_filterable(monkeypatch, tmp_path):
     assert [h["id"] for h in again.query("timeout", where={"path": "y.py"})] == ["b"]
     sims = again.similarities("cache", ["a", "b", "missing"])
     assert sims == {"a": 0.0, "b": 1.0}
+
+
+def test_two_schema_breaking_answers_are_a_failure_not_an_ok_report(monkeypatch):
+    scripted = ScriptedProvider([json.dumps({"verdict": "?"}), json.dumps({"still": "wrong"})])
+    monkeypatch.setattr(reasoner, "make_provider", lambda cfg: scripted)
+    out = reasoner.diagnose(_bundle(), arm="logs_commits", providers=[ProviderConfig("fake", "m")],
+                            settings=Settings(), verify_fix=False, use_embeddings=False)
+    assert out["status"] == "failed"
+
+
+def test_schema_capable_providers_are_sent_the_schema(monkeypatch):
+    import sys
+    import types
+
+    sent = {}
+
+    class Completions:
+        def create(self, **kw):
+            sent.update(kw)
+            msg = types.SimpleNamespace(content="{}")
+            return types.SimpleNamespace(choices=[types.SimpleNamespace(message=msg)],
+                                         usage=types.SimpleNamespace(prompt_tokens=1, completion_tokens=1))
+
+    class Client:
+        def __init__(self, **kw):
+            self.chat = types.SimpleNamespace(completions=Completions())
+
+    fake = types.SimpleNamespace(OpenAI=Client, RateLimitError=Exception, APITimeoutError=Exception,
+                                 APIConnectionError=Exception, InternalServerError=Exception,
+                                 APIStatusError=Exception)
+    monkeypatch.setitem(sys.modules, "openai", fake)
+    schema = {"type": "object"}
+    llm.OpenAICompatible(ProviderConfig("gemini", "m", api_key="k"))._call("s", "u", schema, 10, 0.2, 1)
+    assert sent["response_format"] == {"type": "json_schema", "json_schema": {"name": "diagnosis", "schema": schema}}
+    llm.OpenAICompatible(ProviderConfig("glm", "m", api_key="k"))._call("s", "u", schema, 10, 0.2, 1)
+    assert sent["response_format"] == {"type": "json_object"}

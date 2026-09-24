@@ -39,6 +39,9 @@ def write_markdown(results: Dict[str, Any]) -> str:
            "Cells show the mean over repeats with the (min-max) range across repeats.", ""]
     if results.get("skipped"):
         out += ["Not run: " + "; ".join(f"{s['model']} ({s['reason']})" for s in results["skipped"]), ""]
+    if results.get("unavailable"):
+        out += [f"Not scored: {len(results['unavailable'])} replays where the model service was busy or "
+                "unreachable and never answered (re-run them by running the same command again).", ""]
 
     keys = ["acc_at_1", "acc_at_3", "class_correct", "false_attribution", "guilty_in_retrieved",
             "fix_verified", "fix_acceptance_passed", "reasoning_s", "tokens_per_incident", "cost_usd_per_incident"]

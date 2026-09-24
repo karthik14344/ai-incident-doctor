@@ -62,7 +62,8 @@ def _call(cfg: ProviderConfig, built: Dict[str, Any], budget: CallBudget, seed: 
             errs2 = schema_errors(obj2)
             if not errs2:
                 obj, errors = obj2, semantic_errors(obj2, built["candidates"])
-            elif obj is None:
+            elif obj is None or schema_errors(obj):
+                # Both answers break the schema: a failure, never an "ok" report.
                 raise ValueError("; ".join(errs2))
         except ValueError:
             if obj is None or schema_errors(obj):

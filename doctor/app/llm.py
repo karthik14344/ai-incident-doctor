@@ -101,6 +101,11 @@ class Provider:
         raise NotImplementedError
 
 
+# Verified by request: Gemini's OpenAI-compatible endpoint honours json_schema
+# (4/4 schema-valid answers, against 0/3 usable with json_object; D-83).
+STRUCTURED_OUTPUT_PROVIDERS = {"gemini", "openai"}
+
+
 class OpenAICompatible(Provider):
     def _call(self, system, user, schema, max_tokens, temperature, seed) -> Completion:
         import openai
@@ -109,10 +114,16 @@ class OpenAICompatible(Provider):
             raise ProviderError(f"{self.cfg.provider}: no API key (DOCTOR_API_KEY)", retryable=False)
         client = openai.OpenAI(base_url=self.cfg.base_url, api_key=self.cfg.api_key,
                                timeout=self.timeout_s, max_retries=0)
+        # Providers that accept a JSON schema get the same constraint Ollama gets
+        # through `format`; the others can only be asked for "a JSON object".
+        if self.cfg.provider in STRUCTURED_OUTPUT_PROVIDERS and schema:
+            response_format = {"type": "json_schema", "json_schema": {"name": "diagnosis", "schema": schema}}
+        else:
+            response_format = {"type": "json_object"}
         try:
             r = client.chat.completions.create(
                 model=self.cfg.model, temperature=temperature, max_tokens=max_tokens,
-                response_format={"type": "json_object"},
+                response_format=response_format,
                 messages=[{"role": "system", "content": system}, {"role": "user", "content": user}])
         except (openai.RateLimitError, openai.APITimeoutError, openai.APIConnectionError,
                 openai.InternalServerError) as exc:

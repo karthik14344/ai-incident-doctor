@@ -83,3 +83,15 @@ def test_aggregation_reports_spread_across_repeats_and_splits_by_delivery():
                          "baseline_most_recent_deploy": split, "baseline_deploy_hit": {}, "retrieval": [],
                          "live_timings": []})
     assert "environment faults" in md and "push faults" in md and "0.67 (0.00-1.00)" in md
+
+
+def test_a_busy_service_is_not_scored_as_a_wrong_diagnosis():
+    from run_eval import provider_unavailable
+
+    busy = {"status": "failed", "provider_failures": [
+        {"provider": "gemini:x", "error": "ProviderError: InternalServerError: Error code: 503 - high demand"}]}
+    bad_answer = {"status": "failed", "provider_failures": [
+        {"provider": "gemini:x", "error": "ValueError: demand_vs_capacity/traffic_change: 'increased' is not one of"}]}
+    assert provider_unavailable(busy)
+    assert not provider_unavailable(bad_answer)
+    assert not provider_unavailable({"status": "ok"})
