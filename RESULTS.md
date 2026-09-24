@@ -246,6 +246,9 @@ the repair step, and those are scored as failures.
 
 The full GLM ablation (all three evidence arms, per delivery type) is in
 `doctor/eval/results/glm/results.md`, and also at the end of this file.
+It is in MLflow as parent run `eval-20260924-141418` (experiment
+`incident-doctor-evaluation`), logged with
+`python -m doctor.eval.mlflow_log doctor/eval/results/glm`.
 
 ---
 
