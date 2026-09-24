@@ -1,0 +1,966 @@
+{
+ "incident": {
+  "id": "inc_f5bf806250",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-09-23T15:02:13.992Z",
+   "status": "firing",
+   "alertname": "HighErrorRate",
+   "fingerprint": "7e293efa4fbf39ec",
+   "startsAt": "2026-09-23T15:02:03.987Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighErrorRate",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "More than 3% of requests to gateway failed with 5xx over 5 minutes, in at least 4 of those minutes.",
+    "summary": "gateway is answering 6.218% of requests with 5xx"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=%28sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%7D%5B5m%5D%29%29%29+%3E+0.03+and+on+%28service%29+count_over_time%28%28sum+by+%28service%29+%28increase%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B1m%5D%29%29+%3E+0%29%5B5m%3A1m%5D%29+%3E%3D+4&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighErrorRate\", service=\"gateway\"}"
+  },
+  "service": "gateway",
+  "received_at": "2026-09-23T15:02:13Z",
+  "diagnose_after": "2026-09-23T15:03:18Z",
+  "collection_started": "2026-09-23T15:03:17Z",
+  "evidence_saved": "2026-09-23T15:03:26Z",
+  "report_finished": "2026-09-23T15:03:40Z",
+  "alert_to_report_s": 96.6
+ },
+ "report": {
+  "incident_id": "inc_f5bf806250",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-09-23T15:02:13.992Z",
+   "status": "firing",
+   "alertname": "HighErrorRate",
+   "fingerprint": "7e293efa4fbf39ec",
+   "startsAt": "2026-09-23T15:02:03.987Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighErrorRate",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "More than 3% of requests to gateway failed with 5xx over 5 minutes, in at least 4 of those minutes.",
+    "summary": "gateway is answering 6.218% of requests with 5xx"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=%28sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%7D%5B5m%5D%29%29%29+%3E+0.03+and+on+%28service%29+count_over_time%28%28sum+by+%28service%29+%28increase%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B1m%5D%29%29+%3E+0%29%5B5m%3A1m%5D%29+%3E%3D+4&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighErrorRate\", service=\"gateway\"}"
+  },
+  "created_at": "2026-09-23T15:03:40Z",
+  "live_sha": "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+  "retrieval": {
+   "time_filtered": [
+    "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "a894401eb56d114655b693654947d2f600adfd87",
+    "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "3f8fef7301a256f703f9971661076fa765c68556",
+    "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+    "32f7a989b13c2f70b398f7f1ddeb7caf9d04b13a",
+    "3ebf4f8a23b69615141a0e680695fd0bdd7eb702",
+    "1398f0f8b69cae05829365d767a9dbd24abb3d21",
+    "9c2db405cf3b419c706036b7599d5bf57485c55a",
+    "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "818a26202ce43be4e1e42662a1e1236d441a63df",
+    "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "fd98ee868ee09a8d2af45391fa53ba0f2f29be65",
+    "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "353d3580a62c29c2b94dde7711aa6fdf63331641",
+    "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "b3ee7b320b33e30080b0bcbdb521f4ed4f8a064f",
+    "8b35c3b2419b58d6154bf1055a8fa3870a292774"
+   ],
+   "ranked": [
+    {
+     "sha": "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+     "subject": "Failure alerts must outlast a deploy's container recreate",
+     "deployed_in": "9c2db40",
+     "lexical": 13.5,
+     "semantic": 0.6644,
+     "score": 0.8658,
+     "matched_terms": [
+      "service",
+      "gateway",
+      "endpoint",
+      "failed",
+      "retrieval",
+      "chat",
+      "stream",
+      "name",
+      "warning",
+      "outcome"
+     ]
+    },
+    {
+     "sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+     "subject": "Alert on persistent low-rate errors; ticket fallback when monitoring misses",
+     "deployed_in": "75292dd",
+     "lexical": 12.81,
+     "semantic": 0.7142,
+     "score": 0.8548,
+     "matched_terms": [
+      "service",
+      "gateway",
+      "timeout",
+      "endpoint",
+      "failed",
+      "retrieval",
+      "api",
+      "chat",
+      "name",
+      "run"
+     ]
+    },
+    {
+     "sha": "818a26202ce43be4e1e42662a1e1236d441a63df",
+     "subject": "Title new chat sessions after the question",
+     "deployed_in": "42d196a",
+     "lexical": 11.08,
+     "semantic": 0.655,
+     "score": 0.7542,
+     "matched_terms": [
+      "gateway",
+      "api",
+      "chat",
+      "qestion",
+      "api_gateway",
+      "question",
+      "name",
+      "req",
+      "len",
+      "title"
+     ]
+    },
+    {
+     "sha": "353d3580a62c29c2b94dde7711aa6fdf63331641",
+     "subject": "Title new chat sessions after the question",
+     "deployed_in": "15c1b17",
+     "lexical": 11.08,
+     "semantic": 0.6509,
+     "score": 0.7526,
+     "matched_terms": [
+      "gateway",
+      "api",
+      "chat",
+      "qestion",
+      "api_gateway",
+      "question",
+      "name",
+      "req",
+      "len",
+      "title"
+     ]
+    },
+    {
+     "sha": "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+     "subject": "Revert \"Title new chat sessions after the question\"",
+     "deployed_in": "43e628b",
+     "lexical": 10.78,
+     "semantic": 0.6331,
+     "score": 0.7323,
+     "matched_terms": [
+      "gateway",
+      "api",
+      "chat",
+      "qestion",
+      "api_gateway",
+      "question",
+      "name",
+      "req",
+      "len",
+      "title"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/api_gateway/app/main.py::ChatRequest",
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/common/telemetry.py::<module>",
+    "patient/common/telemetry.py::async_client"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 2965,
+  "provider_failures": [
+   {
+    "provider": "glm:glm-4.6",
+    "error": "ProviderError: glm: no API key (DOCTOR_API_KEY)"
+   }
+  ],
+  "status": "ok",
+  "provider": "ollama",
+  "model": "llama3.2",
+  "diagnosis": {
+   "summary": "Gateway is answering 6.218% of requests with 5xx",
+   "incident_class": "capacity",
+   "demand_vs_capacity": {
+    "traffic_change": "flat",
+    "deploy_before_onset": true,
+    "verdict": "capacity_fell",
+    "reasoning": "Demand rose, but capacity did not increase to match, as indicated by flat traffic_rps and requests_rps, and in_flight increasing from 0.2759 to 1.0"
+   },
+   "hypotheses": [
+    {
+     "cause": "Inadequate capacity to handle increased demand",
+     "component": "gateway",
+     "confidence": 0.9,
+     "evidence": [
+      "in_flight{service=gateway} baseline=0.2759 incident_max=1.0 (x3.6)",
+      "requests_rps{service=gateway} baseline=0.6132 incident_max=0.9637 (x1.6)"
+     ],
+     "suspected_commit": null,
+     "suspected_files": [
+      "patient/api_gateway/app/main.py"
+     ]
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "rationale": "Scale the gateway service to increase capacity",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": false,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 1,
+   "prompt_tokens": 3312,
+   "completion_tokens": 273,
+   "cost_usd": 0.0,
+   "seconds": 2.91
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 11.34,
+   "llm_s": 2.91,
+   "total_s": 14.57
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 96.6,
+  "received_to_report_s": 87.6
+ },
+ "markdown": "# Incident inc_f5bf806250\n\n**Alert:** HighErrorRate - gateway is answering 6.218% of requests with 5xx\n**Started:** 2026-09-23T15:02:03.987Z  \n**Running commit:** 8b35c3b  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** ollama:llama3.2\n\n## What broke\n\nGateway is answering 6.218% of requests with 5xx\n\n**Incident class:** `capacity`\n\n**Demand versus capacity:** traffic flat, deploy before onset: True, verdict: capacity_fell. Demand rose, but capacity did not increase to match, as indicated by flat traffic_rps and requests_rps, and in_flight increasing from 0.2759 to 1.0\n\n## Evidence\n\n- alert 2026-09-23T15:02:03.987Z **HighErrorRate** gateway: gateway is answering 6.218% of requests with 5xx\n- log `AttributeError:c869db82b3fd` x27 in gateway: AttributeError 'ChatRequest' object has no attribute 'qestion'\n- log `ConnectError:8dda9665dd81` x1 in gateway: ConnectError All connection attempts failed\n- log `WARNING:a4dace19f999` x1 in gateway:  request\n- metric `traffic_rps{all}` baseline 0.5527 -> 0.891 (x1.6)\n- metric `requests_rps{service=gateway}` baseline 0.6132 -> 0.9637 (x1.6)\n- metric `requests_rps{service=ingestion}` baseline 0.0678 -> 0.1091 (x1.6)\n- metric `error_ratio_5xx{service=gateway}` baseline 0.0544 -> 0.1759 (x3.2)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.1571 -> 0.2727 (x1.7)\n- metric `latency_p95_s{endpoint=/api/chat,service=gateway}` baseline 2.1765 -> 3.9 (x1.8)\n- metric `latency_p95_s{endpoint=/api/retrieval/search,service=gateway}` baseline 0.0663 -> 0.13 (x2.0)\n- metric `latency_p95_s{endpoint=/generate,service=llm}` baseline 2.0841 -> 4.0 (x1.9)\n\nDeploys in the lookback window: 13; candidate commits (time filter only): 22\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.90 | gateway | none | Inadequate capacity to handle increased demand |\n\nEvidence for #1:\n- in_flight{service=gateway} baseline=0.2759 incident_max=1.0 (x3.6)\n- requests_rps{service=gateway} baseline=0.6132 incident_max=0.9637 (x1.6)\n\n## Proposed fix\n\n**Kind:** action\n\nScale the gateway service to increase capacity\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n1 calls, 3312 prompt + 273 completion tokens, $0.0; reasoning 2.91s, total 14.57s\n",
+ "resolution": null,
+ "evidence": {
+  "alert": {
+   "received_at": "2026-09-23T15:02:13.992Z",
+   "status": "firing",
+   "alertname": "HighErrorRate",
+   "fingerprint": "7e293efa4fbf39ec",
+   "startsAt": "2026-09-23T15:02:03.987Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighErrorRate",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "More than 3% of requests to gateway failed with 5xx over 5 minutes, in at least 4 of those minutes.",
+    "summary": "gateway is answering 6.218% of requests with 5xx"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=%28sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%7D%5B5m%5D%29%29%29+%3E+0.03+and+on+%28service%29+count_over_time%28%28sum+by+%28service%29+%28increase%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B1m%5D%29%29+%3E+0%29%5B5m%3A1m%5D%29+%3E%3D+4&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighErrorRate\", service=\"gateway\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "HighErrorRate",
+    "startsAt": "2026-09-23T15:02:03.987Z",
+    "labels": {
+     "alertname": "HighErrorRate",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "gateway is answering 6.218% of requests with 5xx"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-09-23T14:52:03Z",
+    "2026-09-23T15:03:03Z"
+   ],
+   "baseline": [
+    "2026-09-23T14:22:03Z",
+    "2026-09-23T14:52:03Z"
+   ]
+  },
+  "logs": [
+   {
+    "signature": "AttributeError:c869db82b3fd",
+    "count": 27,
+    "first_seen": "2026-09-23T14:52:36Z",
+    "last_seen": "2026-09-23T15:02:45Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "ERROR",
+    "message": "unhandled exception",
+    "exc_type": "AttributeError",
+    "exc_message": "'ChatRequest' object has no attribute 'qestion'",
+    "error_file": "/app/api_gateway/app/main.py",
+    "error_line": 477,
+    "error_function": "chat_stream",
+    "stack_tail": [
+     "    response = await f(request)",
+     "  File \"/usr/local/lib/python3.10/site-packages/fastapi/routing.py\", line 706, in app",
+     "    raw_response = await run_endpoint_function(",
+     "  File \"/usr/local/lib/python3.10/site-packages/fastapi/routing.py\", line 352, in run_endpoint_function",
+     "    return await dependant.call(**values)",
+     "  File \"/app/api_gateway/app/main.py\", line 477, in chat_stream",
+     "    title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")",
+     "  File \"/usr/local/lib/python3.10/site-packages/pydantic/main.py\", line 1042, in __getattr__",
+     "    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')",
+     "AttributeError: 'ChatRequest' object has no attribute 'qestion'. Did you mean: 'question'?"
+    ],
+    "git_shas": [
+     "15c1b17",
+     "8b35c3b"
+    ],
+    "target": null,
+    "new_in_incident": false
+   },
+   {
+    "signature": "ConnectError:8dda9665dd81",
+    "count": 1,
+    "first_seen": "2026-09-23T14:52:07Z",
+    "last_seen": "2026-09-23T14:52:07Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "ERROR",
+    "message": "retrieval call failed",
+    "exc_type": "ConnectError",
+    "exc_message": "All connection attempts failed",
+    "error_file": "/app/common/telemetry.py",
+    "error_line": 183,
+    "error_function": "handle_async_request",
+    "stack_tail": [
+     "    response = await transport.handle_async_request(request)",
+     "  File \"/app/common/telemetry.py\", line 183, in handle_async_request",
+     "    response = await self._inner.handle_async_request(request)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 393, in handle_async_request",
+     "    with map_httpcore_exceptions():",
+     "  File \"/usr/local/lib/python3.10/contextlib.py\", line 153, in __exit__",
+     "    self.gen.throw(typ, value, traceback)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions",
+     "    raise mapped_exc(message) from exc",
+     "httpx.ConnectError: All connection attempts failed"
+    ],
+    "git_shas": [
+     "75292dd"
+    ],
+    "target": "retrieval",
+    "new_in_incident": true
+   },
+   {
+    "signature": "WARNING:a4dace19f999",
+    "count": 1,
+    "first_seen": "2026-09-23T14:52:12Z",
+    "last_seen": "2026-09-23T14:52:12Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "WARNING",
+    "message": "request",
+    "exc_type": null,
+    "exc_message": "",
+    "error_file": null,
+    "error_line": null,
+    "error_function": null,
+    "stack_tail": [],
+    "git_shas": [
+     "75292dd"
+    ],
+    "target": null,
+    "new_in_incident": false
+   }
+  ],
+  "deploys": [
+   {
+    "ts": "2026-09-23T10:47:39Z",
+    "git_sha": "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7",
+    "short_sha": "5f1ed3e",
+    "previous_sha": "5ac3528d1cb96015e225dba18e7dfaf377da718b",
+    "commits": [
+     "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7"
+    ],
+    "services_changed": [
+     "doctor"
+    ],
+    "files_changed": [
+     "doctor/app/main.py",
+     "doctor/app/store.py",
+     "doctor/tests/test_entrypoints.py",
+     "faults/campaign.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 5.4
+    },
+    "duration_s": 46.5,
+    "reason": "local pipeline push 5f1ed3e",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T11:05:01Z",
+    "git_sha": "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "short_sha": "ffb6f14",
+    "previous_sha": "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7",
+    "commits": [
+     "ffb6f141edb0e0b73b84b97e742f8a4578553242"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/vector_store.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.5
+    },
+    "duration_s": 43.2,
+    "reason": "local pipeline push ffb6f14",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T11:56:42Z",
+    "git_sha": "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "short_sha": "43d8180",
+    "previous_sha": "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "commits": [
+     "a894401eb56d114655b693654947d2f600adfd87",
+     "43d81809c05d8ef22b17787c2fb51579774480c7"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/vector_store.py",
+     "patient/retrieval_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 44.7,
+    "reason": "local pipeline push 43d8180",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T11:57:40Z",
+    "git_sha": "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "short_sha": "8f63699",
+    "previous_sha": "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "commits": [
+     "3f8fef7301a256f703f9971661076fa765c68556",
+     "8f636994edd38c794242e1fb2d76d5016e9abbf2"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/chunker.py",
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 34.6,
+    "reason": "local pipeline push 8f63699",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T12:01:38Z",
+    "git_sha": "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "short_sha": "32d02a7",
+    "previous_sha": "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "commits": [
+     "32d02a7c398be09a6863c3f170e1fbcfc4765880"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 36.2,
+    "reason": "local pipeline push 32d02a7",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T12:14:09Z",
+    "git_sha": "9c2db405cf3b419c706036b7599d5bf57485c55a",
+    "short_sha": "9c2db40",
+    "previous_sha": "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "commits": [
+     "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+     "32f7a989b13c2f70b398f7f1ddeb7caf9d04b13a",
+     "171427eb0e5c8fadb42dcf57f8ad04d227c9324f",
+     "3ebf4f8a23b69615141a0e680695fd0bdd7eb702",
+     "ae830433d81688a2c2cad5fb0f35e854cf1cd44d",
+     "1398f0f8b69cae05829365d767a9dbd24abb3d21",
+     "9c2db405cf3b419c706036b7599d5bf57485c55a"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor",
+     "monitoring"
+    ],
+    "files_changed": [
+     "DECISIONS.md",
+     "PAVILION.md",
+     "README.md",
+     "deploy/deploy.py",
+     "docker-compose.yml",
+     "doctor/tests/test_eval_scoring.py",
+     "faults/catalog.py",
+     "faults/common.py",
+     "monitoring/prometheus/alert.rules.test.yml",
+     "monitoring/prometheus/alert.rules.yml",
+     "scripts/pipeline/verify.sh"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "ae83043",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.3
+    },
+    "duration_s": 35.0,
+    "reason": "local pipeline push 9c2db40",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:11:28Z",
+    "git_sha": "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "short_sha": "f66e72e",
+    "previous_sha": "9c2db405cf3b419c706036b7599d5bf57485c55a",
+    "commits": [
+     "94d95ce87f4f464aa19d8682b4f2f9e6c5577f71",
+     "ff4258b6f13ad83a0fd107302b433a32f3caf7d1",
+     "8ea36d46dd4aadddcf31d639d15e1a49cf35e0df",
+     "f66e72eb25d29c40e182cbf8990423b11f3bf58b"
+    ],
+    "services_changed": [
+     "doctor"
+    ],
+    "files_changed": [
+     "DECISIONS.md",
+     "doctor/app/collectors.py",
+     "doctor/app/prompt.py",
+     "doctor/app/retrieval.py",
+     "doctor/app/settings.py",
+     "doctor/eval/report_tables.py",
+     "doctor/eval/results/baseline-3incidents/results.json",
+     "doctor/eval/results/baseline-3incidents/results.md",
+     "doctor/eval/run_eval.py",
+     "doctor/eval/scoring.py",
+     "faults/campaign.py",
+     "faults/catalog.py",
+     "faults/selfcheck.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 4.2
+    },
+    "duration_s": 29.9,
+    "reason": "local pipeline push f66e72e",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:22:31Z",
+    "git_sha": "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "short_sha": "42d196a",
+    "previous_sha": "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "commits": [
+     "818a26202ce43be4e1e42662a1e1236d441a63df",
+     "42d196a66b41da7d293c54c169a6008860e0f96f"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.9,
+    "reason": "local pipeline push 42d196a",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:23:22Z",
+    "git_sha": "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "short_sha": "b4385a9",
+    "previous_sha": "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "commits": [
+     "fd98ee868ee09a8d2af45391fa53ba0f2f29be65",
+     "b4385a93374d8898be50ea719a53dcc7b9123144"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/api_gateway/app/suggestions.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.0,
+    "reason": "local pipeline push b4385a9",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:39:18Z",
+    "git_sha": "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "short_sha": "43e628b",
+    "previous_sha": "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "commits": [
+     "43e628b0d966a33a4b5833de75b559b2ba8c0b7c"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 33.1,
+    "reason": "local pipeline push 43e628b",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:41:34Z",
+    "git_sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "short_sha": "75292dd",
+    "previous_sha": "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "commits": [
+     "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3"
+    ],
+    "services_changed": [
+     "monitoring"
+    ],
+    "files_changed": [
+     "DECISIONS.md",
+     "faults/catalog.py",
+     "faults/run_fault.py",
+     "monitoring/prometheus/alert.rules.test.yml",
+     "monitoring/prometheus/alert.rules.yml"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 31.3,
+    "reason": "local pipeline push 75292dd",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:52:35Z",
+    "git_sha": "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "short_sha": "15c1b17",
+    "previous_sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "commits": [
+     "353d3580a62c29c2b94dde7711aa6fdf63331641",
+     "15c1b1783539ec6fd7f9260943c5b1e269513723"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/db.py",
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.4,
+    "reason": "local pipeline push 15c1b17",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:53:25Z",
+    "git_sha": "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+    "short_sha": "8b35c3b",
+    "previous_sha": "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "commits": [
+     "b3ee7b320b33e30080b0bcbdb521f4ed4f8a064f",
+     "8b35c3b2419b58d6154bf1055a8fa3870a292774"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/guardrails.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.0,
+    "reason": "local pipeline push 8b35c3b",
+    "pipeline": "local",
+    "host": "Karthz"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "subject": "Reuse one ChromaDB HttpClient per server",
+    "date": "2026-09-23T16:33:37+05:30"
+   },
+   {
+    "sha": "a894401eb56d114655b693654947d2f600adfd87",
+    "subject": "Note what the source previews contain",
+    "date": "2026-09-23T17:25:34+05:30"
+   },
+   {
+    "sha": "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "subject": "Document the similarity convention in the vector store",
+    "date": "2026-09-23T17:25:34+05:30"
+   },
+   {
+    "sha": "3f8fef7301a256f703f9971661076fa765c68556",
+    "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+    "date": "2026-09-23T17:26:42+05:30"
+   },
+   {
+    "sha": "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "subject": "Clarify chunk size units",
+    "date": "2026-09-23T17:26:43+05:30"
+   },
+   {
+    "sha": "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "subject": "Revert \"Cap embedding calls at 10 s so a stuck call frees its thread\"",
+    "date": "2026-09-23T17:30:31+05:30"
+   },
+   {
+    "sha": "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+    "subject": "Failure alerts must outlast a deploy's container recreate",
+    "date": "2026-09-23T17:42:40+05:30"
+   },
+   {
+    "sha": "32f7a989b13c2f70b398f7f1ddeb7caf9d04b13a",
+    "subject": "Tag the doctor and other components by their own last commit",
+    "date": "2026-09-23T17:42:40+05:30"
+   },
+   {
+    "sha": "3ebf4f8a23b69615141a0e680695fd0bdd7eb702",
+    "subject": "Add README for examiners and PAVILION.md for the second laptop",
+    "date": "2026-09-23T17:42:40+05:30"
+   },
+   {
+    "sha": "1398f0f8b69cae05829365d767a9dbd24abb3d21",
+    "subject": "Record fault-injection, alerting, evaluation and deploy-isolation decisions (D-52..D-74)",
+    "date": "2026-09-23T17:42:41+05:30"
+   },
+   {
+    "sha": "9c2db405cf3b419c706036b7599d5bf57485c55a",
+    "subject": "Wrap a long alert description (yamllint line length)",
+    "date": "2026-09-23T17:43:14+05:30"
+   },
+   {
+    "sha": "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "subject": "Record the lint-proof typo fault and the retrieval scope decisions (D-75, D-76)",
+    "date": "2026-09-23T18:47:41+05:30"
+   },
+   {
+    "sha": "818a26202ce43be4e1e42662a1e1236d441a63df",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-09-23T19:51:38+05:30"
+   },
+   {
+    "sha": "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "subject": "Explain why gateway settings are read per request",
+    "date": "2026-09-23T19:51:38+05:30"
+   },
+   {
+    "sha": "fd98ee868ee09a8d2af45391fa53ba0f2f29be65",
+    "subject": "Document the SSE framing helper",
+    "date": "2026-09-23T19:52:31+05:30"
+   },
+   {
+    "sha": "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "subject": "Note that query suggestions never call a model",
+    "date": "2026-09-23T19:52:32+05:30"
+   },
+   {
+    "sha": "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "subject": "Revert \"Title new chat sessions after the question\"",
+    "date": "2026-09-23T20:08:26+05:30"
+   },
+   {
+    "sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "subject": "Alert on persistent low-rate errors; ticket fallback when monitoring misses",
+    "date": "2026-09-23T20:10:44+05:30"
+   },
+   {
+    "sha": "353d3580a62c29c2b94dde7711aa6fdf63331641",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-09-23T20:21:44+05:30"
+   },
+   {
+    "sha": "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "subject": "Document that init_db is idempotent",
+    "date": "2026-09-23T20:21:44+05:30"
+   },
+   {
+    "sha": "b3ee7b320b33e30080b0bcbdb521f4ed4f8a064f",
+    "subject": "Comment on guardrail ordering",
+    "date": "2026-09-23T20:22:35+05:30"
+   },
+   {
+    "sha": "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+    "subject": "Operations notes: restarting a single service",
+    "date": "2026-09-23T20:22:35+05:30"
+   }
+  ]
+ }
+}

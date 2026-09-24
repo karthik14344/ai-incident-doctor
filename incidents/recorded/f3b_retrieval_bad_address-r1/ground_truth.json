@@ -1,0 +1,20 @@
+{
+  "fault_id": "f3b_retrieval_bad_address",
+  "name": "Gateway pointed at a wrong retrieval address",
+  "delivery": "environment",
+  "incident_class": "dependency_failure",
+  "acceptable_classes": [
+    "configuration",
+    "dependency_failure"
+  ],
+  "component": "retrieval",
+  "acceptable_components": [
+    "retrieval"
+  ],
+  "true_cause": "The gateway was restarted with RETRIEVAL_SERVICE_URL pointing at a host that does not exist; retrieval itself is healthy but unreachable from the gateway.",
+  "expected_fix": "Restore the retrieval address (RETRIEVAL_SERVICE_URL=http://retrieval:8002) and restart the gateway.",
+  "acceptance_test": null,
+  "run_id": "f3b_retrieval_bad_address-r1",
+  "guilty_commit": null,
+  "guilty_kb_version": null
+}

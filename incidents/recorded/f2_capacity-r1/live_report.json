@@ -1,0 +1,1197 @@
+{
+ "incident": {
+  "id": "inc_a2d5a9858a",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-09-23T12:26:35.593Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-09-23T12:26:30.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 83.2s"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "service": "gateway",
+  "received_at": "2026-09-23T12:26:35Z",
+  "diagnose_after": "2026-09-23T12:27:45Z",
+  "joined_alerts": [
+   {
+    "alertname": "MemoryClimbing",
+    "startsAt": "2026-09-23T12:28:21.176Z"
+   }
+  ],
+  "collection_started": "2026-09-23T12:31:06Z",
+  "evidence_saved": "2026-09-23T12:31:33Z",
+  "report_finished": "2026-09-23T12:32:47Z",
+  "alert_to_report_s": 376.6
+ },
+ "report": {
+  "incident_id": "inc_a2d5a9858a",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-09-23T12:26:35.593Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-09-23T12:26:30.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 83.2s"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "created_at": "2026-09-23T12:32:47Z",
+  "live_sha": "9c2db405cf3b419c706036b7599d5bf57485c55a",
+  "retrieval": {
+   "time_filtered": [
+    "efc291197369097a1ec055c2aaec27f64e11de8c",
+    "07ba81d47c878d7eee13d085285365c5b76446e9",
+    "1da4721db6d0f7689ad238fa6b9d5e1e75cabdff",
+    "6063556c56a25cdd58aef8daf02d3ce534e3f656",
+    "2f2f5bfd6cd79e444ca180f6bdc7e1a1dc793469",
+    "630a5af6fe22e00a3b7a8de2e91ea952ca01c8f8",
+    "1b6fe489c3d3ed6efe09f0cc5a6a6aa6aca75343",
+    "e0740b7b2a3dbd59ec5bbc3ba0c7aa3055e19e67",
+    "15014227195f89603812e799cd3f3dafe9a30d38",
+    "2b9bbcdedad5072b91bba909f37b239e11259899",
+    "47e6e400ebb9613a4e097e840ef55465665e125d",
+    "c1bdf6c48fef4570cdcc0f306b6df5b3cfe54481",
+    "a96098fba4906c99cc68159c7d8b50be3b78f188",
+    "387e9a1889c0491e876f14ebe3207c0c26cde005",
+    "ab86f1d5991a57f7de20523589e0ffb5d78ffe98",
+    "ecb7ce91b036aae790ddd44417fc48310b33d929",
+    "758c0b3cb8441ef065f91410bd6a2ea9547ea236",
+    "7c76da62d809f09af31fc376248b0418987fab4e",
+    "1d7953f7e7c26f2d0248883f35575b33cbde41b5",
+    "8433da611c47db5f412ef9419fc9e766b7104eb0",
+    "fd2722b5d97ccc22437a35fde5601e4b13f566b1",
+    "50bc361c379bea7aeb33da12250793c7c0ea446e",
+    "a8737e5097753ee8a5ab3f3e62f8f164e3ee90b2",
+    "9174c2e78311ffb0aa369b978faa274a0da83a63",
+    "d42901c99f50c851235dbeaff08ef504e56ee490",
+    "3e53f1e832a013951cececbe8f9888cc9bdd497c",
+    "0bba1491d2612cc96abf48375da0bb10ed2faa15",
+    "602d3d32844446d2f9edd451ebec5a6df87eb7ac",
+    "38326dec780cd0a64dd12fb03c73856c9a63fe7d",
+    "101c65170e71625dc8a7db05fbd743843b348ccb",
+    "de6b924ab57e367835ff1c5f7dee05ef9ae0b36c",
+    "60dd6dcd78c9ea0df63226f8ea25c481a85b89e8",
+    "82cf115bc01c908903d14bb13995a6ed1f5269b6",
+    "f127cdadda75bc12f2450b1317b28fc7ac5eed2b",
+    "999f2a275c731809d809643b4ceb7926de40fabb",
+    "1f413858cc65f526ddd273ab000b5f3ec8f78066",
+    "b36a2afd17593b8383880fdbf9c2d37377166b4c",
+    "5abebfe2ad72d4f2f88b21f594e89ee79e117458",
+    "5ac3528d1cb96015e225dba18e7dfaf377da718b",
+    "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7",
+    "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "a894401eb56d114655b693654947d2f600adfd87",
+    "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "3f8fef7301a256f703f9971661076fa765c68556",
+    "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+    "32f7a989b13c2f70b398f7f1ddeb7caf9d04b13a",
+    "3ebf4f8a23b69615141a0e680695fd0bdd7eb702",
+    "ae830433d81688a2c2cad5fb0f35e854cf1cd44d",
+    "1398f0f8b69cae05829365d767a9dbd24abb3d21",
+    "9c2db405cf3b419c706036b7599d5bf57485c55a"
+   ],
+   "ranked": [
+    {
+     "sha": "1d7953f7e7c26f2d0248883f35575b33cbde41b5",
+     "subject": "doctor: three entry points - /incident, /ticket and a replay CLI",
+     "deployed_in": "d42901c",
+     "lexical": 130.0,
+     "semantic": 0.5894,
+     "score": 0.8358,
+     "matched_terms": [
+      "service",
+      "llm",
+      "gateway",
+      "timeout",
+      "store",
+      "endpoint",
+      "api",
+      "chat",
+      "retrieval",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "e0740b7b2a3dbd59ec5bbc3ba0c7aa3055e19e67",
+     "subject": "doctor: hybrid commit retrieval with a time-filter baseline",
+     "deployed_in": "758c0b3",
+     "lexical": 109.0,
+     "semantic": 0.5362,
+     "score": 0.7175,
+     "matched_terms": [
+      "maxsize",
+      "timeout",
+      "lru",
+      "cache",
+      "memory",
+      "store",
+      "generate",
+      "embed",
+      "retrieval",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "de6b924ab57e367835ff1c5f7dee05ef9ae0b36c",
+     "subject": "Alert rules: deploys must not look like crash loops or leaks",
+     "deployed_in": "ed15266",
+     "lexical": 107.0,
+     "semantic": 0.5413,
+     "score": 0.7104,
+     "matched_terms": [
+      "service",
+      "llm",
+      "gateway",
+      "memory",
+      "endpoint",
+      "retrieval",
+      "knowledgeai"
+     ]
+    },
+    {
+     "sha": "5abebfe2ad72d4f2f88b21f594e89ee79e117458",
+     "subject": "Latency alert thresholds from the measured healthy baseline",
+     "deployed_in": "5abebfe",
+     "lexical": 83.0,
+     "semantic": 0.7753,
+     "score": 0.6932,
+     "matched_terms": [
+      "service",
+      "generate",
+      "endpoint",
+      "latency",
+      "api",
+      "chat",
+      "retrieval",
+      "knowledgeai",
+      "warning",
+      "highlatencyp95"
+     ]
+    },
+    {
+     "sha": "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+     "subject": "Failure alerts must outlast a deploy's container recreate",
+     "deployed_in": "9c2db40",
+     "lexical": 90.0,
+     "semantic": 0.6127,
+     "score": 0.6605,
+     "matched_terms": [
+      "service",
+      "gateway",
+      "endpoint",
+      "chat",
+      "retrieval",
+      "knowledgeai",
+      "outcome",
+      "warning"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/api_gateway/app/main.py::chat_stream",
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/api_gateway/app/main.py::ChatRequest",
+    "patient/api_gateway/app/main.py::_run_retrieval"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 2946,
+  "provider_failures": [
+   {
+    "provider": "glm:glm-4.6",
+    "error": "ProviderError: glm: no API key (DOCTOR_API_KEY)"
+   }
+  ],
+  "status": "ok",
+  "provider": "ollama",
+  "model": "llama3.2",
+  "diagnosis": {
+   "summary": "Gateway /api/chat p95 latency exceeded threshold",
+   "incident_class": "capacity",
+   "demand_vs_capacity": {
+    "traffic_change": "flat",
+    "deploy_before_onset": false,
+    "verdict": "capacity_fell",
+    "reasoning": "Traffic RPS increased by x2.9, while capacity remained the same."
+   },
+   "hypotheses": [
+    {
+     "cause": "Increased traffic from the gateway service",
+     "component": "gateway",
+     "confidence": 0.9,
+     "evidence": [
+      "requests_rps{service=gateway} baseline=0.7277 incident_max=2.0183",
+      "requests_rps{service=gateway} incident_max=2.0183 (x2.8)"
+     ],
+     "suspected_commit": null,
+     "suspected_files": [
+      "patient/api_gateway/app/main.py"
+     ]
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "rationale": "Scale the gateway service to handle increased traffic.",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": false,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 1,
+   "prompt_tokens": 3354,
+   "completion_tokens": 235,
+   "cost_usd": 0.0,
+   "seconds": 72.65
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 0.61,
+   "llm_s": 72.65,
+   "total_s": 73.26
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 376.6,
+  "received_to_report_s": 372.1
+ },
+ "markdown": "# Incident inc_a2d5a9858a\n\n**Alert:** HighLatencyP95 - p95 latency of gateway /api/chat is 83.2s\n**Started:** 2026-09-23T12:26:30.51Z  \n**Running commit:** 9c2db40  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** ollama:llama3.2\n\n## What broke\n\nGateway /api/chat p95 latency exceeded threshold\n\n**Incident class:** `capacity`\n\n**Demand versus capacity:** traffic flat, deploy before onset: False, verdict: capacity_fell. Traffic RPS increased by x2.9, while capacity remained the same.\n\n## Evidence\n\n- alert 2026-09-23T12:26:30.51Z **HighLatencyP95** gateway: p95 latency of gateway /api/chat is 83.2s\n- alert 2026-09-23T12:26:30.51Z **HighLatencyP95** llm: p95 latency of llm /generate is 83.0s\n- alert 2026-09-23T12:28:21.176Z **MemoryClimbing** gateway: resident memory of gateway is growing by 662.7kiB/s\n- alert 2026-09-23T12:28:26.176Z **MemoryClimbing** llm: resident memory of llm is growing by 306.9kiB/s\n- metric `traffic_rps{all}` baseline 0.6647 -> 1.9455 (x2.9)\n- metric `requests_rps{service=gateway}` baseline 0.7277 -> 2.0183 (x2.8)\n- metric `requests_rps{service=llm}` baseline 0.4963 -> 1.5819 (x3.2)\n- metric `requests_rps{service=retrieval}` baseline 0.7459 -> 3.4184 (x4.6)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.4274 -> 1.5092 (x3.5)\n- metric `latency_p95_s{endpoint=/api/chat,service=gateway}` baseline 29.5432 -> 88.5 (x3.0)\n- metric `latency_p95_s{endpoint=/generate,service=llm}` baseline 28.6878 -> 88.5 (x3.1)\n- metric `latency_p50_s{endpoint=/api/chat,service=gateway}` baseline 22.1445 -> 75.0 (x3.4)\n\nDeploys in the lookback window: 14; candidate commits (time filter only): 52\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.90 | gateway | none | Increased traffic from the gateway service |\n\nEvidence for #1:\n- requests_rps{service=gateway} baseline=0.7277 incident_max=2.0183\n- requests_rps{service=gateway} incident_max=2.0183 (x2.8)\n\n## Proposed fix\n\n**Kind:** action\n\nScale the gateway service to handle increased traffic.\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n1 calls, 3354 prompt + 235 completion tokens, $0.0; reasoning 72.65s, total 73.26s\n",
+ "resolution": null,
+ "evidence": {
+  "alert": {
+   "received_at": "2026-09-23T12:26:35.593Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-09-23T12:26:30.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 83.2s"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-09-23T12:26:30.51Z",
+    "labels": {
+     "alertname": "HighLatencyP95",
+     "endpoint": "/api/chat",
+     "path": "generation",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "p95 latency of gateway /api/chat is 83.2s"
+   },
+   {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-09-23T12:26:30.51Z",
+    "labels": {
+     "alertname": "HighLatencyP95",
+     "endpoint": "/generate",
+     "path": "generation",
+     "service": "llm",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "p95 latency of llm /generate is 83.0s"
+   },
+   {
+    "alertname": "MemoryClimbing",
+    "startsAt": "2026-09-23T12:28:21.176Z",
+    "labels": {
+     "alertname": "MemoryClimbing",
+     "instance": "gateway:8000",
+     "job": "gateway",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "resident memory of gateway is growing by 662.7kiB/s"
+   },
+   {
+    "alertname": "MemoryClimbing",
+    "startsAt": "2026-09-23T12:28:26.176Z",
+    "labels": {
+     "alertname": "MemoryClimbing",
+     "instance": "llm:8003",
+     "job": "llm",
+     "service": "llm",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "resident memory of llm is growing by 306.9kiB/s"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-09-23T12:16:30Z",
+    "2026-09-23T12:27:30Z"
+   ],
+   "baseline": [
+    "2026-09-23T11:46:30Z",
+    "2026-09-23T12:16:30Z"
+   ]
+  },
+  "logs": [],
+  "deploys": [
+   {
+    "ts": "2026-09-23T06:51:58Z",
+    "git_sha": "758c0b3cb8441ef065f91410bd6a2ea9547ea236",
+    "short_sha": "758c0b3",
+    "previous_sha": "bae0eb3f1eee67b1606f9cce2e9b5fde04ec4233",
+    "commits": [
+     "efc291197369097a1ec055c2aaec27f64e11de8c",
+     "07ba81d47c878d7eee13d085285365c5b76446e9",
+     "1da4721db6d0f7689ad238fa6b9d5e1e75cabdff",
+     "6063556c56a25cdd58aef8daf02d3ce534e3f656",
+     "2f2f5bfd6cd79e444ca180f6bdc7e1a1dc793469",
+     "630a5af6fe22e00a3b7a8de2e91ea952ca01c8f8",
+     "1b6fe489c3d3ed6efe09f0cc5a6a6aa6aca75343",
+     "e0740b7b2a3dbd59ec5bbc3ba0c7aa3055e19e67",
+     "15014227195f89603812e799cd3f3dafe9a30d38",
+     "2b9bbcdedad5072b91bba909f37b239e11259899",
+     "47e6e400ebb9613a4e097e840ef55465665e125d",
+     "c1bdf6c48fef4570cdcc0f306b6df5b3cfe54481",
+     "a96098fba4906c99cc68159c7d8b50be3b78f188",
+     "387e9a1889c0491e876f14ebe3207c0c26cde005",
+     "ab86f1d5991a57f7de20523589e0ffb5d78ffe98",
+     "ecb7ce91b036aae790ddd44417fc48310b33d929",
+     "758c0b3cb8441ef065f91410bd6a2ea9547ea236"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor",
+     "gateway",
+     "llm"
+    ],
+    "files_changed": [
+     ".env.example",
+     ".github/workflows/ci.yml",
+     ".yamllint.yml",
+     "DECISIONS.md",
+     "deploy/deploy.py",
+     "docker-compose.yml",
+     "doctor/Dockerfile",
+     "doctor/app/__init__.py",
+     "doctor/app/collectors.py",
+     "doctor/app/evidence.py",
+     "doctor/app/fixes.py",
+     "doctor/app/indexes.py",
+     "doctor/app/llm.py",
+     "doctor/app/main.py",
+     "doctor/app/prompt.py",
+     "doctor/app/reasoner.py",
+     "doctor/app/report.py",
+     "doctor/app/retrieval.py",
+     "doctor/app/schema.py",
+     "doctor/app/settings.py",
+     "doctor/app/signatures.py",
+     "doctor/app/store.py",
+     "doctor/app/verify.py",
+     "doctor/requirements.txt",
+     "doctor/tests/conftest.py",
+     "doctor/tests/test_doctor.py",
+     "loadgen/__init__.py",
+     "loadgen/loadgen.py",
+     "patient/evaluation/mlflow_log.py",
+     "patient/evaluation/runner.py",
+     "patient/tests/test_mlflow_log.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 11.3
+    },
+    "duration_s": 393.5,
+    "reason": "add doctor",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T07:41:48Z",
+    "git_sha": "d42901c99f50c851235dbeaff08ef504e56ee490",
+    "short_sha": "d42901c",
+    "previous_sha": "758c0b3cb8441ef065f91410bd6a2ea9547ea236",
+    "commits": [
+     "7c76da62d809f09af31fc376248b0418987fab4e",
+     "1d7953f7e7c26f2d0248883f35575b33cbde41b5",
+     "8433da611c47db5f412ef9419fc9e766b7104eb0",
+     "fd2722b5d97ccc22437a35fde5601e4b13f566b1",
+     "50bc361c379bea7aeb33da12250793c7c0ea446e",
+     "a8737e5097753ee8a5ab3f3e62f8f164e3ee90b2",
+     "9174c2e78311ffb0aa369b978faa274a0da83a63",
+     "d42901c99f50c851235dbeaff08ef504e56ee490"
+    ],
+    "services_changed": [
+     "alert-sink",
+     "compose",
+     "doctor",
+     "frontend",
+     "kb-loader"
+    ],
+    "files_changed": [
+     "alert_sink/sink.py",
+     "deploy/pipeline.py",
+     "deploy/setup_local_remote.py",
+     "docker-compose.yml",
+     "doctor/app/collectors.py",
+     "doctor/app/evidence.py",
+     "doctor/app/main.py",
+     "doctor/app/prompt.py",
+     "doctor/app/replay.py",
+     "doctor/app/settings.py",
+     "doctor/app/store.py",
+     "doctor/app/ticket.py",
+     "doctor/tests/test_doctor.py",
+     "doctor/tests/test_entrypoints.py",
+     "patient/frontend/src/App.jsx",
+     "patient/frontend/src/components/Navbar.jsx",
+     "patient/frontend/src/components/Sidebar.jsx",
+     "patient/frontend/src/pages/Incidents.jsx",
+     "patient/frontend/src/services/doctorApi.js",
+     "patient/kb/load_kb.py",
+     "requirements-dev.txt"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 7.9
+    },
+    "duration_s": 64.1,
+    "reason": "pipeline push d42901c",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T07:46:11Z",
+    "git_sha": "3e53f1e832a013951cececbe8f9888cc9bdd497c",
+    "short_sha": "3e53f1e",
+    "previous_sha": "d42901c99f50c851235dbeaff08ef504e56ee490",
+    "commits": [
+     "3e53f1e832a013951cececbe8f9888cc9bdd497c"
+    ],
+    "services_changed": [
+     "doctor"
+    ],
+    "files_changed": [
+     ".github/workflows/ci.yml",
+     ".yamllint.yml",
+     "deploy/deploy.py",
+     "deploy/pipeline.py",
+     "deploy/setup_local_remote.py",
+     "doctor/tests/test_entrypoints.py",
+     "scripts/pipeline/_env.sh",
+     "scripts/pipeline/deploy.sh",
+     "scripts/pipeline/init_local_pipeline.sh",
+     "scripts/pipeline/post-receive",
+     "scripts/pipeline/verify.sh"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 1.0
+    },
+    "duration_s": 47.2,
+    "reason": "local pipeline push 3e53f1e",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T08:17:39Z",
+    "git_sha": "ed15266d033fc129fe32bce3182f594ca0844fc8",
+    "short_sha": "ed15266",
+    "previous_sha": "3e53f1e832a013951cececbe8f9888cc9bdd497c",
+    "commits": [
+     "0bba1491d2612cc96abf48375da0bb10ed2faa15",
+     "602d3d32844446d2f9edd451ebec5a6df87eb7ac",
+     "38326dec780cd0a64dd12fb03c73856c9a63fe7d",
+     "2f48791bd024ff87683d4983b784a0e5dadfcf93",
+     "101c65170e71625dc8a7db05fbd743843b348ccb",
+     "4b8e1dc0fd8df24dfc80b9da8a577ca7281c4e49",
+     "de6b924ab57e367835ff1c5f7dee05ef9ae0b36c",
+     "60dd6dcd78c9ea0df63226f8ea25c481a85b89e8",
+     "82cf115bc01c908903d14bb13995a6ed1f5269b6",
+     "f127cdadda75bc12f2450b1317b28fc7ac5eed2b",
+     "999f2a275c731809d809643b4ceb7926de40fabb",
+     "ed15266d033fc129fe32bce3182f594ca0844fc8"
+    ],
+    "services_changed": [
+     "doctor",
+     "kb-loader",
+     "knowledge-base",
+     "monitoring"
+    ],
+    "files_changed": [
+     "DECISIONS.md",
+     "doctor/app/main.py",
+     "doctor/tests/test_entrypoints.py",
+     "dvc.lock",
+     "faults/acceptance/test_f1_embed_timeout.py",
+     "faults/acceptance/test_f4_memory_leak.py",
+     "faults/acceptance/test_f5_typo.py",
+     "faults/acceptance/test_f6_tight_timeout.py",
+     "faults/background_traffic.py",
+     "faults/catalog.py",
+     "faults/common.py",
+     "faults/distractors.py",
+     "faults/run_fault.py",
+     "faults/selfcheck.py",
+     "loadgen/loadgen.py",
+     "monitoring/prometheus/alert.rules.test.yml",
+     "monitoring/prometheus/alert.rules.yml",
+     "patient/kb/build_kb.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 46.3,
+    "reason": "local pipeline push ed15266",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T08:21:22Z",
+    "git_sha": "1f413858cc65f526ddd273ab000b5f3ec8f78066",
+    "short_sha": "1f41385",
+    "previous_sha": "ed15266d033fc129fe32bce3182f594ca0844fc8",
+    "commits": [
+     "1f413858cc65f526ddd273ab000b5f3ec8f78066"
+    ],
+    "services_changed": [
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "deploy/deploy.py",
+     "doctor/app/main.py",
+     "doctor/app/reasoner.py",
+     "doctor/eval/scoring.py",
+     "doctor/tests/test_doctor.py",
+     "faults/common.py",
+     "faults/run_fault.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 43.7,
+    "reason": "local pipeline push 1f41385",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T08:25:05Z",
+    "git_sha": "b36a2afd17593b8383880fdbf9c2d37377166b4c",
+    "short_sha": "b36a2af",
+    "previous_sha": "1f413858cc65f526ddd273ab000b5f3ec8f78066",
+    "commits": [
+     "b36a2afd17593b8383880fdbf9c2d37377166b4c"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "docker-compose.yml",
+     "doctor/app/llm.py",
+     "doctor/app/main.py",
+     "doctor/app/reasoner.py",
+     "doctor/app/settings.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 41.3,
+    "reason": "local pipeline push b36a2af",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T08:33:21Z",
+    "git_sha": "5abebfe2ad72d4f2f88b21f594e89ee79e117458",
+    "short_sha": "5abebfe",
+    "previous_sha": "b36a2afd17593b8383880fdbf9c2d37377166b4c",
+    "commits": [
+     "6ba463dea4bea7f60cc382fa1c46b545d1f8ba26",
+     "5abebfe2ad72d4f2f88b21f594e89ee79e117458"
+    ],
+    "services_changed": [
+     "doctor",
+     "monitoring"
+    ],
+    "files_changed": [
+     "doctor/eval/__init__.py",
+     "doctor/eval/config.json",
+     "doctor/eval/mlflow_log.py",
+     "doctor/eval/report_tables.py",
+     "doctor/eval/run_eval.py",
+     "faults/campaign.py",
+     "monitoring/prometheus/alert.rules.yml"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.3
+    },
+    "duration_s": 44.1,
+    "reason": "local pipeline push 5abebfe",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T08:37:06Z",
+    "git_sha": "5ac3528d1cb96015e225dba18e7dfaf377da718b",
+    "short_sha": "5ac3528",
+    "previous_sha": "5abebfe2ad72d4f2f88b21f594e89ee79e117458",
+    "commits": [
+     "5ac3528d1cb96015e225dba18e7dfaf377da718b"
+    ],
+    "services_changed": [
+     "monitoring"
+    ],
+    "files_changed": [
+     "faults/common.py",
+     "faults/run_fault.py",
+     "monitoring/prometheus/alert.rules.yml"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 39.7,
+    "reason": "local pipeline push 5ac3528",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T10:47:39Z",
+    "git_sha": "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7",
+    "short_sha": "5f1ed3e",
+    "previous_sha": "5ac3528d1cb96015e225dba18e7dfaf377da718b",
+    "commits": [
+     "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7"
+    ],
+    "services_changed": [
+     "doctor"
+    ],
+    "files_changed": [
+     "doctor/app/main.py",
+     "doctor/app/store.py",
+     "doctor/tests/test_entrypoints.py",
+     "faults/campaign.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 5.4
+    },
+    "duration_s": 46.5,
+    "reason": "local pipeline push 5f1ed3e",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T11:05:01Z",
+    "git_sha": "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "short_sha": "ffb6f14",
+    "previous_sha": "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7",
+    "commits": [
+     "ffb6f141edb0e0b73b84b97e742f8a4578553242"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/vector_store.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.5
+    },
+    "duration_s": 43.2,
+    "reason": "local pipeline push ffb6f14",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T11:56:42Z",
+    "git_sha": "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "short_sha": "43d8180",
+    "previous_sha": "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "commits": [
+     "a894401eb56d114655b693654947d2f600adfd87",
+     "43d81809c05d8ef22b17787c2fb51579774480c7"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/vector_store.py",
+     "patient/retrieval_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 44.7,
+    "reason": "local pipeline push 43d8180",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T11:57:40Z",
+    "git_sha": "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "short_sha": "8f63699",
+    "previous_sha": "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "commits": [
+     "3f8fef7301a256f703f9971661076fa765c68556",
+     "8f636994edd38c794242e1fb2d76d5016e9abbf2"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/chunker.py",
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 34.6,
+    "reason": "local pipeline push 8f63699",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T12:01:38Z",
+    "git_sha": "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "short_sha": "32d02a7",
+    "previous_sha": "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "commits": [
+     "32d02a7c398be09a6863c3f170e1fbcfc4765880"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 36.2,
+    "reason": "local pipeline push 32d02a7",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T12:14:09Z",
+    "git_sha": "9c2db405cf3b419c706036b7599d5bf57485c55a",
+    "short_sha": "9c2db40",
+    "previous_sha": "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "commits": [
+     "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+     "32f7a989b13c2f70b398f7f1ddeb7caf9d04b13a",
+     "171427eb0e5c8fadb42dcf57f8ad04d227c9324f",
+     "3ebf4f8a23b69615141a0e680695fd0bdd7eb702",
+     "ae830433d81688a2c2cad5fb0f35e854cf1cd44d",
+     "1398f0f8b69cae05829365d767a9dbd24abb3d21",
+     "9c2db405cf3b419c706036b7599d5bf57485c55a"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor",
+     "monitoring"
+    ],
+    "files_changed": [
+     "DECISIONS.md",
+     "PAVILION.md",
+     "README.md",
+     "deploy/deploy.py",
+     "docker-compose.yml",
+     "doctor/tests/test_eval_scoring.py",
+     "faults/catalog.py",
+     "faults/common.py",
+     "monitoring/prometheus/alert.rules.test.yml",
+     "monitoring/prometheus/alert.rules.yml",
+     "scripts/pipeline/verify.sh"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "ae83043",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.3
+    },
+    "duration_s": 35.0,
+    "reason": "local pipeline push 9c2db40",
+    "pipeline": "local",
+    "host": "Karthz"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "efc291197369097a1ec055c2aaec27f64e11de8c",
+    "subject": "Add CI: lint and tests on every push/PR, deploy from main on the Pavilion",
+    "date": "2026-09-23T11:21:23+05:30"
+   },
+   {
+    "sha": "07ba81d47c878d7eee13d085285365c5b76446e9",
+    "subject": "Log evaluation runs to MLflow",
+    "date": "2026-09-23T11:23:38+05:30"
+   },
+   {
+    "sha": "1da4721db6d0f7689ad238fa6b9d5e1e75cabdff",
+    "subject": "Record deployment and monitoring decisions (D-19..D-33)",
+    "date": "2026-09-23T11:24:36+05:30"
+   },
+   {
+    "sha": "6063556c56a25cdd58aef8daf02d3ce534e3f656",
+    "subject": "Add loadgen: configurable rate, concurrency and duration",
+    "date": "2026-09-23T11:49:36+05:30"
+   },
+   {
+    "sha": "2f2f5bfd6cd79e444ca180f6bdc7e1a1dc793469",
+    "subject": "doctor: settings and log-signature function",
+    "date": "2026-09-23T11:49:36+05:30"
+   },
+   {
+    "sha": "630a5af6fe22e00a3b7a8de2e91ea952ca01c8f8",
+    "subject": "doctor: evidence collectors and the frozen evidence bundle",
+    "date": "2026-09-23T11:49:36+05:30"
+   },
+   {
+    "sha": "1b6fe489c3d3ed6efe09f0cc5a6a6aa6aca75343",
+    "subject": "doctor: code, commit and past-incident indexes",
+    "date": "2026-09-23T11:49:36+05:30"
+   },
+   {
+    "sha": "e0740b7b2a3dbd59ec5bbc3ba0c7aa3055e19e67",
+    "subject": "doctor: hybrid commit retrieval with a time-filter baseline",
+    "date": "2026-09-23T11:49:36+05:30"
+   },
+   {
+    "sha": "15014227195f89603812e799cd3f3dafe9a30d38",
+    "subject": "doctor: diagnosis schema and pluggable reasoning providers",
+    "date": "2026-09-23T11:49:37+05:30"
+   },
+   {
+    "sha": "2b9bbcdedad5072b91bba909f37b239e11259899",
+    "subject": "doctor: prompt with the demand-versus-capacity fork and three evidence arms",
+    "date": "2026-09-23T11:49:37+05:30"
+   },
+   {
+    "sha": "47e6e400ebb9613a4e097e840ef55465665e125d",
+    "subject": "doctor: render fixes as unified diffs and verify them on throwaway copies",
+    "date": "2026-09-23T11:49:37+05:30"
+   },
+   {
+    "sha": "c1bdf6c48fef4570cdcc0f306b6df5b3cfe54481",
+    "subject": "doctor: reasoner, markdown report, incident store and HTTP service",
+    "date": "2026-09-23T11:49:37+05:30"
+   },
+   {
+    "sha": "a96098fba4906c99cc68159c7d8b50be3b78f188",
+    "subject": "doctor: Dockerfile and dependencies",
+    "date": "2026-09-23T11:49:38+05:30"
+   },
+   {
+    "sha": "387e9a1889c0491e876f14ebe3207c0c26cde005",
+    "subject": "doctor: unit tests (schema, rules, fixes, retrieval, prompt, fallback)",
+    "date": "2026-09-23T11:49:38+05:30"
+   },
+   {
+    "sha": "ab86f1d5991a57f7de20523589e0ffb5d78ffe98",
+    "subject": "Run the doctor in compose",
+    "date": "2026-09-23T11:50:23+05:30"
+   },
+   {
+    "sha": "ecb7ce91b036aae790ddd44417fc48310b33d929",
+    "subject": "doctor image: longer pip timeout and retries",
+    "date": "2026-09-23T12:04:20+05:30"
+   },
+   {
+    "sha": "758c0b3cb8441ef065f91410bd6a2ea9547ea236",
+    "subject": "deploy: roll back only services that have an image at the previous SHA",
+    "date": "2026-09-23T12:15:24+05:30"
+   },
+   {
+    "sha": "7c76da62d809f09af31fc376248b0418987fab4e",
+    "subject": "doctor: parse timestamps with 1-5 fractional digits",
+    "date": "2026-09-23T12:23:33+05:30"
+   },
+   {
+    "sha": "1d7953f7e7c26f2d0248883f35575b33cbde41b5",
+    "subject": "doctor: three entry points - /incident, /ticket and a replay CLI",
+    "date": "2026-09-23T13:08:19+05:30"
+   },
+   {
+    "sha": "8433da611c47db5f412ef9419fc9e766b7104eb0",
+    "subject": "doctor: snapshot raw metric series and hide experimenter paths",
+    "date": "2026-09-23T13:08:19+05:30"
+   },
+   {
+    "sha": "fd2722b5d97ccc22437a35fde5601e4b13f566b1",
+    "subject": "alert-sink: push every firing alert to the doctor",
+    "date": "2026-09-23T13:08:19+05:30"
+   },
+   {
+    "sha": "50bc361c379bea7aeb33da12250793c7c0ea446e",
+    "subject": "kb-loader: append a record of every knowledge-base load",
+    "date": "2026-09-23T13:08:19+05:30"
+   },
+   {
+    "sha": "a8737e5097753ee8a5ab3f3e62f8f164e3ee90b2",
+    "subject": "Add the Incidents page to the frontend",
+    "date": "2026-09-23T13:08:20+05:30"
+   },
+   {
+    "sha": "9174c2e78311ffb0aa369b978faa274a0da83a63",
+    "subject": "Run CI/CD locally on git push, through a bare remote",
+    "date": "2026-09-23T13:09:57+05:30"
+   },
+   {
+    "sha": "d42901c99f50c851235dbeaff08ef504e56ee490",
+    "subject": "pipeline: clear the hook's GIT_* environment before running jobs",
+    "date": "2026-09-23T13:10:20+05:30"
+   },
+   {
+    "sha": "3e53f1e832a013951cececbe8f9888cc9bdd497c",
+    "subject": "One tracked copy of the pipeline, called by both the hook and Actions",
+    "date": "2026-09-23T13:14:56+05:30"
+   },
+   {
+    "sha": "0bba1491d2612cc96abf48375da0bb10ed2faa15",
+    "subject": "Record doctor, trigger and local-pipeline decisions (D-34..D-51)",
+    "date": "2026-09-23T13:16:40+05:30"
+   },
+   {
+    "sha": "602d3d32844446d2f9edd451ebec5a6df87eb7ac",
+    "subject": "loadgen: keyword-style queries, and let the gateway create sessions",
+    "date": "2026-09-23T13:20:15+05:30"
+   },
+   {
+    "sha": "38326dec780cd0a64dd12fb03c73856c9a63fe7d",
+    "subject": "doctor: do not re-open incidents already on disk after a restart",
+    "date": "2026-09-23T13:36:48+05:30"
+   },
+   {
+    "sha": "101c65170e71625dc8a7db05fbd743843b348ccb",
+    "subject": "doctor tests: a fresh incident store per entry-point test",
+    "date": "2026-09-23T13:37:17+05:30"
+   },
+   {
+    "sha": "de6b924ab57e367835ff1c5f7dee05ef9ae0b36c",
+    "subject": "Alert rules: deploys must not look like crash loops or leaks",
+    "date": "2026-09-23T13:42:25+05:30"
+   },
+   {
+    "sha": "60dd6dcd78c9ea0df63226f8ea25c481a85b89e8",
+    "subject": "build_kb: optional output directory and embedding model",
+    "date": "2026-09-23T13:42:25+05:30"
+   },
+   {
+    "sha": "82cf115bc01c908903d14bb13995a6ed1f5269b6",
+    "subject": "build_kb: optionally build the chat collection from a subset of documents",
+    "date": "2026-09-23T13:44:37+05:30"
+   },
+   {
+    "sha": "f127cdadda75bc12f2450b1317b28fc7ac5eed2b",
+    "subject": "dvc.lock: record the updated build_kb.py dependency (outputs unchanged)",
+    "date": "2026-09-23T13:44:51+05:30"
+   },
+   {
+    "sha": "999f2a275c731809d809643b4ceb7926de40fabb",
+    "subject": "Alert when most chat questions are refused as out of scope",
+    "date": "2026-09-23T13:46:18+05:30"
+   },
+   {
+    "sha": "1f413858cc65f526ddd273ab000b5f3ec8f78066",
+    "subject": "Reload monitoring on deploy; only join incidents not yet started",
+    "date": "2026-09-23T13:50:03+05:30"
+   },
+   {
+    "sha": "b36a2afd17593b8383880fdbf9c2d37377166b4c",
+    "subject": "doctor: local context size and output budget are settings",
+    "date": "2026-09-23T13:53:49+05:30"
+   },
+   {
+    "sha": "5abebfe2ad72d4f2f88b21f594e89ee79e117458",
+    "subject": "Latency alert thresholds from the measured healthy baseline",
+    "date": "2026-09-23T14:02:04+05:30"
+   },
+   {
+    "sha": "5ac3528d1cb96015e225dba18e7dfaf377da718b",
+    "subject": "Fault runs match their own alert and report; slower HighErrorRate",
+    "date": "2026-09-23T14:05:52+05:30"
+   },
+   {
+    "sha": "5f1ed3e9ca9bca720f3b2f54dc14fce2546629b7",
+    "subject": "doctor: serialised, atomic incident file writes",
+    "date": "2026-09-23T16:16:05+05:30"
+   },
+   {
+    "sha": "ffb6f141edb0e0b73b84b97e742f8a4578553242",
+    "subject": "Reuse one ChromaDB HttpClient per server",
+    "date": "2026-09-23T16:33:37+05:30"
+   },
+   {
+    "sha": "a894401eb56d114655b693654947d2f600adfd87",
+    "subject": "Note what the source previews contain",
+    "date": "2026-09-23T17:25:34+05:30"
+   },
+   {
+    "sha": "43d81809c05d8ef22b17787c2fb51579774480c7",
+    "subject": "Document the similarity convention in the vector store",
+    "date": "2026-09-23T17:25:34+05:30"
+   },
+   {
+    "sha": "3f8fef7301a256f703f9971661076fa765c68556",
+    "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+    "date": "2026-09-23T17:26:42+05:30"
+   },
+   {
+    "sha": "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+    "subject": "Clarify chunk size units",
+    "date": "2026-09-23T17:26:43+05:30"
+   },
+   {
+    "sha": "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+    "subject": "Revert \"Cap embedding calls at 10 s so a stuck call frees its thread\"",
+    "date": "2026-09-23T17:30:31+05:30"
+   },
+   {
+    "sha": "97d9d0c6d8db145d37f7ce672a8e8df50b02de0f",
+    "subject": "Failure alerts must outlast a deploy's container recreate",
+    "date": "2026-09-23T17:42:40+05:30"
+   },
+   {
+    "sha": "32f7a989b13c2f70b398f7f1ddeb7caf9d04b13a",
+    "subject": "Tag the doctor and other components by their own last commit",
+    "date": "2026-09-23T17:42:40+05:30"
+   },
+   {
+    "sha": "3ebf4f8a23b69615141a0e680695fd0bdd7eb702",
+    "subject": "Add README for examiners and PAVILION.md for the second laptop",
+    "date": "2026-09-23T17:42:40+05:30"
+   },
+   {
+    "sha": "ae830433d81688a2c2cad5fb0f35e854cf1cd44d",
+    "subject": "Test the evaluation scoring, baseline and aggregation",
+    "date": "2026-09-23T17:42:40+05:30"
+   },
+   {
+    "sha": "1398f0f8b69cae05829365d767a9dbd24abb3d21",
+    "subject": "Record fault-injection, alerting, evaluation and deploy-isolation decisions (D-52..D-74)",
+    "date": "2026-09-23T17:42:41+05:30"
+   },
+   {
+    "sha": "9c2db405cf3b419c706036b7599d5bf57485c55a",
+    "subject": "Wrap a long alert description (yamllint line length)",
+    "date": "2026-09-23T17:43:14+05:30"
+   }
+  ]
+ }
+}

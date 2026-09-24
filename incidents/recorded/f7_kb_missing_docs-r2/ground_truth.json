@@ -1,0 +1,21 @@
+{
+  "fault_id": "f7_kb_missing_docs",
+  "name": "Knowledge-base version published with 6 of 10 documents missing",
+  "delivery": "data",
+  "incident_class": "data_issue",
+  "acceptable_classes": [
+    "data_issue"
+  ],
+  "component": "knowledge_base",
+  "acceptable_components": [
+    "chroma",
+    "knowledge_base",
+    "retrieval"
+  ],
+  "true_cause": "A knowledge-base version built from only 4 of the 10 policy documents (library, scholarship, lab safety, placement, grievance and calendar missing) was loaded into the live index. Questions about the missing policies find nothing relevant and are refused as out of scope. No code or infrastructure changed.",
+  "expected_fix": "Reload the previous complete knowledge-base version with kb-loader --force (and rebuild the KB from the full corpus before publishing).",
+  "acceptance_test": null,
+  "run_id": "f7_kb_missing_docs-r2",
+  "guilty_commit": null,
+  "guilty_kb_version": "405bbf0b9802"
+}

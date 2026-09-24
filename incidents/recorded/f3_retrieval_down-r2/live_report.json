@@ -1,0 +1,1517 @@
+{
+ "incident": {
+  "id": "inc_d6b392195b",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-09-23T18:54:36.165Z",
+   "status": "firing",
+   "alertname": "ServiceDown",
+   "fingerprint": "3e6bc34864145b12",
+   "startsAt": "2026-09-23T18:54:26.923Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "ServiceDown",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "critical",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds.",
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=up%7Bjob%3D~%22gateway%7Cingestion%7Cretrieval%7Cllm%22%7D+%3D%3D+0&g0.tab=1",
+   "groupKey": "{}:{alertname=\"ServiceDown\", service=\"retrieval\"}"
+  },
+  "service": "retrieval",
+  "received_at": "2026-09-23T18:54:36Z",
+  "diagnose_after": "2026-09-23T18:55:41Z",
+  "collection_started": "2026-09-23T18:55:41Z",
+  "evidence_saved": "2026-09-23T18:55:51Z",
+  "report_finished": "2026-09-23T18:56:04Z",
+  "alert_to_report_s": 97.1
+ },
+ "report": {
+  "incident_id": "inc_d6b392195b",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-09-23T18:54:36.165Z",
+   "status": "firing",
+   "alertname": "ServiceDown",
+   "fingerprint": "3e6bc34864145b12",
+   "startsAt": "2026-09-23T18:54:26.923Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "ServiceDown",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "critical",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds.",
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=up%7Bjob%3D~%22gateway%7Cingestion%7Cretrieval%7Cllm%22%7D+%3D%3D+0&g0.tab=1",
+   "groupKey": "{}:{alertname=\"ServiceDown\", service=\"retrieval\"}"
+  },
+  "created_at": "2026-09-23T18:56:04Z",
+  "live_sha": "4d271b92814d24582a19854302240342e8e76f5b",
+  "retrieval": {
+   "time_filtered": [
+    "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "818a26202ce43be4e1e42662a1e1236d441a63df",
+    "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "fd98ee868ee09a8d2af45391fa53ba0f2f29be65",
+    "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "353d3580a62c29c2b94dde7711aa6fdf63331641",
+    "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "b3ee7b320b33e30080b0bcbdb521f4ed4f8a064f",
+    "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+    "6abf2ab2ccd05eaec3a13d868d96b0737e19dd53",
+    "1a6e545f6afa83070174b747fb267bb07f3c0993",
+    "f314d9d12c70766189767e36d42aba32ccc74d1e",
+    "bd28722b12af54b187e11509e6959ff3ce792b7c",
+    "fe5ae015f989f06bd1dad6f25aa8bc1ea01fc88e",
+    "1cfa66797f91b38154eb375eb3d62deae882431a",
+    "48225cd8045cb4d3911e506cfe70172d45222e84",
+    "fcb3ab8611b53332d84cb220924cc0353fb25fc3",
+    "7d9fa358822d7c481fbec1b148af9a3748fa4253",
+    "d08706def979428f9581abedf0742df306635027",
+    "1accbede432336a28215cd27859a89dff9211733",
+    "1a06be7844d5d64326ecfd8f2463e5759e547f4c",
+    "ff4c00daf41d8fe105d78fcdb6d8392ea4ac0f65",
+    "493e5d791d8a972ce1dc4cc385eb7ddbb250d12c",
+    "8189ba85f3a798b80ecde3d9df28628e0c5aa654",
+    "6a33acf04fe6f4f8ec7d5bbd02f0907cc1e357e4",
+    "1f00121baa345da971dd7eeb4a73b2e6594fe718",
+    "71b19e9350050b299f8f218d81577ea7314cd58e",
+    "f4bc84c00af52e6728be92eb0ccfdc10fd259cf4",
+    "711b81194a3c697229ed57f4c5a67f61683e595d",
+    "3b6f0317041c4b9ef374bd0b0296d30955b0d223",
+    "e8e8d7f26ab387e401729bde9653909697f52110",
+    "e1d8c774330370f83bddd63271ffb129c95d4664",
+    "f2e5549900a0175dfc90c243f462bfe40ebed8f5",
+    "1f5a3676188a771b11cc38f5673a792f325e8fe3",
+    "6089cc68f03d3d8df76c472e61fc4b3b5f38b480",
+    "4d271b92814d24582a19854302240342e8e76f5b"
+   ],
+   "ranked": [
+    {
+     "sha": "d08706def979428f9581abedf0742df306635027",
+     "subject": "Fail fast when retrieval is slow - it normally answers in about 30 ms",
+     "deployed_in": "1accbed",
+     "lexical": 17.46,
+     "semantic": 0.7566,
+     "score": 0.9026,
+     "matched_terms": [
+      "retrieval",
+      "gateway",
+      "timeout",
+      "api",
+      "telemetry",
+      "client",
+      "chat"
+     ]
+    },
+    {
+     "sha": "1a06be7844d5d64326ecfd8f2463e5759e547f4c",
+     "subject": "Revert \"Fail fast when retrieval is slow - it normally answers in about 30 ms\"",
+     "deployed_in": "1a06be7",
+     "lexical": 16.97,
+     "semantic": 0.7444,
+     "score": 0.8809,
+     "matched_terms": [
+      "retrieval",
+      "gateway",
+      "timeout",
+      "api",
+      "telemetry",
+      "client",
+      "chat"
+     ]
+    },
+    {
+     "sha": "bd28722b12af54b187e11509e6959ff3ce792b7c",
+     "subject": "Don't let one slow generation hold a gateway connection for two minutes",
+     "deployed_in": "fe5ae01",
+     "lexical": 12.61,
+     "semantic": 0.7037,
+     "score": 0.7148,
+     "matched_terms": [
+      "gateway",
+      "timeout",
+      "api",
+      "telemetry",
+      "client"
+     ]
+    },
+    {
+     "sha": "1cfa66797f91b38154eb375eb3d62deae882431a",
+     "subject": "Revert \"Don't let one slow generation hold a gateway connection for two minutes\"",
+     "deployed_in": "1cfa667",
+     "lexical": 12.26,
+     "semantic": 0.6926,
+     "score": 0.6982,
+     "matched_terms": [
+      "gateway",
+      "timeout",
+      "api",
+      "telemetry",
+      "client"
+     ]
+    },
+    {
+     "sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+     "subject": "Alert on persistent low-rate errors; ticket fallback when monitoring misses",
+     "deployed_in": "75292dd",
+     "lexical": 9.66,
+     "semantic": 0.7082,
+     "score": 0.6153,
+     "matched_terms": [
+      "service",
+      "retrieval",
+      "gateway",
+      "timeout",
+      "api",
+      "endpoint",
+      "outcome",
+      "chat",
+      "failed",
+      "knowledgeai"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/common/telemetry.py::<module>",
+    "patient/common/telemetry.py::async_client",
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/api_gateway/app/main.py::_run_retrieval"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 3161,
+  "provider_failures": [
+   {
+    "provider": "glm:glm-4.6",
+    "error": "ProviderError: glm: no API key (DOCTOR_API_KEY)"
+   }
+  ],
+  "status": "ok",
+  "provider": "ollama",
+  "model": "llama3.2",
+  "diagnosis": {
+   "summary": "retrieval is not answering Prometheus scrapes",
+   "incident_class": "capacity",
+   "demand_vs_capacity": {
+    "traffic_change": "flat",
+    "deploy_before_onset": false,
+    "verdict": "capacity_fell",
+    "reasoning": "Traffic increased, but capacity did not keep up with the demand."
+   },
+   "hypotheses": [
+    {
+     "cause": "Insufficient capacity in the retrieval service",
+     "component": "retrieval",
+     "confidence": 0.9,
+     "evidence": [
+      "HighLatencyP95 gateway: p95 latency of gateway /api/retrieval/search is 12.2s",
+      "in_flight{service=retrieval}: baseline=0.4138 incident_max=1.0 (x2.4)"
+     ],
+     "suspected_commit": null,
+     "suspected_files": [
+      "patient/..."
+     ]
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "rationale": "Scale the retrieval service to handle the increased traffic.",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": false,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 1,
+   "prompt_tokens": 3778,
+   "completion_tokens": 240,
+   "cost_usd": 0.0,
+   "seconds": 2.69
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 9.58,
+   "llm_s": 2.69,
+   "total_s": 12.46
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 97.1,
+  "received_to_report_s": 88.0
+ },
+ "markdown": "# Incident inc_d6b392195b\n\n**Alert:** ServiceDown - retrieval is not answering Prometheus scrapes\n**Started:** 2026-09-23T18:54:26.923Z  \n**Running commit:** 4d271b9  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** ollama:llama3.2\n\n## What broke\n\nretrieval is not answering Prometheus scrapes\n\n**Incident class:** `capacity`\n\n**Demand versus capacity:** traffic flat, deploy before onset: False, verdict: capacity_fell. Traffic increased, but capacity did not keep up with the demand.\n\n## Evidence\n\n- alert 2026-09-23T18:54:26.923Z **ServiceDown** retrieval: retrieval is not answering Prometheus scrapes\n- alert 2026-09-23T18:54:53.987Z **DownstreamCallFailures** gateway: calls from gateway to retrieval are failing\n- alert 2026-09-23T18:55:00.51Z **HighLatencyP95** gateway: p95 latency of gateway /api/retrieval/search is 12.2s\n- log `WARNING:a4dace19f999` x34 in gateway:  request\n- log `ConnectError:5b2993ef741b` x17 in gateway: ConnectError [Errno -5] No address associated with hostname\n- metric `traffic_rps{all}` baseline 0.5653 -> 0.8909 (x1.6)\n- metric `requests_rps{service=gateway}` baseline 0.6296 -> 0.9637 (x1.5)\n- metric `requests_rps{service=llm}` baseline 0.228 -> 0.4 (x1.8)\n- metric `error_ratio_5xx{service=gateway}` baseline 0.0577 -> 0.6333 (x11.0)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.162 -> 0.3273 (x2.0)\n- metric `chat_outcomes_rps{outcome=refused_scope}` baseline 0.0421 -> 0.1818 (x4.3)\n- metric `latency_p95_s{endpoint=/api/chat,service=gateway}` baseline 4.7441 -> 16.5 (x3.5)\n- metric `latency_p95_s{endpoint=/api/retrieval/search,service=gateway}` baseline 1.2466 -> 13.7 (x11.0)\n\nDeploys in the lookback window: 23; candidate commits (time filter only): 38\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.90 | retrieval | none | Insufficient capacity in the retrieval service |\n\nEvidence for #1:\n- HighLatencyP95 gateway: p95 latency of gateway /api/retrieval/search is 12.2s\n- in_flight{service=retrieval}: baseline=0.4138 incident_max=1.0 (x2.4)\n\n## Proposed fix\n\n**Kind:** action\n\nScale the retrieval service to handle the increased traffic.\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n1 calls, 3778 prompt + 240 completion tokens, $0.0; reasoning 2.69s, total 12.46s\n",
+ "resolution": null,
+ "evidence": {
+  "alert": {
+   "received_at": "2026-09-23T18:54:36.165Z",
+   "status": "firing",
+   "alertname": "ServiceDown",
+   "fingerprint": "3e6bc34864145b12",
+   "startsAt": "2026-09-23T18:54:26.923Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "ServiceDown",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "critical",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds.",
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=up%7Bjob%3D~%22gateway%7Cingestion%7Cretrieval%7Cllm%22%7D+%3D%3D+0&g0.tab=1",
+   "groupKey": "{}:{alertname=\"ServiceDown\", service=\"retrieval\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "ServiceDown",
+    "startsAt": "2026-09-23T18:54:26.923Z",
+    "labels": {
+     "alertname": "ServiceDown",
+     "instance": "retrieval:8002",
+     "job": "retrieval",
+     "service": "retrieval",
+     "severity": "critical",
+     "stack": "knowledgeai"
+    },
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   {
+    "alertname": "DownstreamCallFailures",
+    "startsAt": "2026-09-23T18:54:53.987Z",
+    "labels": {
+     "alertname": "DownstreamCallFailures",
+     "pattern": "outage",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai",
+     "target": "retrieval"
+    },
+    "summary": "calls from gateway to retrieval are failing"
+   },
+   {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-09-23T18:55:00.51Z",
+    "labels": {
+     "alertname": "HighLatencyP95",
+     "endpoint": "/api/retrieval/search",
+     "path": "retrieval",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "p95 latency of gateway /api/retrieval/search is 12.2s"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-09-23T18:44:26Z",
+    "2026-09-23T18:55:26Z"
+   ],
+   "baseline": [
+    "2026-09-23T18:14:26Z",
+    "2026-09-23T18:44:26Z"
+   ]
+  },
+  "logs": [
+   {
+    "signature": "WARNING:a4dace19f999",
+    "count": 34,
+    "first_seen": "2026-09-23T18:53:45Z",
+    "last_seen": "2026-09-23T18:55:26Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "WARNING",
+    "message": "request",
+    "exc_type": null,
+    "exc_message": "",
+    "error_file": null,
+    "error_line": null,
+    "error_function": null,
+    "stack_tail": [],
+    "git_shas": [
+     "4d271b9"
+    ],
+    "target": null,
+    "new_in_incident": false
+   },
+   {
+    "signature": "ConnectError:5b2993ef741b",
+    "count": 17,
+    "first_seen": "2026-09-23T18:53:45Z",
+    "last_seen": "2026-09-23T18:55:25Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "ERROR",
+    "message": "retrieval call failed",
+    "exc_type": "ConnectError",
+    "exc_message": "[Errno -5] No address associated with hostname",
+    "error_file": "/app/common/telemetry.py",
+    "error_line": 183,
+    "error_function": "handle_async_request",
+    "stack_tail": [
+     "    response = await transport.handle_async_request(request)",
+     "  File \"/app/common/telemetry.py\", line 183, in handle_async_request",
+     "    response = await self._inner.handle_async_request(request)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 393, in handle_async_request",
+     "    with map_httpcore_exceptions():",
+     "  File \"/usr/local/lib/python3.10/contextlib.py\", line 153, in __exit__",
+     "    self.gen.throw(typ, value, traceback)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions",
+     "    raise mapped_exc(message) from exc",
+     "httpx.ConnectError: [Errno -5] No address associated with hostname"
+    ],
+    "git_shas": [
+     "4d271b9"
+    ],
+    "target": "retrieval",
+    "new_in_incident": false
+   }
+  ],
+  "deploys": [
+   {
+    "ts": "2026-09-23T14:11:28Z",
+    "git_sha": "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "short_sha": "f66e72e",
+    "previous_sha": "9c2db405cf3b419c706036b7599d5bf57485c55a",
+    "commits": [
+     "94d95ce87f4f464aa19d8682b4f2f9e6c5577f71",
+     "ff4258b6f13ad83a0fd107302b433a32f3caf7d1",
+     "8ea36d46dd4aadddcf31d639d15e1a49cf35e0df",
+     "f66e72eb25d29c40e182cbf8990423b11f3bf58b"
+    ],
+    "services_changed": [
+     "doctor"
+    ],
+    "files_changed": [
+     "DECISIONS.md",
+     "doctor/app/collectors.py",
+     "doctor/app/prompt.py",
+     "doctor/app/retrieval.py",
+     "doctor/app/settings.py",
+     "doctor/eval/report_tables.py",
+     "doctor/eval/results/baseline-3incidents/results.json",
+     "doctor/eval/results/baseline-3incidents/results.md",
+     "doctor/eval/run_eval.py",
+     "doctor/eval/scoring.py",
+     "faults/campaign.py",
+     "faults/catalog.py",
+     "faults/selfcheck.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 4.2
+    },
+    "duration_s": 29.9,
+    "reason": "local pipeline push f66e72e",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:22:31Z",
+    "git_sha": "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "short_sha": "42d196a",
+    "previous_sha": "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "commits": [
+     "818a26202ce43be4e1e42662a1e1236d441a63df",
+     "42d196a66b41da7d293c54c169a6008860e0f96f"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.9,
+    "reason": "local pipeline push 42d196a",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:23:22Z",
+    "git_sha": "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "short_sha": "b4385a9",
+    "previous_sha": "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "commits": [
+     "fd98ee868ee09a8d2af45391fa53ba0f2f29be65",
+     "b4385a93374d8898be50ea719a53dcc7b9123144"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/api_gateway/app/suggestions.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.0,
+    "reason": "local pipeline push b4385a9",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:39:18Z",
+    "git_sha": "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "short_sha": "43e628b",
+    "previous_sha": "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "commits": [
+     "43e628b0d966a33a4b5833de75b559b2ba8c0b7c"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 33.1,
+    "reason": "local pipeline push 43e628b",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:41:34Z",
+    "git_sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "short_sha": "75292dd",
+    "previous_sha": "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "commits": [
+     "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3"
+    ],
+    "services_changed": [
+     "monitoring"
+    ],
+    "files_changed": [
+     "DECISIONS.md",
+     "faults/catalog.py",
+     "faults/run_fault.py",
+     "monitoring/prometheus/alert.rules.test.yml",
+     "monitoring/prometheus/alert.rules.yml"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 31.3,
+    "reason": "local pipeline push 75292dd",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:52:35Z",
+    "git_sha": "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "short_sha": "15c1b17",
+    "previous_sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "commits": [
+     "353d3580a62c29c2b94dde7711aa6fdf63331641",
+     "15c1b1783539ec6fd7f9260943c5b1e269513723"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/db.py",
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.4,
+    "reason": "local pipeline push 15c1b17",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T14:53:25Z",
+    "git_sha": "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+    "short_sha": "8b35c3b",
+    "previous_sha": "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "commits": [
+     "b3ee7b320b33e30080b0bcbdb521f4ed4f8a064f",
+     "8b35c3b2419b58d6154bf1055a8fa3870a292774"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/guardrails.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.0,
+    "reason": "local pipeline push 8b35c3b",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T15:04:40Z",
+    "git_sha": "6abf2ab2ccd05eaec3a13d868d96b0737e19dd53",
+    "short_sha": "6abf2ab",
+    "previous_sha": "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+    "commits": [
+     "6abf2ab2ccd05eaec3a13d868d96b0737e19dd53"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 33.4,
+    "reason": "local pipeline push 6abf2ab",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T15:31:10Z",
+    "git_sha": "f314d9d12c70766189767e36d42aba32ccc74d1e",
+    "short_sha": "f314d9d",
+    "previous_sha": "6abf2ab2ccd05eaec3a13d868d96b0737e19dd53",
+    "commits": [
+     "1a6e545f6afa83070174b747fb267bb07f3c0993",
+     "f314d9d12c70766189767e36d42aba32ccc74d1e"
+    ],
+    "services_changed": [
+     "llm"
+    ],
+    "files_changed": [
+     "patient/llm_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.9,
+    "reason": "local pipeline push f314d9d",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T15:32:03Z",
+    "git_sha": "fe5ae015f989f06bd1dad6f25aa8bc1ea01fc88e",
+    "short_sha": "fe5ae01",
+    "previous_sha": "f314d9d12c70766189767e36d42aba32ccc74d1e",
+    "commits": [
+     "bd28722b12af54b187e11509e6959ff3ce792b7c",
+     "fe5ae015f989f06bd1dad6f25aa8bc1ea01fc88e"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/tests/test_behaviour_notes.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.6,
+    "reason": "local pipeline push fe5ae01",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T15:48:29Z",
+    "git_sha": "1cfa66797f91b38154eb375eb3d62deae882431a",
+    "short_sha": "1cfa667",
+    "previous_sha": "fe5ae015f989f06bd1dad6f25aa8bc1ea01fc88e",
+    "commits": [
+     "1cfa66797f91b38154eb375eb3d62deae882431a"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.0,
+    "reason": "local pipeline push 1cfa667",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T16:35:16Z",
+    "git_sha": "7d9fa358822d7c481fbec1b148af9a3748fa4253",
+    "short_sha": "7d9fa35",
+    "previous_sha": "1cfa66797f91b38154eb375eb3d62deae882431a",
+    "commits": [
+     "48225cd8045cb4d3911e506cfe70172d45222e84",
+     "fcb3ab8611b53332d84cb220924cc0353fb25fc3",
+     "7d9fa358822d7c481fbec1b148af9a3748fa4253"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "DECISIONS.md",
+     "faults/catalog.py",
+     "faults/run_fault.py",
+     "patient/docs/OPERATIONS.md",
+     "patient/tests/test_behaviour_notes.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 33.1,
+    "reason": "local pipeline push 7d9fa35",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T16:36:09Z",
+    "git_sha": "1accbede432336a28215cd27859a89dff9211733",
+    "short_sha": "1accbed",
+    "previous_sha": "7d9fa358822d7c481fbec1b148af9a3748fa4253",
+    "commits": [
+     "d08706def979428f9581abedf0742df306635027",
+     "1accbede432336a28215cd27859a89dff9211733"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.9,
+    "reason": "local pipeline push 1accbed",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T16:47:05Z",
+    "git_sha": "1a06be7844d5d64326ecfd8f2463e5759e547f4c",
+    "short_sha": "1a06be7",
+    "previous_sha": "1accbede432336a28215cd27859a89dff9211733",
+    "commits": [
+     "1a06be7844d5d64326ecfd8f2463e5759e547f4c"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.3
+    },
+    "duration_s": 33.2,
+    "reason": "local pipeline push 1a06be7",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T17:23:44Z",
+    "git_sha": "493e5d791d8a972ce1dc4cc385eb7ddbb250d12c",
+    "short_sha": "493e5d7",
+    "previous_sha": "1a06be7844d5d64326ecfd8f2463e5759e547f4c",
+    "commits": [
+     "ff4c00daf41d8fe105d78fcdb6d8392ea4ac0f65",
+     "493e5d791d8a972ce1dc4cc385eb7ddbb250d12c"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md",
+     "patient/tests/test_behaviour_notes.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 33.9,
+    "reason": "local pipeline push 493e5d7",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T17:24:38Z",
+    "git_sha": "6a33acf04fe6f4f8ec7d5bbd02f0907cc1e357e4",
+    "short_sha": "6a33acf",
+    "previous_sha": "493e5d791d8a972ce1dc4cc385eb7ddbb250d12c",
+    "commits": [
+     "8189ba85f3a798b80ecde3d9df28628e0c5aa654",
+     "6a33acf04fe6f4f8ec7d5bbd02f0907cc1e357e4"
+    ],
+    "services_changed": [
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/retrieval_service/app/main.py",
+     "patient/tests/test_behaviour_notes.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.9,
+    "reason": "local pipeline push 6a33acf",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T17:40:32Z",
+    "git_sha": "1f00121baa345da971dd7eeb4a73b2e6594fe718",
+    "short_sha": "1f00121",
+    "previous_sha": "6a33acf04fe6f4f8ec7d5bbd02f0907cc1e357e4",
+    "commits": [
+     "1f00121baa345da971dd7eeb4a73b2e6594fe718"
+    ],
+    "services_changed": [
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/retrieval_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.8,
+    "reason": "local pipeline push 1f00121",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T18:18:33Z",
+    "git_sha": "f4bc84c00af52e6728be92eb0ccfdc10fd259cf4",
+    "short_sha": "f4bc84c",
+    "previous_sha": "1f00121baa345da971dd7eeb4a73b2e6594fe718",
+    "commits": [
+     "71b19e9350050b299f8f218d81577ea7314cd58e",
+     "f4bc84c00af52e6728be92eb0ccfdc10fd259cf4"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md",
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 34.2,
+    "reason": "local pipeline push f4bc84c",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T18:19:26Z",
+    "git_sha": "3b6f0317041c4b9ef374bd0b0296d30955b0d223",
+    "short_sha": "3b6f031",
+    "previous_sha": "f4bc84c00af52e6728be92eb0ccfdc10fd259cf4",
+    "commits": [
+     "711b81194a3c697229ed57f4c5a67f61683e595d",
+     "3b6f0317041c4b9ef374bd0b0296d30955b0d223"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md",
+     "patient/tests/test_behaviour_notes.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.3,
+    "reason": "local pipeline push 3b6f031",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T18:23:17Z",
+    "git_sha": "e8e8d7f26ab387e401729bde9653909697f52110",
+    "short_sha": "e8e8d7f",
+    "previous_sha": "3b6f0317041c4b9ef374bd0b0296d30955b0d223",
+    "commits": [
+     "e8e8d7f26ab387e401729bde9653909697f52110"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 32.1,
+    "reason": "local pipeline push e8e8d7f",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T18:35:41Z",
+    "git_sha": "f2e5549900a0175dfc90c243f462bfe40ebed8f5",
+    "short_sha": "f2e5549",
+    "previous_sha": "e8e8d7f26ab387e401729bde9653909697f52110",
+    "commits": [
+     "e1d8c774330370f83bddd63271ffb129c95d4664",
+     "f2e5549900a0175dfc90c243f462bfe40ebed8f5"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md",
+     "patient/tests/test_behaviour_notes.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 33.4,
+    "reason": "local pipeline push f2e5549",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T18:36:34Z",
+    "git_sha": "6089cc68f03d3d8df76c472e61fc4b3b5f38b480",
+    "short_sha": "6089cc6",
+    "previous_sha": "f2e5549900a0175dfc90c243f462bfe40ebed8f5",
+    "commits": [
+     "1f5a3676188a771b11cc38f5673a792f325e8fe3",
+     "6089cc68f03d3d8df76c472e61fc4b3b5f38b480"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/tests/test_behaviour_notes.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 33.5,
+    "reason": "local pipeline push 6089cc6",
+    "pipeline": "local",
+    "host": "Karthz"
+   },
+   {
+    "ts": "2026-09-23T18:43:39Z",
+    "git_sha": "4d271b92814d24582a19854302240342e8e76f5b",
+    "short_sha": "4d271b9",
+    "previous_sha": "6089cc68f03d3d8df76c472e61fc4b3b5f38b480",
+    "commits": [
+     "4d271b92814d24582a19854302240342e8e76f5b"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "8ea36d4",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "MLFLOW_IMAGE_TAG": "b700d3b",
+     "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 33.1,
+    "reason": "local pipeline push 4d271b9",
+    "pipeline": "local",
+    "host": "Karthz"
+   }
+  ],
+  "kb_changes": [
+   {
+    "ts": "2026-09-23T15:58:31Z",
+    "kb_version": "405bbf0b9802",
+    "previous": "38ba55c908d1",
+    "documents": 4,
+    "collections": {
+     "default": {
+      "documents": 4,
+      "chunks": 9
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-09-23T15:58:32Z",
+    "kb_version": "38ba55c908d1",
+    "previous": "405bbf0b9802",
+    "documents": 10,
+    "collections": {
+     "default": {
+      "documents": 10,
+      "chunks": 21
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-09-23T16:14:08Z",
+    "kb_version": "38ba55c908d1",
+    "previous": "38ba55c908d1",
+    "documents": 10,
+    "collections": {
+     "default": {
+      "documents": 10,
+      "chunks": 21
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-09-23T16:23:24Z",
+    "kb_version": "405bbf0b9802",
+    "previous": "38ba55c908d1",
+    "documents": 4,
+    "collections": {
+     "default": {
+      "documents": 4,
+      "chunks": 9
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-09-23T16:23:41Z",
+    "kb_version": "38ba55c908d1",
+    "previous": "405bbf0b9802",
+    "documents": 10,
+    "collections": {
+     "default": {
+      "documents": 10,
+      "chunks": 21
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-09-23T16:57:08Z",
+    "kb_version": "405bbf0b9802",
+    "previous": "38ba55c908d1",
+    "documents": 4,
+    "collections": {
+     "default": {
+      "documents": 4,
+      "chunks": 9
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-09-23T17:12:44Z",
+    "kb_version": "38ba55c908d1",
+    "previous": "405bbf0b9802",
+    "documents": 10,
+    "collections": {
+     "default": {
+      "documents": 10,
+      "chunks": 21
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   }
+  ],
+  "candidate_commits": [
+   {
+    "sha": "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+    "subject": "Record the lint-proof typo fault and the retrieval scope decisions (D-75, D-76)",
+    "date": "2026-09-23T18:47:41+05:30"
+   },
+   {
+    "sha": "818a26202ce43be4e1e42662a1e1236d441a63df",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-09-23T19:51:38+05:30"
+   },
+   {
+    "sha": "42d196a66b41da7d293c54c169a6008860e0f96f",
+    "subject": "Explain why gateway settings are read per request",
+    "date": "2026-09-23T19:51:38+05:30"
+   },
+   {
+    "sha": "fd98ee868ee09a8d2af45391fa53ba0f2f29be65",
+    "subject": "Document the SSE framing helper",
+    "date": "2026-09-23T19:52:31+05:30"
+   },
+   {
+    "sha": "b4385a93374d8898be50ea719a53dcc7b9123144",
+    "subject": "Note that query suggestions never call a model",
+    "date": "2026-09-23T19:52:32+05:30"
+   },
+   {
+    "sha": "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+    "subject": "Revert \"Title new chat sessions after the question\"",
+    "date": "2026-09-23T20:08:26+05:30"
+   },
+   {
+    "sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "subject": "Alert on persistent low-rate errors; ticket fallback when monitoring misses",
+    "date": "2026-09-23T20:10:44+05:30"
+   },
+   {
+    "sha": "353d3580a62c29c2b94dde7711aa6fdf63331641",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-09-23T20:21:44+05:30"
+   },
+   {
+    "sha": "15c1b1783539ec6fd7f9260943c5b1e269513723",
+    "subject": "Document that init_db is idempotent",
+    "date": "2026-09-23T20:21:44+05:30"
+   },
+   {
+    "sha": "b3ee7b320b33e30080b0bcbdb521f4ed4f8a064f",
+    "subject": "Comment on guardrail ordering",
+    "date": "2026-09-23T20:22:35+05:30"
+   },
+   {
+    "sha": "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+    "subject": "Operations notes: restarting a single service",
+    "date": "2026-09-23T20:22:35+05:30"
+   },
+   {
+    "sha": "6abf2ab2ccd05eaec3a13d868d96b0737e19dd53",
+    "subject": "Revert \"Title new chat sessions after the question\"",
+    "date": "2026-09-23T20:33:47+05:30"
+   },
+   {
+    "sha": "1a6e545f6afa83070174b747fb267bb07f3c0993",
+    "subject": "Comment on explicit Ollama model tags",
+    "date": "2026-09-23T21:00:17+05:30"
+   },
+   {
+    "sha": "f314d9d12c70766189767e36d42aba32ccc74d1e",
+    "subject": "Explain the greeting shortcut",
+    "date": "2026-09-23T21:00:17+05:30"
+   },
+   {
+    "sha": "bd28722b12af54b187e11509e6959ff3ce792b7c",
+    "subject": "Don't let one slow generation hold a gateway connection for two minutes",
+    "date": "2026-09-23T21:01:11+05:30"
+   },
+   {
+    "sha": "fe5ae015f989f06bd1dad6f25aa8bc1ea01fc88e",
+    "subject": "Add test: long pages are split with overlap",
+    "date": "2026-09-23T21:01:11+05:30"
+   },
+   {
+    "sha": "1cfa66797f91b38154eb375eb3d62deae882431a",
+    "subject": "Revert \"Don't let one slow generation hold a gateway connection for two minutes\"",
+    "date": "2026-09-23T21:17:38+05:30"
+   },
+   {
+    "sha": "48225cd8045cb4d3911e506cfe70172d45222e84",
+    "subject": "Redesign f6 from measured latency; keep data changes from being undone",
+    "date": "2026-09-23T21:54:15+05:30"
+   },
+   {
+    "sha": "fcb3ab8611b53332d84cb220924cc0353fb25fc3",
+    "subject": "Operations notes: where the logs are",
+    "date": "2026-09-23T22:04:23+05:30"
+   },
+   {
+    "sha": "7d9fa358822d7c481fbec1b148af9a3748fa4253",
+    "subject": "Add test: empty pages produce no chunks",
+    "date": "2026-09-23T22:04:23+05:30"
+   },
+   {
+    "sha": "d08706def979428f9581abedf0742df306635027",
+    "subject": "Fail fast when retrieval is slow - it normally answers in about 30 ms",
+    "date": "2026-09-23T22:05:16+05:30"
+   },
+   {
+    "sha": "1accbede432336a28215cd27859a89dff9211733",
+    "subject": "Operations notes: checking the knowledge base version",
+    "date": "2026-09-23T22:05:16+05:30"
+   },
+   {
+    "sha": "1a06be7844d5d64326ecfd8f2463e5759e547f4c",
+    "subject": "Revert \"Fail fast when retrieval is slow - it normally answers in about 30 ms\"",
+    "date": "2026-09-23T22:16:10+05:30"
+   },
+   {
+    "sha": "ff4c00daf41d8fe105d78fcdb6d8392ea4ac0f65",
+    "subject": "Add test: bare model names get the latest tag",
+    "date": "2026-09-23T22:52:46+05:30"
+   },
+   {
+    "sha": "493e5d791d8a972ce1dc4cc385eb7ddbb250d12c",
+    "subject": "Operations notes: slow first answer after a restart",
+    "date": "2026-09-23T22:52:46+05:30"
+   },
+   {
+    "sha": "8189ba85f3a798b80ecde3d9df28628e0c5aa654",
+    "subject": "Serve repeated retrieval questions from memory",
+    "date": "2026-09-23T22:53:45+05:30"
+   },
+   {
+    "sha": "6a33acf04fe6f4f8ec7d5bbd02f0907cc1e357e4",
+    "subject": "Add test: greetings are recognised",
+    "date": "2026-09-23T22:53:45+05:30"
+   },
+   {
+    "sha": "1f00121baa345da971dd7eeb4a73b2e6594fe718",
+    "subject": "Revert \"Serve repeated retrieval questions from memory\"",
+    "date": "2026-09-23T23:09:39+05:30"
+   },
+   {
+    "sha": "71b19e9350050b299f8f218d81577ea7314cd58e",
+    "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+    "date": "2026-09-23T23:47:38+05:30"
+   },
+   {
+    "sha": "f4bc84c00af52e6728be92eb0ccfdc10fd259cf4",
+    "subject": "Operations notes: uploading documents",
+    "date": "2026-09-23T23:47:38+05:30"
+   },
+   {
+    "sha": "711b81194a3c697229ed57f4c5a67f61683e595d",
+    "subject": "Add test: factual prompts carry the context",
+    "date": "2026-09-23T23:48:34+05:30"
+   },
+   {
+    "sha": "3b6f0317041c4b9ef374bd0b0296d30955b0d223",
+    "subject": "Operations notes: reading the operations dashboard",
+    "date": "2026-09-23T23:48:34+05:30"
+   },
+   {
+    "sha": "e8e8d7f26ab387e401729bde9653909697f52110",
+    "subject": "Revert \"Cap embedding calls at 10 s so a stuck call frees its thread\"",
+    "date": "2026-09-23T23:52:22+05:30"
+   },
+   {
+    "sha": "e1d8c774330370f83bddd63271ffb129c95d4664",
+    "subject": "Add test: no chunks gives an explicit empty context",
+    "date": "2026-09-24T00:04:48+05:30"
+   },
+   {
+    "sha": "f2e5549900a0175dfc90c243f462bfe40ebed8f5",
+    "subject": "Operations notes: rate limiting",
+    "date": "2026-09-24T00:04:48+05:30"
+   },
+   {
+    "sha": "1f5a3676188a771b11cc38f5673a792f325e8fe3",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-09-24T00:05:41+05:30"
+   },
+   {
+    "sha": "6089cc68f03d3d8df76c472e61fc4b3b5f38b480",
+    "subject": "Add test: blank questions are refused before retrieval",
+    "date": "2026-09-24T00:05:41+05:30"
+   },
+   {
+    "sha": "4d271b92814d24582a19854302240342e8e76f5b",
+    "subject": "Revert \"Title new chat sessions after the question\"",
+    "date": "2026-09-24T00:12:46+05:30"
+   }
+  ]
+ }
+}

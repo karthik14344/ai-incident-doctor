@@ -1,0 +1,86 @@
+{
+  "run_id": "f5_typo-r2",
+  "fault_id": "f5_typo",
+  "delivery": "push",
+  "variant": "guilty_last",
+  "started": "2026-09-23T18:34:47Z",
+  "trigger": "alert",
+  "pushes": [
+    {
+      "label": "distractors",
+      "sha": "f2e5549900a0175dfc90c243f462bfe40ebed8f5",
+      "pushed_at": "2026-09-23T18:34:48Z",
+      "push_returned_at": "2026-09-23T18:35:41Z",
+      "push_seconds": 53.2,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (34s)        ",
+        "remote: pipeline: SUCCESS for f2e5549900a0175dfc90c243f462bfe40ebed8f5 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/f2e5549900a0175dfc90c243f462bfe40ebed8f5.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   e8e8d7f..f2e5549  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T18:35:41Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "guilty",
+      "sha": "6089cc68f03d3d8df76c472e61fc4b3b5f38b480",
+      "pushed_at": "2026-09-23T18:35:41Z",
+      "push_returned_at": "2026-09-23T18:36:34Z",
+      "push_seconds": 53.2,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (33s)        ",
+        "remote: pipeline: SUCCESS for 6089cc68f03d3d8df76c472e61fc4b3b5f38b480 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/6089cc68f03d3d8df76c472e61fc4b3b5f38b480.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   f2e5549..6089cc6  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T18:36:34Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "4d271b92814d24582a19854302240342e8e76f5b",
+      "pushed_at": "2026-09-23T18:42:46Z",
+      "push_returned_at": "2026-09-23T18:43:39Z",
+      "push_seconds": 53.2,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (33s)        ",
+        "remote: pipeline: SUCCESS for 4d271b92814d24582a19854302240342e8e76f5b - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/4d271b92814d24582a19854302240342e8e76f5b.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   6089cc6..4d271b9  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T18:43:39Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "t_break": "2026-09-23T18:35:41Z",
+  "load": null,
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "HighErrorRate",
+    "startsAt": "2026-09-23T18:41:03.987Z",
+    "received_at": "2026-09-23T18:41:13.358Z",
+    "labels": {
+      "alertname": "HighErrorRate",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-09-23T18:41:03.987Z",
+  "unnoticed_s": 323.0,
+  "expected_alert": true,
+  "incident_id": "inc_38689da628",
+  "t_report": "2026-09-23T18:42:45Z",
+  "doctor_s": 101.0,
+  "joined_alerts": [],
+  "t_revert_start": "2026-09-23T18:42:46Z",
+  "t_reverted": "2026-09-23T18:43:39Z",
+  "t_alert_resolved": "2026-09-23T18:43:13.346Z",
+  "finished": "2026-09-23T18:43:39Z"
+}

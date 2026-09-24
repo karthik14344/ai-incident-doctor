@@ -1,0 +1,40 @@
+{
+  "run_id": "f3b_retrieval_bad_address-r2",
+  "fault_id": "f3b_retrieval_bad_address",
+  "delivery": "environment",
+  "variant": null,
+  "started": "2026-09-23T20:25:07Z",
+  "trigger": "alert",
+  "t_break": "2026-09-23T20:25:07Z",
+  "load": null,
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "DownstreamCallFailures",
+    "startsAt": "2026-09-23T20:26:23.987Z",
+    "received_at": "2026-09-23T20:26:33.058Z",
+    "labels": {
+      "alertname": "DownstreamCallFailures",
+      "pattern": "outage",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai",
+      "target": "retrieval"
+    }
+  },
+  "t_alert": "2026-09-23T20:26:23.987Z",
+  "unnoticed_s": 77.0,
+  "expected_alert": true,
+  "incident_id": "inc_ab945bb462",
+  "t_report": "2026-09-23T20:28:05Z",
+  "doctor_s": 101.0,
+  "joined_alerts": [
+    {
+      "alertname": "HighLatencyP95",
+      "startsAt": "2026-09-23T20:27:10.51Z"
+    }
+  ],
+  "t_revert_start": "2026-09-23T20:28:05Z",
+  "t_reverted": "2026-09-23T20:28:08Z",
+  "t_alert_resolved": "2026-09-23T20:28:33.054Z",
+  "finished": "2026-09-23T20:28:38Z"
+}

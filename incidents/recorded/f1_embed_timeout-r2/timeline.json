@@ -1,0 +1,94 @@
+{
+  "run_id": "f1_embed_timeout-r2",
+  "fault_id": "f1_embed_timeout",
+  "delivery": "push",
+  "variant": "guilty_earlier",
+  "started": "2026-09-23T18:17:38Z",
+  "trigger": "alert",
+  "t_break": "2026-09-23T18:17:38Z",
+  "pushes": [
+    {
+      "label": "guilty",
+      "sha": "f4bc84c00af52e6728be92eb0ccfdc10fd259cf4",
+      "pushed_at": "2026-09-23T18:17:38Z",
+      "push_returned_at": "2026-09-23T18:18:33Z",
+      "push_seconds": 54.9,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (34s)        ",
+        "remote: pipeline: SUCCESS for f4bc84c00af52e6728be92eb0ccfdc10fd259cf4 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/f4bc84c00af52e6728be92eb0ccfdc10fd259cf4.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   1f00121..f4bc84c  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T18:18:33Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "distractors-after",
+      "sha": "3b6f0317041c4b9ef374bd0b0296d30955b0d223",
+      "pushed_at": "2026-09-23T18:18:34Z",
+      "push_returned_at": "2026-09-23T18:19:27Z",
+      "push_seconds": 53.0,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (33s)        ",
+        "remote: pipeline: SUCCESS for 3b6f0317041c4b9ef374bd0b0296d30955b0d223 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/3b6f0317041c4b9ef374bd0b0296d30955b0d223.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   f4bc84c..3b6f031  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T18:19:26Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "e8e8d7f26ab387e401729bde9653909697f52110",
+      "pushed_at": "2026-09-23T18:22:22Z",
+      "push_returned_at": "2026-09-23T18:23:17Z",
+      "push_seconds": 54.7,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (32s)        ",
+        "remote: pipeline: SUCCESS for e8e8d7f26ab387e401729bde9653909697f52110 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/e8e8d7f26ab387e401729bde9653909697f52110.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   3b6f031..e8e8d7f  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T18:23:17Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "load": null,
+  "neighbour": true,
+  "first_alert": {
+    "alertname": "EmbeddingFallbackActive",
+    "startsAt": "2026-09-23T18:20:00.625Z",
+    "received_at": "2026-09-23T18:20:09.974Z",
+    "labels": {
+      "alertname": "EmbeddingFallbackActive",
+      "instance": "retrieval:8002",
+      "job": "retrieval",
+      "service": "retrieval",
+      "severity": "warning",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-09-23T18:20:00.625Z",
+  "unnoticed_s": 142.6,
+  "expected_alert": true,
+  "incident_id": "inc_cb34590ec2",
+  "t_report": "2026-09-23T18:22:20Z",
+  "doctor_s": 139.4,
+  "joined_alerts": [
+    {
+      "alertname": "HighLatencyP95",
+      "startsAt": "2026-09-23T18:20:45.51Z"
+    }
+  ],
+  "neighbour_calls": 9,
+  "t_revert_start": "2026-09-23T18:22:22Z",
+  "t_reverted": "2026-09-23T18:23:17Z",
+  "t_alert_resolved": "2026-09-23T18:24:47.358Z",
+  "finished": "2026-09-23T18:24:47Z"
+}

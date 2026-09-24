@@ -1,0 +1,25 @@
+{
+  "fault_id": "f4_memory_leak",
+  "name": "Retrieval response cache that never evicts",
+  "delivery": "push",
+  "incident_class": "code_defect",
+  "acceptable_classes": [
+    "code_defect"
+  ],
+  "component": "retrieval",
+  "acceptable_components": [
+    "retrieval"
+  ],
+  "true_cause": "A commit added a module-level dict caching every retrieval response (with its query embedding) keyed by question text, with no eviction. Memory grows with every distinct question until the container hits its limit and is OOM-killed, repeatedly.",
+  "expected_fix": "Bound the cache (LRU with maxsize, or TTL) or remove it.",
+  "acceptance_test": "faults/acceptance/test_f4_memory_leak.py",
+  "run_id": "f4_memory_leak-r1",
+  "guilty_commit": "8189ba85f3a798b80ecde3d9df28628e0c5aa654",
+  "guilty_kb_version": null,
+  "guilty_deploy": "6a33acf",
+  "distractor_commits": [
+    "ff4c00daf41d8fe105d78fcdb6d8392ea4ac0f65",
+    "493e5d791d8a972ce1dc4cc385eb7ddbb250d12c",
+    "6a33acf04fe6f4f8ec7d5bbd02f0907cc1e357e4"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "run_id": "f3_retrieval_down-r2",
+  "fault_id": "f3_retrieval_down",
+  "delivery": "environment",
+  "variant": null,
+  "started": "2026-09-23T18:53:39Z",
+  "trigger": "alert",
+  "t_break": "2026-09-23T18:53:39Z",
+  "load": null,
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "ServiceDown",
+    "startsAt": "2026-09-23T18:54:26.923Z",
+    "received_at": "2026-09-23T18:54:36.165Z",
+    "labels": {
+      "alertname": "ServiceDown",
+      "instance": "retrieval:8002",
+      "job": "retrieval",
+      "service": "retrieval",
+      "severity": "critical",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-09-23T18:54:26.923Z",
+  "unnoticed_s": 47.9,
+  "expected_alert": true,
+  "incident_id": "inc_d6b392195b",
+  "t_report": "2026-09-23T18:56:04Z",
+  "doctor_s": 97.1,
+  "joined_alerts": [],
+  "t_revert_start": "2026-09-23T18:56:11Z",
+  "t_reverted": "2026-09-23T18:56:13Z",
+  "t_alert_resolved": "2026-09-23T18:56:36.158Z",
+  "finished": "2026-09-23T18:56:43Z"
+}

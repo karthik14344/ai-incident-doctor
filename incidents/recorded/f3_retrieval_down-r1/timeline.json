@@ -1,0 +1,42 @@
+{
+  "run_id": "f3_retrieval_down-r1",
+  "fault_id": "f3_retrieval_down",
+  "delivery": "environment",
+  "variant": null,
+  "started": "2026-09-23T11:15:11Z",
+  "t_break": "2026-09-23T11:15:11Z",
+  "load": null,
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "DownstreamCallFailures",
+    "startsAt": "2026-09-23T11:15:43.987Z",
+    "received_at": "2026-09-23T11:15:53.272Z",
+    "labels": {
+      "alertname": "DownstreamCallFailures",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai",
+      "target": "retrieval"
+    }
+  },
+  "t_alert": "2026-09-23T11:15:43.987Z",
+  "unnoticed_s": 33.0,
+  "expected_alert": true,
+  "incident_id": "inc_62e26ac22f",
+  "t_report": "2026-09-23T11:18:03Z",
+  "doctor_s": 139.0,
+  "joined_alerts": [
+    {
+      "alertname": "HighErrorRate",
+      "startsAt": "2026-09-23T11:16:33.987Z"
+    },
+    {
+      "alertname": "HighLatencyP95",
+      "startsAt": "2026-09-23T11:16:40.51Z"
+    }
+  ],
+  "t_revert_start": "2026-09-23T11:18:07Z",
+  "t_reverted": "2026-09-23T11:18:10Z",
+  "t_alert_resolved": "2026-09-23T11:20:23.237Z",
+  "finished": "2026-09-23T11:20:31Z"
+}

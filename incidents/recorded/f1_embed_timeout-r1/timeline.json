@@ -1,0 +1,102 @@
+{
+  "run_id": "f1_embed_timeout-r1",
+  "fault_id": "f1_embed_timeout",
+  "delivery": "push",
+  "variant": "guilty_last",
+  "started": "2026-09-23T11:55:34Z",
+  "pushes": [
+    {
+      "label": "distractors",
+      "sha": "43d81809c05d8ef22b17787c2fb51579774480c7",
+      "pushed_at": "2026-09-23T11:55:34Z",
+      "push_returned_at": "2026-09-23T11:56:42Z",
+      "push_seconds": 67.9,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (45s)        ",
+        "remote: pipeline: SUCCESS for 43d81809c05d8ef22b17787c2fb51579774480c7 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/43d81809c05d8ef22b17787c2fb51579774480c7.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   ffb6f14..43d8180  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T11:56:42Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "guilty",
+      "sha": "8f636994edd38c794242e1fb2d76d5016e9abbf2",
+      "pushed_at": "2026-09-23T11:56:43Z",
+      "push_returned_at": "2026-09-23T11:57:40Z",
+      "push_seconds": 57.4,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (35s)        ",
+        "remote: pipeline: SUCCESS for 8f636994edd38c794242e1fb2d76d5016e9abbf2 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/8f636994edd38c794242e1fb2d76d5016e9abbf2.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   43d8180..8f63699  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T11:57:40Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "32d02a7c398be09a6863c3f170e1fbcfc4765880",
+      "pushed_at": "2026-09-23T12:00:31Z",
+      "push_returned_at": "2026-09-23T12:01:38Z",
+      "push_seconds": 67.0,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (37s)        ",
+        "remote: pipeline: SUCCESS for 32d02a7c398be09a6863c3f170e1fbcfc4765880 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/32d02a7c398be09a6863c3f170e1fbcfc4765880.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   8f63699..32d02a7  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T12:01:38Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "t_break": "2026-09-23T11:56:42Z",
+  "load": null,
+  "neighbour": true,
+  "first_alert": {
+    "alertname": "EmbeddingFallbackActive",
+    "startsAt": "2026-09-23T11:58:25.625Z",
+    "received_at": "2026-09-23T11:58:34Z",
+    "labels": {
+      "alertname": "EmbeddingFallbackActive",
+      "instance": "retrieval:8002",
+      "job": "retrieval",
+      "service": "retrieval",
+      "severity": "warning",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-09-23T11:58:25.625Z",
+  "unnoticed_s": 103.6,
+  "expected_alert": true,
+  "incident_id": "inc_9bf1ee6114",
+  "t_report": "2026-09-23T12:01:08Z",
+  "doctor_s": 162.4,
+  "joined_alerts": [],
+  "neighbour_calls": 8,
+  "t_revert_start": "2026-09-23T12:00:31Z",
+  "t_reverted": "2026-09-23T12:01:38Z",
+  "t_alert_resolved": "2026-09-23T11:58:40.376Z",
+  "finished": "2026-09-23T12:01:38Z",
+  "deploy_blip_alert": {
+    "alertname": "DownstreamCallFailures",
+    "startsAt": "2026-09-23T11:57:33.987Z",
+    "received_at": "2026-09-23T11:57:40.313Z",
+    "labels": {
+      "alertname": "DownstreamCallFailures",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai",
+      "target": "retrieval"
+    }
+  },
+  "unnoticed_after_deploy_s": 45.6,
+  "note": "The runner's first alert was a DownstreamCallFailures blip from the guilty deploy recreating containers (fixed afterwards, DECISIONS D-72). The fault's own symptom, EmbeddingFallbackActive, fired 45 s after the deploy and was diagnosed as its own incident; this record points at it."
+}

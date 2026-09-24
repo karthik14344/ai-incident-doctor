@@ -1,0 +1,27 @@
+{
+  "fault_id": "f6_tight_timeout",
+  "name": "Gateway -> retrieval timeout set to 50 ms (a unit slip)",
+  "delivery": "push",
+  "incident_class": "code_defect",
+  "acceptable_classes": [
+    "code_defect",
+    "configuration"
+  ],
+  "component": "gateway",
+  "acceptable_components": [
+    "gateway",
+    "retrieval"
+  ],
+  "true_cause": "A commit set the gateway's httpx timeout for the chat retrieval call to 0.05 s (meant as a 'fail fast' limit, but in seconds). Retrieval normally answers in ~30-50 ms, so the slower ~7% of calls raise ReadTimeout; the gateway then answers without context and refuses the question. Failures are intermittent, for no visible reason.",
+  "expected_fix": "Restore the retrieval call timeout (30 s, or at least well above retrieval latency).",
+  "acceptance_test": "faults/acceptance/test_f6_tight_timeout.py",
+  "run_id": "f6_tight_timeout-r2",
+  "guilty_commit": "5e1f7bca8b8130ad9bd2b771a475264575c44e8a",
+  "guilty_kb_version": null,
+  "guilty_deploy": "d9a0a8b",
+  "distractor_commits": [
+    "d9a0a8b3350c7111f3f2645eda798873cb465926",
+    "d1990329461930031d2da26dc919d654a18bbdc6",
+    "e91ff596918adc1ec4210b6465f246c4c816b312"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "run_id": "f6_tight_timeout-r2",
+  "fault_id": "f6_tight_timeout",
+  "delivery": "push",
+  "variant": "guilty_earlier",
+  "started": "2026-09-23T19:06:43Z",
+  "trigger": "alert",
+  "t_break": "2026-09-23T19:06:43Z",
+  "pushes": [
+    {
+      "label": "guilty",
+      "sha": "d9a0a8b3350c7111f3f2645eda798873cb465926",
+      "pushed_at": "2026-09-23T19:06:43Z",
+      "push_returned_at": "2026-09-23T19:07:38Z",
+      "push_seconds": 54.9,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (34s)        ",
+        "remote: pipeline: SUCCESS for d9a0a8b3350c7111f3f2645eda798873cb465926 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/d9a0a8b3350c7111f3f2645eda798873cb465926.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   4d271b9..d9a0a8b  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T19:07:38Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "distractors-after",
+      "sha": "e91ff596918adc1ec4210b6465f246c4c816b312",
+      "pushed_at": "2026-09-23T19:07:38Z",
+      "push_returned_at": "2026-09-23T19:08:32Z",
+      "push_seconds": 53.4,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (33s)        ",
+        "remote: pipeline: SUCCESS for e91ff596918adc1ec4210b6465f246c4c816b312 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/e91ff596918adc1ec4210b6465f246c4c816b312.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   d9a0a8b..e91ff59  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T19:08:32Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "c5614c20d4d90fd7c0afb3ed9efdbeb1d2ceb432",
+      "pushed_at": "2026-09-23T19:18:34Z",
+      "push_returned_at": "2026-09-23T19:19:30Z",
+      "push_seconds": 55.2,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (33s)        ",
+        "remote: pipeline: SUCCESS for c5614c20d4d90fd7c0afb3ed9efdbeb1d2ceb432 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/c5614c20d4d90fd7c0afb3ed9efdbeb1d2ceb432.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   e91ff59..c5614c2  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T19:19:29Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "load": {
+    "mode": "chat",
+    "rate": 0.8,
+    "concurrency": 16,
+    "duration": 600
+  },
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "DownstreamCallFailures",
+    "startsAt": "2026-09-23T19:12:03.987Z",
+    "received_at": "2026-09-23T19:12:13.261Z",
+    "labels": {
+      "alertname": "DownstreamCallFailures",
+      "pattern": "intermittent",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai",
+      "target": "retrieval"
+    }
+  },
+  "t_alert": "2026-09-23T19:12:03.987Z",
+  "unnoticed_s": 321.0,
+  "expected_alert": true,
+  "incident_id": "inc_790d9ddcfb",
+  "t_report": "2026-09-23T19:13:49Z",
+  "doctor_s": 105.0,
+  "joined_alerts": [],
+  "load_summary": {
+    "requests": 484,
+    "ok": 484,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p50_s": 1.458,
+    "p95_s": 4.26,
+    "p99_s": 5.332,
+    "mean_s": 1.828,
+    "max_s": 5.962,
+    "throughput_rps": 0.803,
+    "error_kinds": {},
+    "outcomes": {
+      "refused": 19,
+      "answered": 465
+    },
+    "wall_s": 602.5
+  },
+  "t_revert_start": "2026-09-23T19:18:34Z",
+  "t_reverted": "2026-09-23T19:19:30Z",
+  "t_alert_resolved": "2026-09-23T19:21:29.657Z",
+  "finished": "2026-09-23T19:21:30Z"
+}

@@ -1,0 +1,48 @@
+{
+  "run_id": "f7_kb_missing_docs-r2",
+  "fault_id": "f7_kb_missing_docs",
+  "delivery": "data",
+  "variant": null,
+  "started": "2026-09-23T19:31:30Z",
+  "trigger": "ticket",
+  "t_break": "2026-09-23T19:31:30Z",
+  "guilty_kb_version": "405bbf0b9802",
+  "kb_load": " Container aid-kb-loader-run-f35fbcd9f671 Created",
+  "load": null,
+  "neighbour": false,
+  "monitoring_missed": true,
+  "ticket_filed_at": "2026-09-23T19:46:36Z",
+  "ticket": {
+    "text": "It no longer answers questions about the library, scholarships or placements.",
+    "since": "about 15 minutes ago",
+    "response": {
+      "status": "opened",
+      "incident_id": "inc_97ae8af9da",
+      "diagnose_after": "2026-09-23T19:46:36Z",
+      "window": {
+        "text": "It no longer answers questions about the library, scholarships or placements.",
+        "since": "about 15 minutes ago",
+        "search_range": [
+          "2026-09-23T19:24:06Z",
+          "2026-09-23T19:46:36Z"
+        ],
+        "how": "'15 minutes ago'",
+        "onset_signals": [
+          {
+            "metric": "chat_errors_per_min",
+            "onset": 1790191626.26,
+            "value": 1.091,
+            "baseline": 0.0
+          }
+        ],
+        "onset_found": true
+      }
+    }
+  },
+  "incident_id": "inc_97ae8af9da",
+  "t_report": "2026-09-23T19:47:08Z",
+  "doctor_s": 32.0,
+  "t_revert_start": "2026-09-23T19:47:16Z",
+  "t_reverted": "2026-09-23T19:47:19Z",
+  "finished": "2026-09-23T19:47:19Z"
+}

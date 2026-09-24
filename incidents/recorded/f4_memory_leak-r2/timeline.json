@@ -1,0 +1,109 @@
+{
+  "run_id": "f4_memory_leak-r2",
+  "fault_id": "f4_memory_leak",
+  "delivery": "push",
+  "variant": "guilty_earlier",
+  "started": "2026-09-23T19:57:19Z",
+  "trigger": "alert",
+  "t_break": "2026-09-23T19:57:19Z",
+  "pushes": [
+    {
+      "label": "guilty",
+      "sha": "41c6e09decf35bae084dc13f059944dc15983f2e",
+      "pushed_at": "2026-09-23T19:57:19Z",
+      "push_returned_at": "2026-09-23T19:58:16Z",
+      "push_seconds": 56.9,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (35s)        ",
+        "remote: pipeline: SUCCESS for 41c6e09decf35bae084dc13f059944dc15983f2e - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/41c6e09decf35bae084dc13f059944dc15983f2e.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   c5614c2..41c6e09  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T19:58:16Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "distractors-after",
+      "sha": "2354deb44985eabf598ce96e1294403cb40eeadf",
+      "pushed_at": "2026-09-23T19:58:16Z",
+      "push_returned_at": "2026-09-23T19:59:07Z",
+      "push_seconds": 50.9,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (32s)        ",
+        "remote: pipeline: SUCCESS for 2354deb44985eabf598ce96e1294403cb40eeadf - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/2354deb44985eabf598ce96e1294403cb40eeadf.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   41c6e09..2354deb  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T19:59:07Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "16735bd8dcd782b443e913ee4c66f21dde24f368",
+      "pushed_at": "2026-09-23T20:14:08Z",
+      "push_returned_at": "2026-09-23T20:15:07Z",
+      "push_seconds": 59.8,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (38s)        ",
+        "remote: pipeline: SUCCESS for 16735bd8dcd782b443e913ee4c66f21dde24f368 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/16735bd8dcd782b443e913ee4c66f21dde24f368.log        ",
+        "To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git",
+        "   2354deb..16735bd  main -> main"
+      ],
+      "deploy_ts": "2026-09-23T20:15:07Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "load": {
+    "mode": "search",
+    "rate": 6.0,
+    "concurrency": 12,
+    "duration": 900,
+    "unique": true
+  },
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "MemoryClimbing",
+    "startsAt": "2026-09-23T20:11:56.176Z",
+    "received_at": "2026-09-23T20:12:05.263Z",
+    "labels": {
+      "alertname": "MemoryClimbing",
+      "instance": "retrieval:8002",
+      "job": "retrieval",
+      "service": "retrieval",
+      "severity": "warning",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-09-23T20:11:56.176Z",
+  "unnoticed_s": 877.2,
+  "expected_alert": true,
+  "incident_id": "inc_1898ba07d1",
+  "t_report": "2026-09-23T20:13:42Z",
+  "doctor_s": 105.8,
+  "joined_alerts": [],
+  "load_summary": {
+    "requests": 5365,
+    "ok": 5365,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p50_s": 0.04,
+    "p95_s": 0.072,
+    "p99_s": 0.108,
+    "mean_s": 0.046,
+    "max_s": 0.84,
+    "throughput_rps": 5.961,
+    "error_kinds": {},
+    "outcomes": {},
+    "wall_s": 900.1
+  },
+  "t_revert_start": "2026-09-23T20:14:08Z",
+  "t_reverted": "2026-09-23T20:15:07Z",
+  "t_alert_resolved": "2026-09-23T20:15:05.269Z",
+  "finished": "2026-09-23T20:15:07Z"
+}

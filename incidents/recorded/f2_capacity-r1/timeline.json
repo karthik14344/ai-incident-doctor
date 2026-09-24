@@ -1,0 +1,63 @@
+{
+  "run_id": "f2_capacity-r1",
+  "fault_id": "f2_capacity",
+  "delivery": "environment",
+  "variant": null,
+  "started": "2026-09-23T12:24:37Z",
+  "t_break": "2026-09-23T12:24:37Z",
+  "load": {
+    "mode": "chat",
+    "rate": 4.0,
+    "concurrency": 96,
+    "duration": 300,
+    "timeout": 240
+  },
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-09-23T12:26:30.51Z",
+    "received_at": "2026-09-23T12:26:35.593Z",
+    "labels": {
+      "alertname": "HighLatencyP95",
+      "endpoint": "/api/chat",
+      "path": "generation",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-09-23T12:26:30.51Z",
+  "unnoticed_s": 113.5,
+  "expected_alert": true,
+  "incident_id": "inc_a2d5a9858a",
+  "t_report": "2026-09-23T12:32:47Z",
+  "doctor_s": 376.5,
+  "joined_alerts": [
+    {
+      "alertname": "MemoryClimbing",
+      "startsAt": "2026-09-23T12:28:21.176Z"
+    }
+  ],
+  "load_summary": {
+    "requests": 1180,
+    "ok": 1180,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p50_s": 70.989,
+    "p95_s": 78.401,
+    "p99_s": 80.088,
+    "mean_s": 67.652,
+    "max_s": 80.866,
+    "throughput_rps": 1.341,
+    "error_kinds": {},
+    "outcomes": {
+      "answered": 1178,
+      "refused": 2
+    },
+    "wall_s": 880.2
+  },
+  "t_revert_start": "2026-09-23T12:39:17Z",
+  "t_reverted": "2026-09-23T12:39:17Z",
+  "t_alert_resolved": "2026-09-23T12:41:35.536Z",
+  "finished": "2026-09-23T12:41:38Z"
+}

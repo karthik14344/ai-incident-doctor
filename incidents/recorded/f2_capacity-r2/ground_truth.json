@@ -1,0 +1,20 @@
+{
+  "fault_id": "f2_capacity",
+  "name": "Concurrent chat surge saturates the single local model",
+  "delivery": "environment",
+  "incident_class": "capacity",
+  "acceptable_classes": [
+    "capacity"
+  ],
+  "component": "ollama",
+  "acceptable_components": [
+    "llm",
+    "ollama"
+  ],
+  "true_cause": "Many simultaneous chat questions; the single local llama3.2 on Ollama serialises generation, so requests queue and latency climbs. No deploy is involved.",
+  "expected_fix": "Bound concurrency at the gateway with a queue/semaphore and shed load (429) beyond it; scale generation capacity. No code change caused this.",
+  "acceptance_test": null,
+  "run_id": "f2_capacity-r2",
+  "guilty_commit": null,
+  "guilty_kb_version": null
+}

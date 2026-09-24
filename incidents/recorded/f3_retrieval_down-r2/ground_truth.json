@@ -1,0 +1,19 @@
+{
+  "fault_id": "f3_retrieval_down",
+  "name": "Retrieval service stopped",
+  "delivery": "environment",
+  "incident_class": "dependency_failure",
+  "acceptable_classes": [
+    "dependency_failure"
+  ],
+  "component": "retrieval",
+  "acceptable_components": [
+    "retrieval"
+  ],
+  "true_cause": "The retrieval container was stopped; every gateway call to it fails with a connection error.",
+  "expected_fix": "Restart the retrieval service (docker compose start retrieval).",
+  "acceptance_test": null,
+  "run_id": "f3_retrieval_down-r2",
+  "guilty_commit": null,
+  "guilty_kb_version": null
+}

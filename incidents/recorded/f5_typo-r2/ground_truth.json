@@ -1,0 +1,25 @@
+{
+  "fault_id": "f5_typo",
+  "name": "AttributeError when titling a chat session from a keyword query",
+  "delivery": "push",
+  "incident_class": "code_defect",
+  "acceptable_classes": [
+    "code_defect"
+  ],
+  "component": "gateway",
+  "acceptable_components": [
+    "gateway"
+  ],
+  "true_cause": "A commit changed how new chat sessions are titled; the branch for questions without a '?' reads req.qestion, an attribute that does not exist, so keyword-style queries crash with AttributeError (HTTP 500) while normal questions work. Linters do not see attribute typos.",
+  "expected_fix": "Fix the attribute name (req.qestion -> req.question) in the session-title branch.",
+  "acceptance_test": "faults/acceptance/test_f5_typo.py",
+  "run_id": "f5_typo-r2",
+  "guilty_commit": "1f5a3676188a771b11cc38f5673a792f325e8fe3",
+  "guilty_kb_version": null,
+  "guilty_deploy": "6089cc6",
+  "distractor_commits": [
+    "e1d8c774330370f83bddd63271ffb129c95d4664",
+    "f2e5549900a0175dfc90c243f462bfe40ebed8f5",
+    "6089cc68f03d3d8df76c472e61fc4b3b5f38b480"
+  ]
+}
