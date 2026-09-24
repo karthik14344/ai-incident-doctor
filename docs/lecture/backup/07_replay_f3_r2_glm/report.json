@@ -1,0 +1,254 @@
+{
+ "incident_id": "inc_d6b392195b",
+ "arm": "logs_commits_incidents",
+ "alert": {
+  "received_at": "2026-09-23T18:54:36.165Z",
+  "status": "firing",
+  "alertname": "ServiceDown",
+  "fingerprint": "3e6bc34864145b12",
+  "startsAt": "2026-09-23T18:54:26.923Z",
+  "endsAt": "0001-01-01T00:00:00Z",
+  "labels": {
+   "alertname": "ServiceDown",
+   "instance": "retrieval:8002",
+   "job": "retrieval",
+   "service": "retrieval",
+   "severity": "critical",
+   "stack": "knowledgeai"
+  },
+  "annotations": {
+   "description": "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds.",
+   "summary": "retrieval is not answering Prometheus scrapes"
+  },
+  "generatorURL": "http://9232fe25c7db:9090/graph?g0.expr=up%7Bjob%3D~%22gateway%7Cingestion%7Cretrieval%7Cllm%22%7D+%3D%3D+0&g0.tab=1",
+  "groupKey": "{}:{alertname=\"ServiceDown\", service=\"retrieval\"}"
+ },
+ "created_at": "2026-09-24T10:15:12Z",
+ "live_sha": "4d271b92814d24582a19854302240342e8e76f5b",
+ "retrieval": {
+  "time_filtered": [
+   "f66e72eb25d29c40e182cbf8990423b11f3bf58b",
+   "818a26202ce43be4e1e42662a1e1236d441a63df",
+   "42d196a66b41da7d293c54c169a6008860e0f96f",
+   "fd98ee868ee09a8d2af45391fa53ba0f2f29be65",
+   "b4385a93374d8898be50ea719a53dcc7b9123144",
+   "43e628b0d966a33a4b5833de75b559b2ba8c0b7c",
+   "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+   "353d3580a62c29c2b94dde7711aa6fdf63331641",
+   "15c1b1783539ec6fd7f9260943c5b1e269513723",
+   "b3ee7b320b33e30080b0bcbdb521f4ed4f8a064f",
+   "8b35c3b2419b58d6154bf1055a8fa3870a292774",
+   "6abf2ab2ccd05eaec3a13d868d96b0737e19dd53",
+   "1a6e545f6afa83070174b747fb267bb07f3c0993",
+   "f314d9d12c70766189767e36d42aba32ccc74d1e",
+   "bd28722b12af54b187e11509e6959ff3ce792b7c",
+   "fe5ae015f989f06bd1dad6f25aa8bc1ea01fc88e",
+   "1cfa66797f91b38154eb375eb3d62deae882431a",
+   "48225cd8045cb4d3911e506cfe70172d45222e84",
+   "fcb3ab8611b53332d84cb220924cc0353fb25fc3",
+   "7d9fa358822d7c481fbec1b148af9a3748fa4253",
+   "d08706def979428f9581abedf0742df306635027",
+   "1accbede432336a28215cd27859a89dff9211733",
+   "1a06be7844d5d64326ecfd8f2463e5759e547f4c",
+   "ff4c00daf41d8fe105d78fcdb6d8392ea4ac0f65",
+   "493e5d791d8a972ce1dc4cc385eb7ddbb250d12c",
+   "8189ba85f3a798b80ecde3d9df28628e0c5aa654",
+   "6a33acf04fe6f4f8ec7d5bbd02f0907cc1e357e4",
+   "1f00121baa345da971dd7eeb4a73b2e6594fe718",
+   "71b19e9350050b299f8f218d81577ea7314cd58e",
+   "f4bc84c00af52e6728be92eb0ccfdc10fd259cf4",
+   "711b81194a3c697229ed57f4c5a67f61683e595d",
+   "3b6f0317041c4b9ef374bd0b0296d30955b0d223",
+   "e8e8d7f26ab387e401729bde9653909697f52110",
+   "e1d8c774330370f83bddd63271ffb129c95d4664",
+   "f2e5549900a0175dfc90c243f462bfe40ebed8f5",
+   "1f5a3676188a771b11cc38f5673a792f325e8fe3",
+   "6089cc68f03d3d8df76c472e61fc4b3b5f38b480",
+   "4d271b92814d24582a19854302240342e8e76f5b"
+  ],
+  "ranked": [
+   {
+    "sha": "d08706def979428f9581abedf0742df306635027",
+    "subject": "Fail fast when retrieval is slow - it normally answers in about 30 ms",
+    "deployed_in": "1accbed",
+    "lexical": 17.46,
+    "semantic": 0.7566,
+    "score": 0.9026,
+    "matched_terms": [
+     "retrieval",
+     "gateway",
+     "timeout",
+     "api",
+     "telemetry",
+     "chat",
+     "client"
+    ]
+   },
+   {
+    "sha": "1a06be7844d5d64326ecfd8f2463e5759e547f4c",
+    "subject": "Revert \"Fail fast when retrieval is slow - it normally answers in about 30 ms\"",
+    "deployed_in": "1a06be7",
+    "lexical": 16.97,
+    "semantic": 0.7444,
+    "score": 0.8809,
+    "matched_terms": [
+     "retrieval",
+     "gateway",
+     "timeout",
+     "api",
+     "telemetry",
+     "chat",
+     "client"
+    ]
+   },
+   {
+    "sha": "bd28722b12af54b187e11509e6959ff3ce792b7c",
+    "subject": "Don't let one slow generation hold a gateway connection for two minutes",
+    "deployed_in": "fe5ae01",
+    "lexical": 12.61,
+    "semantic": 0.7037,
+    "score": 0.7148,
+    "matched_terms": [
+     "gateway",
+     "timeout",
+     "api",
+     "telemetry",
+     "client"
+    ]
+   },
+   {
+    "sha": "1cfa66797f91b38154eb375eb3d62deae882431a",
+    "subject": "Revert \"Don't let one slow generation hold a gateway connection for two minutes\"",
+    "deployed_in": "1cfa667",
+    "lexical": 12.26,
+    "semantic": 0.6926,
+    "score": 0.6982,
+    "matched_terms": [
+     "gateway",
+     "timeout",
+     "api",
+     "telemetry",
+     "client"
+    ]
+   },
+   {
+    "sha": "75292ddb9dc7e3d8034e87d46ee75d539dba4bf3",
+    "subject": "Alert on persistent low-rate errors; ticket fallback when monitoring misses",
+    "deployed_in": "75292dd",
+    "lexical": 9.66,
+    "semantic": 0.7082,
+    "score": 0.6153,
+    "matched_terms": [
+     "service",
+     "retrieval",
+     "gateway",
+     "timeout",
+     "endpoint",
+     "api",
+     "chat",
+     "outcome",
+     "failed",
+     "knowledgeai"
+    ]
+   }
+  ],
+  "embedding_used": true,
+  "note": null,
+  "code_chunks": [
+   "patient/common/telemetry.py::<module>",
+   "patient/common/telemetry.py::async_client",
+   "patient/api_gateway/app/main.py::debug_retrieval",
+   "patient/api_gateway/app/main.py::_run_retrieval"
+  ],
+  "past_incidents": []
+ },
+ "prompt_tokens_estimate": 3160,
+ "provider_failures": [],
+ "status": "ok",
+ "provider": "glm",
+ "model": "glm-4.5-flash",
+ "diagnosis": {
+  "summary": "The retrieval service is not responding to Prometheus scrapes, causing downstream failures and high latency in the gateway service.",
+  "incident_class": "dependency_failure",
+  "demand_vs_capacity": {
+   "traffic_change": "rose",
+   "deploy_before_onset": true,
+   "verdict": "capacity_fell",
+   "reasoning": "Traffic increased by 1.6x, but the primary issue is the retrieval service becoming unreachable, as evidenced by ConnectError logs and the service_up metric dropping to 0."
+  },
+  "hypotheses": [
+   {
+    "cause": "The retrieval service is down or unreachable due to a network configuration issue or service failure.",
+    "component": "retrieval",
+    "confidence": 0.9,
+    "evidence": [
+     "ConnectError logs in gateway: 'No address associated with hostname'",
+     "service_up metric dropped to 0 during incident",
+     "DownstreamCallFailures alert triggered for gateway->retrieval"
+    ],
+    "suspected_commit": null,
+    "suspected_files": [
+     "patient/common/telemetry.py"
+    ]
+   },
+   {
+    "cause": "The retrieval service is running but unable to respond to requests due to resource exhaustion or deadlock.",
+    "component": "retrieval",
+    "confidence": 0.6,
+    "evidence": [
+     "in_flight for retrieval increased by 2.4x during incident",
+     "HighLatencyP95 alert for gateway's /api/retrieval/search endpoint"
+    ],
+    "suspected_commit": null,
+    "suspected_files": []
+   },
+   {
+    "cause": "A recent deployment to the gateway service introduced a bug in the telemetry module that's causing connection issues.",
+    "component": "gateway",
+    "confidence": 0.5,
+    "evidence": [
+     "Most recent deploy (4d271b9) was to gateway service",
+     "ConnectError logs appear in gateway service telemetry"
+    ],
+    "suspected_commit": null,
+    "suspected_files": [
+     "patient/common/telemetry.py"
+    ],
+    "suspected_commit_raw": "4d271b9"
+   }
+  ],
+  "fix": {
+   "kind": "action",
+   "edits": [],
+   "action": "Restart the retrieval service and check its logs for any errors. If the issue persists, verify network connectivity between gateway and retrieval services.",
+   "rationale": "The primary evidence points to the retrieval service being completely unreachable (service_up=0), suggesting a service failure rather than a code defect. The most immediate action is to restart the service to restore functionality.",
+   "unified_diff": "",
+   "edit_problems": []
+  },
+  "constraint_violations": [
+   "named a commit that is not a candidate: 4d271b9"
+  ]
+ },
+ "repaired": true,
+ "remaining_errors": [
+  "hypotheses/2/suspected_commit: '4d271b9' is not one of the candidate commits; use a SHA from the list or null"
+ ],
+ "usage": {
+  "calls": 2,
+  "prompt_tokens": 8350,
+  "completion_tokens": 1114,
+  "cost_usd": 0.0,
+  "seconds": 39.39
+ },
+ "verification": {
+  "status": "unverified - needs human review",
+  "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+ },
+ "timings": {
+  "retrieval_s": 1.31,
+  "llm_s": 39.39,
+  "total_s": 40.7
+ },
+ "trigger": "replay",
+ "replayed_at": "2026-09-24T10:14:31Z"
+}

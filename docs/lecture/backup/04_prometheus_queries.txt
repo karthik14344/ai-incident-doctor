@@ -1,0 +1,176 @@
+# Demo: Prometheus from zero - the same PromQL queries before and during load (2026-09-24, development laptop)
+# Background traffic (faults.background_traffic: 0.2 chats/s + 0.4 searches/s) was running throughout.
+
+############ A. BEFORE extra load
+# evaluated at 2026-09-24T10:09:23+00:00
+
+Q1 up:  up{job=~"gateway|ingestion|retrieval|llm"}
+   {"__name__": "up", "job": "llm"} = 1
+   {"__name__": "up", "job": "ingestion"} = 1
+   {"__name__": "up", "job": "retrieval"} = 1
+   {"__name__": "up", "job": "gateway"} = 1
+
+Q2 raw counter:  knowledgeai_http_requests_total{service="gateway",endpoint="/api/retrieval/search"}
+   {"__name__": "knowledgeai_http_requests_total", "endpoint": "/api/retrieval/search", "job": "gateway", "method": "POST", "service": "gateway", "status": "200"} = 42
+
+Q3 request rate:  sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[1m]))
+   {"service": "llm"} = 0.2909
+   {"service": "ingestion"} = 0.07273
+   {"service": "retrieval"} = 0.7819
+   {"service": "gateway"} = 0.8182
+
+Q4 user traffic:  sum by (endpoint) (rate(knowledgeai_http_requests_total{service="gateway",endpoint=~"/api/chat|/api/retrieval/search"}[1m]))
+   {"endpoint": "/api/retrieval/search"} = 0.5455
+   {"endpoint": "/api/chat"} = 0.2182
+
+Q5 error ratio:  sum by (service) (rate(knowledgeai_http_requests_total{status=~"5..",endpoint!="/metrics"}[5m])) / sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[5m]))
+   (no data)
+
+Q6 p95 latency:  histogram_quantile(0.95, sum by (le, endpoint) (rate(knowledgeai_http_request_duration_seconds_bucket{service="gateway",endpoint=~"/api/chat|/api/retrieval/search"}[2m])))
+   {"endpoint": "/api/retrieval/search"} = 0.0972
+   {"endpoint": "/api/chat"} = 2.674
+
+Q7 in flight:  sum by (service) (knowledgeai_http_requests_in_flight)
+   {"service": "llm"} = 0
+   {"service": "ingestion"} = 0
+   {"service": "retrieval"} = 0
+   {"service": "gateway"} = 0
+
+Q8 chat outcomes:  sum by (outcome) (rate(knowledgeai_chat_answers_total[5m]))
+   {"outcome": "answered"} = 0.05844
+
+Q9 memory MiB:  knowledgeai_process_resident_memory_bytes / 1048576
+   {"job": "llm", "service": "llm"} = 58.09
+   {"job": "ingestion", "service": "ingestion"} = 90.54
+   {"job": "retrieval", "service": "retrieval"} = 92.54
+   {"job": "gateway", "service": "gateway"} = 97.28
+
+Q10 fallback:  knowledgeai_embedding_fallback_total
+   {"__name__": "knowledgeai_embedding_fallback_total", "job": "ingestion", "service": "ingestion"} = 0
+   {"__name__": "knowledgeai_embedding_fallback_total", "job": "retrieval", "service": "retrieval"} = 0
+
+Q11 downstream failures:  sum by (service, target) (increase(knowledgeai_downstream_failures_total[5m]))
+   (no data)
+
+############ B. Load generator, searches:  .venv\Scripts\python.exe loadgen\loadgen.py --mode search --rate 5 --concurrency 10 --duration 120
+2026-09-24T10:09:30Z
+{
+  "config": {
+    "base_url": "http://127.0.0.1:18000",
+    "mode": "search",
+    "rate": 5.0,
+    "concurrency": 10,
+    "duration": 120.0,
+    "unique": false
+  },
+  "summary": {
+    "requests": 601,
+    "ok": 601,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p50_s": 0.037,
+    "p95_s": 0.063,
+    "p99_s": 0.083,
+    "mean_s": 0.041,
+    "max_s": 0.094,
+    "throughput_rps": 5.006,
+    "error_kinds": {},
+    "outcomes": {},
+    "wall_s": 120.0
+  }
+}
+LOADGEN_SECONDS=121
+
+[exited with code 0]
+
+############ C. DURING the search load (90 s in)
+# evaluated at 2026-09-24T10:11:10+00:00
+
+Q2 raw counter:  knowledgeai_http_requests_total{service="gateway",endpoint="/api/retrieval/search"}
+   {"__name__": "knowledgeai_http_requests_total", "endpoint": "/api/retrieval/search", "job": "gateway", "method": "POST", "service": "gateway", "status": "200"} = 575
+
+Q3 request rate:  sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[1m]))
+   {"service": "llm"} = 0.2
+   {"service": "ingestion"} = 0.07273
+   {"service": "retrieval"} = 5.546
+   {"service": "gateway"} = 5.582
+
+Q4 user traffic:  sum by (endpoint) (rate(knowledgeai_http_requests_total{service="gateway",endpoint=~"/api/chat|/api/retrieval/search"}[1m]))
+   {"endpoint": "/api/retrieval/search"} = 5.364
+   {"endpoint": "/api/chat"} = 0.1455
+
+Q6 p95 latency:  histogram_quantile(0.95, sum by (le, endpoint) (rate(knowledgeai_http_request_duration_seconds_bucket{service="gateway",endpoint=~"/api/chat|/api/retrieval/search"}[2m])))
+   {"endpoint": "/api/retrieval/search"} = 0.07803
+   {"endpoint": "/api/chat"} = 2.6
+
+Q7 in flight:  sum by (service) (knowledgeai_http_requests_in_flight)
+   {"service": "llm"} = 0
+   {"service": "ingestion"} = 0
+   {"service": "retrieval"} = 0
+   {"service": "gateway"} = 0
+
+Q9 memory MiB:  knowledgeai_process_resident_memory_bytes / 1048576
+   {"job": "llm", "service": "llm"} = 58.84
+   {"job": "ingestion", "service": "ingestion"} = 90.54
+   {"job": "retrieval", "service": "retrieval"} = 104.8
+   {"job": "gateway", "service": "gateway"} = 99.78
+
+############ D. Load generator, chats:  .venv\Scripts\python.exe loadgen\loadgen.py --mode chat --rate 1 --concurrency 8 --duration 120
+2026-09-24T10:11:42Z
+{
+  "config": {
+    "base_url": "http://127.0.0.1:18000",
+    "mode": "chat",
+    "rate": 1.0,
+    "concurrency": 8,
+    "duration": 120.0,
+    "unique": false
+  },
+  "summary": {
+    "requests": 123,
+    "ok": 123,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p50_s": 2.945,
+    "p95_s": 6.548,
+    "p99_s": 7.366,
+    "mean_s": 3.301,
+    "max_s": 7.495,
+    "throughput_rps": 0.989,
+    "error_kinds": {},
+    "outcomes": {
+      "answered": 123
+    },
+    "wall_s": 124.4
+  }
+}
+LOADGEN_SECONDS=125
+
+[exited with code 0]
+
+############ E. DURING the chat load (100 s in)
+# evaluated at 2026-09-24T10:13:23+00:00
+
+Q3 request rate:  sum by (service) (rate(knowledgeai_http_requests_total{endpoint!="/metrics"}[1m]))
+   {"service": "llm"} = 1.255
+   {"service": "ingestion"} = 0.07273
+   {"service": "retrieval"} = 1.8
+   {"service": "gateway"} = 1.8
+
+Q4 user traffic:  sum by (endpoint) (rate(knowledgeai_http_requests_total{service="gateway",endpoint=~"/api/chat|/api/retrieval/search"}[1m]))
+   {"endpoint": "/api/retrieval/search"} = 0.5818
+   {"endpoint": "/api/chat"} = 1.164
+
+Q6 p95 latency:  histogram_quantile(0.95, sum by (le, endpoint) (rate(knowledgeai_http_request_duration_seconds_bucket{service="gateway",endpoint=~"/api/chat|/api/retrieval/search"}[2m])))
+   {"endpoint": "/api/retrieval/search"} = 0.07444
+   {"endpoint": "/api/chat"} = 6.959
+
+Q7 in flight:  sum by (service) (knowledgeai_http_requests_in_flight)
+   {"service": "llm"} = 1
+   {"service": "ingestion"} = 0
+   {"service": "retrieval"} = 0
+   {"service": "gateway"} = 2
+
+Q8 chat outcomes:  sum by (outcome) (rate(knowledgeai_chat_answers_total[5m]))
+   {"outcome": "answered"} = 0.5322
+   {"outcome": "refused_output"} = 0

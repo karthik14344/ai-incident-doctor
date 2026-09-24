@@ -1,0 +1,47 @@
+# Demo: DVC - the knowledge base is data, versioned by DVC (run 2026-09-24T10:19Z)
+
+> .venv\Scripts\python.exe -m dvc dag
++----------+ 
+| build_kb | 
++----------+ 
+
+> .venv\Scripts\python.exe -m dvc status
+build_kb:
+	changed deps:
+		modified:           patient\ingestion_service\app\chunker.py
+		modified:           patient\ingestion_service\app\vector_store.py
+# (These two files changed only by comment commits: 8f63699 'Clarify chunk size units', 43d8180 'Document the similarity convention in the vector store'. The KB was not rebuilt after them.)
+
+> Get-Content kb\manifest.json   (first lines: the kb_version the app is serving)
+{
+  "kb_version": "38ba55c908d1",
+  "built_at": "2026-09-23T04:51:57.053809+00:00",
+  "embedding_model": "nomic-embed-text",
+  "chunk_size": 800,
+  "chunk_overlap": 100,
+  "collections": {
+    "default": {
+      "documents": 10,
+      "chunks": 21
+    },
+    "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+    }
+  },
+  "documents": [
+    "academic_calendar.pdf",
+    "attendance_policy.pdf",
+    "exam_policy.pdf",
+    "grievance_redressal.pdf",
+    "hostel_rules.pdf",
+    "lab_safety.pdf",
+    "library_rules.pdf",
+    "placement_policy.pdf",
+    "scholarship_policy.pdf",
+    "welcome_guide.txt"
+  ],
+  "embedding_fallbacks_during_build": 0
+}
+> last line of runtime\kb_loads.jsonl  (kb-loader records every load)
+{"ts": "2026-09-23T19:47:18Z", "kb_version": "38ba55c908d1", "previous": "405bbf0b9802", "documents": 10, "collections": {"default": {"documents": 10, "chunks": 21}, "eval_kb": {"documents": 10, "chunks": 21}}, "embedding_model": "nomic-embed-text"}

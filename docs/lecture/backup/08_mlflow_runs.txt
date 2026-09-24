@@ -1,0 +1,27 @@
+# Demo: MLflow - the evaluation runs (queried 2026-09-24 through the MLflow REST API at http://localhost:15000)
+# Experiment 'incident-doctor-evaluation' (id 2). Parent runs named in RESULTS.md:
+
+parent run id 29408e71688044db9af3fd19e9a31c3a  -> 5 child runs (one per configuration)
+  ablation|logs_commits_incidents|ollama:llama3      environment.acc_at_1=0.17  environment.false_attribution=0.67  push.acc_at_1=0.33  push.fix_acceptance_passed=0.29  all.class_correct=0.69  all.reasoning_s=11.12
+  ablation|logs_commits|ollama:llama3                environment.acc_at_1=0.0  environment.false_attribution=0.83  push.acc_at_1=0.21  push.fix_acceptance_passed=0.25  all.class_correct=0.54  all.reasoning_s=11.61
+  ablation|logs_only|ollama:llama3                   environment.acc_at_1=0.39  environment.false_attribution=0.0  push.acc_at_1=0.0  push.fix_acceptance_passed=0.25  all.class_correct=0.65  all.reasoning_s=8.75
+  models|logs_commits_incidents|ollama:llama3        environment.acc_at_1=0.17  environment.false_attribution=0.67  push.acc_at_1=0.33  push.fix_acceptance_passed=0.29  all.class_correct=0.69  all.reasoning_s=11.12
+  models|logs_commits_incidents|ollama:llama3.2      environment.acc_at_1=0.28  environment.false_attribution=0.22  push.acc_at_1=0.04  push.fix_acceptance_passed=0.08  all.class_correct=0.58  all.reasoning_s=5.51
+
+parent run id 793a3dfcd206488890d0fcd0f6cea273  -> 6 child runs (one per configuration)
+  ablation|logs_commits_incidents|glm:glm-4.5-flash  environment.acc_at_1=0.56  environment.false_attribution=0.11  push.acc_at_1=0.38  push.fix_acceptance_passed=0.71  all.class_correct=0.81  all.reasoning_s=54.67
+  ablation|logs_commits|glm:glm-4.5-flash            environment.acc_at_1=0.44  environment.false_attribution=0.17  push.acc_at_1=0.38  push.fix_acceptance_passed=0.71  all.class_correct=0.62  all.reasoning_s=54.62
+  ablation|logs_only|glm:glm-4.5-flash               environment.acc_at_1=0.44  environment.false_attribution=0.0  push.acc_at_1=0.0  push.fix_acceptance_passed=0.25  all.class_correct=0.52  all.reasoning_s=59.84
+  models|logs_commits_incidents|glm:glm-4.5-flash    environment.acc_at_1=0.56  environment.false_attribution=0.11  push.acc_at_1=0.38  push.fix_acceptance_passed=0.71  all.class_correct=0.81  all.reasoning_s=54.67
+  models|logs_commits_incidents|ollama:llama3        environment.acc_at_1=0.17  environment.false_attribution=0.67  push.acc_at_1=0.33  push.fix_acceptance_passed=0.29  all.class_correct=0.69  all.reasoning_s=11.12
+  models|logs_commits_incidents|ollama:llama3.2      environment.acc_at_1=0.28  environment.false_attribution=0.22  push.acc_at_1=0.04  push.fix_acceptance_passed=0.08  all.class_correct=0.58  all.reasoning_s=5.51
+
+parent run id 5d6ca33fab324315a340ced51fb662fa  -> 6 child runs (one per configuration)
+  ablation|logs_commits_incidents|glm:glm-4.5-flash  environment.acc_at_1=0.56  environment.false_attribution=0.11  push.acc_at_1=0.38  push.fix_acceptance_passed=0.71  all.class_correct=0.81  all.reasoning_s=54.67
+  ablation|logs_commits|glm:glm-4.5-flash            environment.acc_at_1=0.44  environment.false_attribution=0.17  push.acc_at_1=0.38  push.fix_acceptance_passed=0.71  all.class_correct=0.62  all.reasoning_s=54.62
+  ablation|logs_only|glm:glm-4.5-flash               environment.acc_at_1=0.44  environment.false_attribution=0.0  push.acc_at_1=0.0  push.fix_acceptance_passed=0.25  all.class_correct=0.52  all.reasoning_s=59.84
+  models|logs_commits_incidents|glm:glm-4.5-flash    environment.acc_at_1=0.56  environment.false_attribution=0.11  push.acc_at_1=0.38  push.fix_acceptance_passed=0.71  all.class_correct=0.81  all.reasoning_s=54.67
+  models|logs_commits_incidents|ollama:llama3        environment.acc_at_1=0.17  environment.false_attribution=0.67  push.acc_at_1=0.33  push.fix_acceptance_passed=0.29  all.class_correct=0.69  all.reasoning_s=11.12
+  models|logs_commits_incidents|ollama:llama3.2      environment.acc_at_1=0.28  environment.false_attribution=0.22  push.acc_at_1=0.04  push.fix_acceptance_passed=0.08  all.class_correct=0.58  all.reasoning_s=5.51
+
+# Note: the GLM parent name eval-20260924-141418 appears twice in MLflow (logged twice); both carry the same child runs and values.

@@ -1,0 +1,179 @@
+# Live run 1 of the big demo: python -m faults.run_fault f3_retrieval_down --label lecture  (2026-09-24, 10:17:18-10:20:22 UTC, 185 s)
+# Runner output:
+START 2026-09-24T10:17:17Z
+[2026-09-24T10:17:18Z] === f3_retrieval_down-lecture: Retrieval service stopped (environment)
+[2026-09-24T10:17:19Z] f3_retrieval_down: break applied
+[2026-09-24T10:18:20Z] alert ServiceDown after 48.9s
+[2026-09-24T10:20:10Z] doctor report inc_efd0fe81ca: None /  (123.1s after the alert)
+[2026-09-24T10:20:22Z] === f3_retrieval_down-lecture done
+RUN_FAULT_SECONDS=185
+10:20:22
+
+[exited with code 0]
+
+# What the audience would see, polled every 2 s (Prometheus, alert-sink, doctor):
+10:17:18 watching; doctor already has 84 incidents
+10:17:18 METRIC up retrieval: {'{"job": "retrieval"}': 1.0}
+10:17:18 METRIC gateway->retrieval failures/s: {}
+10:17:18 METRIC gateway 5xx ratio (1m): {}
+10:17:18 METRIC chat refused_scope/s: {}
+10:17:18 PROMETHEUS ALERTS: []
+10:17:28 METRIC up retrieval: {'{"job": "retrieval"}': 0.0}
+10:17:28 PROMETHEUS ALERTS: ['ServiceDown[retrieval]=pending']
+10:17:34 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.054}
+10:17:34 METRIC gateway 5xx ratio (1m): {'{}': 0.0}
+10:17:36 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.068}
+10:17:39 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.082}
+10:17:41 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.143}
+10:17:41 METRIC gateway 5xx ratio (1m): {'{}': 0.042}
+10:17:41 METRIC chat refused_scope/s: {'{}': 0.031}
+10:17:43 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.164}
+10:17:43 METRIC gateway 5xx ratio (1m): {'{}': 0.048}
+10:17:43 METRIC chat refused_scope/s: {'{}': 0.038}
+10:17:45 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.246}
+10:17:45 METRIC gateway 5xx ratio (1m): {'{}': 0.131}
+10:17:45 METRIC chat refused_scope/s: {'{}': 0.022}
+10:17:45 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=pending', 'ServiceDown[retrieval]=pending']
+10:17:47 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.278}
+10:17:47 METRIC gateway 5xx ratio (1m): {'{}': 0.145}
+10:17:47 METRIC chat refused_scope/s: {'{}': 0.026}
+10:17:49 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.306}
+10:17:49 METRIC gateway 5xx ratio (1m): {'{}': 0.195}
+10:17:49 METRIC chat refused_scope/s: {'{}': 0.02}
+10:17:51 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.334}
+10:17:51 METRIC gateway 5xx ratio (1m): {'{}': 0.209}
+10:17:51 METRIC chat refused_scope/s: {'{}': 0.022}
+10:17:51 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=pending', 'HighLatencyP95[gateway]=pending', 'ServiceDown[retrieval]=pending']
+10:17:53 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.395}
+10:17:53 METRIC gateway 5xx ratio (1m): {'{}': 0.223}
+10:17:53 METRIC chat refused_scope/s: {'{}': 0.025}
+10:17:56 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.44}
+10:17:56 METRIC gateway 5xx ratio (1m): {'{}': 0.29}
+10:17:56 METRIC chat refused_scope/s: {'{}': 0.04}
+10:17:58 METRIC gateway 5xx ratio (1m): {'{}': 0.304}
+10:17:58 METRIC chat refused_scope/s: {'{}': 0.044}
+10:18:00 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:18:00 METRIC gateway 5xx ratio (1m): {'{}': 0.315}
+10:18:00 METRIC chat refused_scope/s: {'{}': 0.057}
+10:18:02 METRIC gateway 5xx ratio (1m): {'{}': 0.328}
+10:18:02 METRIC chat refused_scope/s: {'{}': 0.061}
+10:18:04 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:18:04 METRIC gateway 5xx ratio (1m): {'{}': 0.375}
+10:18:04 METRIC chat refused_scope/s: {'{}': 0.072}
+10:18:06 METRIC gateway 5xx ratio (1m): {'{}': 0.388}
+10:18:06 METRIC chat refused_scope/s: {'{}': 0.077}
+10:18:08 METRIC gateway 5xx ratio (1m): {'{}': 0.4}
+10:18:08 METRIC chat refused_scope/s: {'{}': 0.082}
+10:18:10 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:18:10 METRIC gateway 5xx ratio (1m): {'{}': 0.542}
+10:18:10 METRIC chat refused_scope/s: {'{}': 0.074}
+10:18:12 METRIC gateway 5xx ratio (1m): {'{}': 0.554}
+10:18:12 METRIC chat refused_scope/s: {'{}': 0.078}
+10:18:12 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=pending', 'HighLatencyP95[gateway]=pending', 'ServiceDown[retrieval]=firing']
+10:18:14 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:18:14 METRIC chat refused_scope/s: {'{}': 0.107}
+10:18:16 METRIC gateway 5xx ratio (1m): {'{}': 0.565}
+10:18:16 METRIC chat refused_scope/s: {'{}': 0.113}
+10:18:18 METRIC gateway 5xx ratio (1m): {'{}': 0.575}
+10:18:18 METRIC chat refused_scope/s: {'{}': 0.118}
+10:18:18 ALERT-SINK received firing ServiceDown service=retrieval startsAt=2026-09-24T10:18:06.923Z received_at=2026-09-24T10:18:16.935Z
+10:18:19 DOCTOR incident inc_efd0fe81ca trigger=alert alert=ServiceDown status=open class=None model=None alert_to_report_s=None
+10:18:21 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:18:21 METRIC gateway 5xx ratio (1m): {'{}': 0.554}
+10:18:21 METRIC chat refused_scope/s: {'{}': 0.128}
+10:18:23 METRIC gateway 5xx ratio (1m): {'{}': 0.563}
+10:18:23 METRIC chat refused_scope/s: {'{}': 0.133}
+10:18:25 METRIC gateway 5xx ratio (1m): {'{}': 0.607}
+10:18:25 METRIC chat refused_scope/s: {'{}': 0.125}
+10:18:27 METRIC chat refused_scope/s: {'{}': 0.129}
+10:18:29 METRIC gateway 5xx ratio (1m): {'{}': 0.613}
+10:18:29 METRIC chat refused_scope/s: {'{}': 0.145}
+10:18:35 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:18:35 METRIC gateway 5xx ratio (1m): {'{}': 0.656}
+10:18:35 METRIC chat refused_scope/s: {'{}': 0.127}
+10:18:39 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:18:39 METRIC gateway 5xx ratio (1m): {'{}': 0.6}
+10:18:39 METRIC chat refused_scope/s: {'{}': 0.164}
+10:18:44 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=pending', 'ServiceDown[retrieval]=firing']
+10:18:46 METRIC gateway 5xx ratio (1m): {'{}': 0.581}
+10:18:50 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:18:50 METRIC gateway 5xx ratio (1m): {'{}': 0.548}
+10:18:50 METRIC chat refused_scope/s: {'{}': 0.182}
+10:18:50 ALERT-SINK received firing DownstreamCallFailures service=gateway startsAt=2026-09-24T10:18:38.987Z received_at=2026-09-24T10:18:48.943Z
+10:18:50 DOCTOR incident inc_43d3032c26 trigger=alert alert=DownstreamCallFailures status=open class=None model=None alert_to_report_s=None
+10:18:52 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=firing', 'ServiceDown[retrieval]=firing']
+10:18:54 METRIC gateway 5xx ratio (1m): {'{}': 0.581}
+10:18:56 ALERT-SINK received firing HighLatencyP95 service=gateway startsAt=2026-09-24T10:18:45.51Z received_at=2026-09-24T10:18:55.468Z
+10:19:00 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:19:00 METRIC chat refused_scope/s: {'{}': 0.164}
+10:19:04 METRIC gateway 5xx ratio (1m): {'{}': 0.516}
+10:19:05 METRIC chat refused_scope/s: {'{}': 0.2}
+10:19:11 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:19:11 METRIC gateway 5xx ratio (1m): {'{}': 0.567}
+10:19:11 METRIC chat refused_scope/s: {'{}': 0.182}
+10:19:15 METRIC gateway 5xx ratio (1m): {'{}': 0.562}
+10:19:17 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=pending', 'DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=firing', 'ServiceDown[retrieval]=firing']
+10:19:19 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:19:19 METRIC gateway 5xx ratio (1m): {'{}': 0.531}
+10:19:19 METRIC chat refused_scope/s: {'{}': 0.2}
+10:19:21 DOCTOR incident inc_efd0fe81ca trigger=alert alert=ServiceDown status=collecting class=None model=None alert_to_report_s=None
+10:19:25 METRIC gateway 5xx ratio (1m): {'{}': 0.5}
+10:19:25 METRIC chat refused_scope/s: {'{}': 0.218}
+10:19:25 DOCTOR incident inc_efd0fe81ca trigger=alert alert=ServiceDown status=diagnosing class=None model=None alert_to_report_s=None
+10:19:30 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:19:30 METRIC gateway 5xx ratio (1m): {'{}': 0.452}
+10:19:30 METRIC chat refused_scope/s: {'{}': 0.236}
+10:19:36 METRIC gateway 5xx ratio (1m): {'{}': 0.5}
+10:19:36 METRIC chat refused_scope/s: {'{}': 0.218}
+10:19:40 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:19:40 METRIC gateway 5xx ratio (1m): {'{}': 0.484}
+10:19:40 METRIC chat refused_scope/s: {'{}': 0.236}
+10:19:44 METRIC gateway 5xx ratio (1m): {'{}': 0.516}
+10:19:44 METRIC chat refused_scope/s: {'{}': 0.2}
+10:19:51 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:19:55 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:19:55 METRIC gateway 5xx ratio (1m): {'{}': 0.533}
+10:19:59 METRIC gateway 5xx ratio (1m): {'{}': 0.5}
+10:19:59 METRIC chat refused_scope/s: {'{}': 0.218}
+10:20:05 METRIC gateway 5xx ratio (1m): {'{}': 0.516}
+10:20:05 METRIC chat refused_scope/s: {'{}': 0.2}
+10:20:09 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:20:09 METRIC gateway 5xx ratio (1m): {'{}': 0.533}
+10:20:12 DOCTOR incident inc_43d3032c26 trigger=alert alert=DownstreamCallFailures status=collecting class=None model=None alert_to_report_s=None
+10:20:12 DOCTOR incident inc_efd0fe81ca trigger=alert alert=ServiceDown status=failed class=None model=None alert_to_report_s=123.3
+10:20:14 DOCTOR incident inc_43d3032c26 trigger=alert alert=DownstreamCallFailures status=diagnosing class=None model=None alert_to_report_s=None
+10:20:16 METRIC up retrieval: {'{"job": "retrieval"}': 1.0}
+10:20:16 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 1.32}
+10:20:16 METRIC gateway 5xx ratio (1m): {'{}': 0.635}
+10:20:16 METRIC chat refused_scope/s: {'{}': 0.273}
+10:20:18 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=pending', 'DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=firing']
+10:20:18 ALERT-SINK received resolved ServiceDown service=retrieval startsAt=2026-09-24T10:18:06.923Z received_at=2026-09-24T10:20:16.911Z
+10:20:20 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 1.28}
+10:20:20 METRIC gateway 5xx ratio (1m): {'{}': 0.611}
+10:20:20 METRIC chat refused_scope/s: {'{}': 0.255}
+10:20:24 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 1.16}
+10:20:24 METRIC gateway 5xx ratio (1m): {'{}': 0.574}
+10:20:24 METRIC chat refused_scope/s: {'{}': 0.236}
+10:20:30 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 1.08}
+10:20:30 METRIC gateway 5xx ratio (1m): {'{}': 0.492}
+10:20:30 METRIC chat refused_scope/s: {'{}': 0.218}
+10:20:35 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.96}
+10:20:35 METRIC gateway 5xx ratio (1m): {'{}': 0.467}
+10:20:35 METRIC chat refused_scope/s: {'{}': 0.2}
+10:20:39 METRIC gateway 5xx ratio (1m): {'{}': 0.433}
+10:20:41 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.04}
+10:20:45 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.0}
+10:20:45 METRIC gateway 5xx ratio (1m): {'{}': 0.393}
+10:20:45 METRIC chat refused_scope/s: {'{}': 0.182}
+10:20:49 METRIC gateway 5xx ratio (1m): {'{}': 0.349}
+10:20:54 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=pending', 'HighLatencyP95[gateway]=firing']
+10:20:54 DOCTOR incident inc_43d3032c26 trigger=alert alert=DownstreamCallFailures status=failed class=None model=None alert_to_report_s=133.0
+10:20:56 METRIC gateway 5xx ratio (1m): {'{}': 0.355}
+10:20:56 METRIC chat refused_scope/s: {'{}': 0.127}
+10:21:00 METRIC gateway 5xx ratio (1m): {'{}': 0.303}
+10:21:04 METRIC gateway 5xx ratio (1m): {'{}': 0.286}
+10:21:04 METRIC chat refused_scope/s: {'{}': 0.109}
+10:21:10 METRIC gateway 5xx ratio (1m): {'{}': 0.0}
+10:21:10 METRIC chat refused_scope/s: {'{}': 0.018}
+10:21:10 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=pending', 'DownstreamCallFailures[gateway]=firing', 'HighErrorRate[gateway]=pending', 'HighLatencyP95[gateway]=firing']
+10:21:15 METRIC chat refused_scope/s: {'{}': 0.0}

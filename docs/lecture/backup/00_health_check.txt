@@ -1,0 +1,70 @@
+# Demo: health check of every service (run 2026-09-24 ~10:08 UTC, right after the pipeline deploy)
+# Command: the health-check loop in LECTURE.md, section 'Before class'
+
+frontend      200
+gateway       200
+ingestion     200
+retrieval     200
+llm           200
+chroma        200
+doctor        200
+grafana       200
+prometheus    200
+alertmanager  200
+alert-sink    200
+loki          200
+alloy         200
+cadvisor      200
+mlflow        200
+minio         200
+ollama        200
+
+# docker ps (container name, image tag, status)
+aid-frontend-1	aid/frontend:a8737e5	Up About a minute (healthy)
+aid-doctor-1	aid/doctor:9a043d2	Up About a minute (healthy)
+aid-gateway-1	aid/gateway:73e80cf	Up About a minute (healthy)
+aid-kb-loader-1	aid/ingestion:73e80cf	Exited (0) About a minute ago
+aid-ingestion-1	aid/ingestion:73e80cf	Up About a minute (healthy)
+aid-container-exporter-1	aid/container-exporter:d8f4807	Up About a minute (healthy)
+aid-mlflow-1	aid/mlflow:b700d3b	Up About a minute (healthy)
+aid-alert-sink-1	aid/alert-sink:fd2722b	Up About a minute (healthy)
+aid-llm-1	aid/llm:73e80cf	Up About a minute (healthy)
+aid-retrieval-1	aid/retrieval:73e80cf	Up About a minute (healthy)
+aid-minio-1	quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z	Up About a minute (healthy)
+aid-cadvisor-1	ghcr.io/google/cadvisor:v0.53.0	Up About a minute (healthy)
+aid-chroma-1	chromadb/chroma:1.5.9	Up About a minute (healthy)
+aid-grafana-1	grafana/grafana:12.1.1	Up 57 seconds (healthy)
+aid-alloy-1	grafana/alloy:v1.10.2	Up 57 seconds (healthy)
+aid-minio-init-1	quay.io/minio/mc:RELEASE.2025-04-16T18-13-26Z	Exited (0) About a minute ago
+aid-alertmanager-1	prom/alertmanager:v0.28.1	Up About a minute (healthy)
+aid-prometheus-1	prom/prometheus:v3.5.0	Up About a minute (healthy)
+aid-loki-1	grafana/loki:3.5.3	Up About a minute (healthy)
+
+# GET http://localhost:18100/health  (the doctor)
+{
+  "service": "doctor",
+  "status": "online",
+  "busy": null,
+  "queued": 0,
+  "last_error": null,
+  "last_catchup": "2026-09-24T10:07:51Z",
+  "primary": "glm:glm-4.6",
+  "fallback": "ollama:llama3.2",
+  "arm": "logs_commits_incidents"
+}
+
+# GET http://localhost:18000/api/system/status  (the gateway checks every service)
+{
+  "gateway": "online",
+  "ingestion": "online",
+  "retrieval": "online",
+  "llm_service": "online",
+  "ollama": "online",
+  "ollama_models": [
+    "mistral:latest",
+    "llama3:latest",
+    "codellama:latest",
+    "nomic-embed-text:latest",
+    "llama3.2:latest"
+  ]
+}

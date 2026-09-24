@@ -1,0 +1,213 @@
+# Demo: git push pipeline main  (run 2026-09-24T10:05:53Z on the development laptop)
+# Total time for the push to return: 65 s (verify ~35 s, deploy 29.5 s)
+# Terminal output of: git push pipeline main  (last lines)
+remote:   "duration_s": 29.5,        remote: 
+remote:   "reason": "local pipeline push 73e80cf",        remote: 
+remote:   "pipeline": "local",        remote: 
+remote:   "host": "Karthz"        remote: 
+remote: }        remote: 
+remote: === deploy: ok (29s)        
+remote: pipeline: SUCCESS for 73e80cf3ef3d8de6c110e9e56765b7d4c1e8ae57 - log: /d/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline-logs/73e80cf3ef3d8de6c110e9e56765b7d4c1e8ae57.log        
+To D:/college/VII-sem/IDT/ai-incident-doctor/runtime/pipeline.git
+   16735bd..73e80cf  main -> main
+PUSH_SECONDS=65
+
+[exited with code 0]
+
+# Job 1 - scripts/pipeline/verify.sh (from runtime/pipeline-logs/<sha>.log)
+=== ruff
+All checks passed!
+=== ruff: ok (1s)
+=== yamllint
+=== yamllint: ok (2s)
+=== patient tests
+........................................................................ [ 41%]
+........................................................................ [ 83%]
+.............................                                            [100%]
+============================== warnings summary ===============================
+
+173 passed, 1 warning in 12.54s
+=== patient tests: ok (13s)
+=== alert-sink tests
+.                                                                        [100%]
+1 passed in 0.03s
+=== alert-sink tests: ok (1s)
+=== doctor tests
+............................................................             [100%]
+============================== warnings summary ===============================
+
+60 passed, 1 warning in 5.13s
+=== doctor tests: ok (6s)
+=== promtool
+Checking prometheus.yml
+  SUCCESS: 1 rule files found
+ SUCCESS: prometheus.yml is valid prometheus config file syntax
+
+Checking /etc/prometheus/alert.rules.yml
+  SUCCESS: 16 rules found
+
+Checking alert.rules.yml
+  SUCCESS: 16 rules found
+
+  SUCCESS
+
+=== promtool: ok (11s)
+=== amtool
+Checking '/etc/alertmanager/alertmanager.yml'  SUCCESS
+Found:
+ - global config
+ - route
+ - 0 inhibit rules
+ - 1 receivers
+ - 0 templates
+
+=== amtool: ok (1s)
+=== compose config
+=== compose config: ok (0s)
+=== installed hook matches tracked hook
+=== installed hook matches tracked hook: ok (0s)
+verify: all checks passed
+
+# Job 2 - the deploy record appended to runtime/deploys.jsonl
+{
+    "ts": "2026-09-24T10:06:58Z",
+    "git_sha": "73e80cf3ef3d8de6c110e9e56765b7d4c1e8ae57",
+    "short_sha": "73e80cf",
+    "previous_sha": "16735bd8dcd782b443e913ee4c66f21dde24f368",
+    "commits": [
+        "0f249555bebfec9b53faa9822c0670c831e9a8ba",
+        "bbd89697ce8acfbcecb8818a2e5f1c50c8f31b92",
+        "fff73d76bb9e3e9ad1b113059394b89b5854f89a",
+        "b37e28e2a1bf9090dd656d1ed2a5bced427d11bf",
+        "62d4b01fe71127936f215bf842c0ea620c1dbe50",
+        "220f3804ab2de62ac76a13c860032641cbacef65",
+        "227b5da48141aa2ed5626afbb13607c7d87b46ab",
+        "abeae768fb7342d0112e65fec992cd6843cf7f8d",
+        "0759271d78db88436d2595dc269ece5c7db5b741",
+        "9a043d2cd2bc8cb9a6f7d4bfb6550736a3f69c4e",
+        "73e80cf3ef3d8de6c110e9e56765b7d4c1e8ae57"
+    ],
+    "services_changed": [
+        "doctor"
+    ],
+    "files_changed": [
+        "DECISIONS.md",
+        "README.md",
+        "RESULTS.md",
+        "doctor/app/fixes.py",
+        "doctor/app/indexes.py",
+        "doctor/app/llm.py",
+        "doctor/app/reasoner.py",
+        "doctor/eval/config.json",
+        "doctor/eval/mlflow_log.py",
+        "doctor/eval/report_tables.py",
+        "doctor/eval/results/final/results.json",
+        "doctor/eval/results/final/results.md",
+        "doctor/eval/results/final/runs.jsonl",
+        "doctor/eval/results/glm/results.json",
+        "doctor/eval/results/glm/results.md",
+        "doctor/eval/results/glm/runs.jsonl",
+        "doctor/eval/run_eval.py",
+        "doctor/eval/scoring.py",
+        "doctor/tests/test_doctor.py",
+        "doctor/tests/test_eval_scoring.py",
+        "incidents/recorded/f1_embed_timeout-r1/bundle.json",
+        "incidents/recorded/f1_embed_timeout-r1/ground_truth.json",
+        "incidents/recorded/f1_embed_timeout-r1/live_report.json",
+        "incidents/recorded/f1_embed_timeout-r1/live_report.md",
+        "incidents/recorded/f1_embed_timeout-r1/timeline.json",
+        "incidents/recorded/f1_embed_timeout-r2/bundle.json",
+        "incidents/recorded/f1_embed_timeout-r2/ground_truth.json",
+        "incidents/recorded/f1_embed_timeout-r2/live_report.json",
+        "incidents/recorded/f1_embed_timeout-r2/live_report.md",
+        "incidents/recorded/f1_embed_timeout-r2/timeline.json",
+        "incidents/recorded/f2_capacity-r1/bundle.json",
+        "incidents/recorded/f2_capacity-r1/ground_truth.json",
+        "incidents/recorded/f2_capacity-r1/live_report.json",
+        "incidents/recorded/f2_capacity-r1/live_report.md",
+        "incidents/recorded/f2_capacity-r1/timeline.json",
+        "incidents/recorded/f2_capacity-r2/bundle.json",
+        "incidents/recorded/f2_capacity-r2/ground_truth.json",
+        "incidents/recorded/f2_capacity-r2/live_report.json",
+        "incidents/recorded/f2_capacity-r2/live_report.md",
+        "incidents/recorded/f2_capacity-r2/timeline.json",
+        "incidents/recorded/f3_retrieval_down-r1/bundle.json",
+        "incidents/recorded/f3_retrieval_down-r1/ground_truth.json",
+        "incidents/recorded/f3_retrieval_down-r1/live_report.json",
+        "incidents/recorded/f3_retrieval_down-r1/live_report.md",
+        "incidents/recorded/f3_retrieval_down-r1/timeline.json",
+        "incidents/recorded/f3_retrieval_down-r2/bundle.json",
+        "incidents/recorded/f3_retrieval_down-r2/ground_truth.json",
+        "incidents/recorded/f3_retrieval_down-r2/live_report.json",
+        "incidents/recorded/f3_retrieval_down-r2/live_report.md",
+        "incidents/recorded/f3_retrieval_down-r2/timeline.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r1/bundle.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r1/ground_truth.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r1/live_report.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r1/live_report.md",
+        "incidents/recorded/f3b_retrieval_bad_address-r1/timeline.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r2/bundle.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r2/ground_truth.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r2/live_report.json",
+        "incidents/recorded/f3b_retrieval_bad_address-r2/live_report.md",
+        "incidents/recorded/f3b_retrieval_bad_address-r2/timeline.json",
+        "incidents/recorded/f4_memory_leak-r1/bundle.json",
+        "incidents/recorded/f4_memory_leak-r1/ground_truth.json",
+        "incidents/recorded/f4_memory_leak-r1/live_report.json",
+        "incidents/recorded/f4_memory_leak-r1/live_report.md",
+        "incidents/recorded/f4_memory_leak-r1/timeline.json",
+        "incidents/recorded/f4_memory_leak-r2/bundle.json",
+        "incidents/recorded/f4_memory_leak-r2/ground_truth.json",
+        "incidents/recorded/f4_memory_leak-r2/live_report.json",
+        "incidents/recorded/f4_memory_leak-r2/live_report.md",
+        "incidents/recorded/f4_memory_leak-r2/timeline.json",
+        "incidents/recorded/f5_typo-r1/bundle.json",
+        "incidents/recorded/f5_typo-r1/ground_truth.json",
+        "incidents/recorded/f5_typo-r1/live_report.json",
+        "incidents/recorded/f5_typo-r1/live_report.md",
+        "incidents/recorded/f5_typo-r1/timeline.json",
+        "incidents/recorded/f5_typo-r2/bundle.json",
+        "incidents/recorded/f5_typo-r2/ground_truth.json",
+        "incidents/recorded/f5_typo-r2/live_report.json",
+        "incidents/recorded/f5_typo-r2/live_report.md",
+        "incidents/recorded/f5_typo-r2/timeline.json",
+        "incidents/recorded/f6_tight_timeout-r1/bundle.json",
+        "incidents/recorded/f6_tight_timeout-r1/ground_truth.json",
+        "incidents/recorded/f6_tight_timeout-r1/live_report.json",
+        "incidents/recorded/f6_tight_timeout-r1/live_report.md",
+        "incidents/recorded/f6_tight_timeout-r1/timeline.json",
+        "incidents/recorded/f6_tight_timeout-r2/bundle.json",
+        "incidents/recorded/f6_tight_timeout-r2/ground_truth.json",
+        "incidents/recorded/f6_tight_timeout-r2/live_report.json",
+        "incidents/recorded/f6_tight_timeout-r2/live_report.md",
+        "incidents/recorded/f6_tight_timeout-r2/timeline.json",
+        "incidents/recorded/f7_kb_missing_docs-r1/bundle.json",
+        "incidents/recorded/f7_kb_missing_docs-r1/ground_truth.json",
+        "incidents/recorded/f7_kb_missing_docs-r1/live_report.json",
+        "incidents/recorded/f7_kb_missing_docs-r1/live_report.md",
+        "incidents/recorded/f7_kb_missing_docs-r1/timeline.json",
+        "incidents/recorded/f7_kb_missing_docs-r2/bundle.json",
+        "incidents/recorded/f7_kb_missing_docs-r2/ground_truth.json",
+        "incidents/recorded/f7_kb_missing_docs-r2/live_report.json",
+        "incidents/recorded/f7_kb_missing_docs-r2/live_report.md",
+        "incidents/recorded/f7_kb_missing_docs-r2/timeline.json"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+        "DOCTOR_IMAGE_TAG": "9a043d2",
+        "ALERT_SINK_IMAGE_TAG": "fd2722b",
+        "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+        "MLFLOW_IMAGE_TAG": "b700d3b",
+        "FRONTEND_IMAGE_TAG": "a8737e5"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+        "ok": true,
+        "seconds": 3.2
+    },
+    "duration_s": 29.5,
+    "reason": "local pipeline push 73e80cf",
+    "pipeline": "local",
+    "host": "Karthz"
+}

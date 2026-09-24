@@ -2,6 +2,10 @@
 
 Final-year project for **Intelligent Developer Tools and AI DevOps Workflows**.
 
+> **Teaching or presenting this project?** [`docs/LECTURE.md`](docs/LECTURE.md) is a 2-hour lecture guide
+> with a checklist, a minute-by-minute plan, live demos with real timings, and backups in
+> [`docs/lecture/backup/`](docs/lecture/backup/).
+
 There are two systems in this repository, and they are kept apart on purpose:
 
 - **The patient** (`patient/`): *KnowledgeAI*, a document question-answering

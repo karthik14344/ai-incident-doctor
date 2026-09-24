@@ -1,0 +1,15 @@
+# Demo: ticket - a person reports a problem in plain words (2026-09-24)
+# Filed at 10:43:39Z through the same address the Incidents page form uses:
+#   POST http://localhost:13001/doctor-api/ticket  {"text": "The assistant says it has nothing relevant in the documents, for every question.", "since": "about 10 minutes ago"}
+# The real break (faults.run_fault f3_retrieval_down) was at 10:36:00Z; the first alarm at 10:36:46.9Z.
+# Report finished 10:44:18Z = 39 s after the ticket (GLM-4.5-Flash, 2 calls, reasoning 36.3 s).
+
+search range: 2026-09-24T10:28:39Z -> 2026-09-24T10:43:39Z   (how: '10 minutes ago')
+onset chosen (synthetic alert startsAt): 2026-09-24T10:35:39Z
+onset signals (earliest first):
+  chat_errors_per_min          onset 10:35:39  value 1.091  (baseline 0.0)
+  http_5xx_per_min             onset 10:36:09  value 1.091  (baseline 0.0)
+  downstream_failures_per_min  onset 10:36:09  value 1.091  (baseline 0.0)
+  chat_p95_s                   onset 10:36:39  value 8.75  (baseline 1.982)
+
+# Full report (as shown on the Incidents page): see 09_ticket_report.md

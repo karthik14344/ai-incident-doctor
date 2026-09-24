@@ -1,0 +1,34 @@
+# Demo: ask the patient app one question (run 2026-09-24T10:08:06Z, development laptop)
+# PowerShell:
+#   $body = @{ question = "What is the minimum attendance required to sit semester examinations?"; stream = $false } | ConvertTo-Json
+#   Invoke-WebRequest http://localhost:18000/api/chat -Method Post -ContentType 'application/json' -Body $body -Headers @{ 'X-Request-ID' = 'lecture-demo-001' } -UseBasicParsing
+# Took 2.6 s. The response header X-Request-ID came back as: lecture-demo-001
+# The answer arrives as a stream of small pieces ("server-sent events"), shown here exactly as received:
+
+data: {"type": "meta", "session_id": "session_d9e76390", "sources": [{"filename": "attendance_policy.pdf", "page": 1, "chunk_index": 1, "similarity": 0.8741, "text": "UNIVERSITY ATTENDANCE POLICY (2026-2027)\n\nStudents are required to maintain a minimum attendance of 75% in each registered course to be eligible to si..."}, {"filename": "exam_policy.pdf", "page": 1, "chunk_index": 1, "similarity": 0.758, "text": "SEMESTER EXAMINATION GUIDELINES\n\nMid-semester examinations carry 30% weightage, end-semester examinations carry 50% weightage, and continuous internal..."}, {"filename": "attendance_policy.pdf", "page": 2, "chunk_index": 2, "similarity": 0.7022, "text": "ATTENDANCE CONDONATION RULES\n\nStudents having attendance between 65% and 74.9% due to medical emergencies or university participation in sports/compet..."}, {"filename": "attendance_policy.pdf", "page": 3, "chunk_index": 3, "similarity": 0.6237, "text": "LEAVE SANCTION PROCEDURE\n\nMedical leaves exceeding 3 consecutive days must be endorsed by the University Chief Medical Officer. Absence without prior ..."}], "pipeline_debug": {"query_embedding_dim": 768, "results_count": 4, "top_k": 4, "embedding_model": "nomic-embed-text", "llm_model": "llama3.2"}, "guardrails": [{"guardrail": "input_validation", "allowed": true, "reason": "no concern detected", "action": "allow", "note": null}, {"guardrail": "prompt_injection", "allowed": true, "reason": "no concern detected", "action": "allow", "note": null}, {"guardrail": "content_policy", "allowed": true, "reason": "no concern detected", "action": "allow", "note": null}, {"guardrail": "authority_impersonation", "allowed": true, "reason": "no concern detected", "action": "allow", "note": null}, {"guardrail": "privacy", "allowed": true, "reason": "no concern detected", "action": "allow", "note": null}, {"guardrail": "rate_limit", "allowed": true, "reason": "no concern detected", "action": "allow", "note": null}, {"guardrail": "scope_control", "allowed": true, "reason": "top similarity 0.8741 is within the corpus", "action": "allow", "note": null}]}
+
+data: {"token": "Hello! I'm glad you're u"}
+data: {"token": "sing our knowledge base "}
+data: {"token": "to explore the universit"}
+data: {"token": "y attendance policy. To "}
+data: {"token": "answer your question, ac"}
+data: {"token": "cording to the Universit"}
+data: {"token": "y Attendance Policy (202"}
+data: {"token": "6-2027), as stated on Pa"}
+data: {"token": "ge 1 of the document, st"}
+data: {"token": "udents are required to m"}
+data: {"token": "aintain a minimum attend"}
+data: {"token": "ance of 75% in each regi"}
+data: {"token": "stered course to be elig"}
+data: {"token": "ible to sit for semester"}
+data: {"token": " examinations."}
+
+data: {"type": "guardrails", "verdicts": [... the same 7 checks as above, plus "output_sanity" and "grounding": all "allowed": true ...]}
+
+data: {"done": true}
+
+# Put together, the answer reads:
+#   "Hello! I'm glad you're using our knowledge base to explore the university attendance policy. To answer your
+#    question, according to the University Attendance Policy (2026-2027), as stated on Page 1 of the document,
+#    students are required to maintain a minimum attendance of 75% in each registered course to be eligible to
+#    sit for semester examinations."

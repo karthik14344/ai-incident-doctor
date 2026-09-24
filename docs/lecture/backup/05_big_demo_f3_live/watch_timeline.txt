@@ -1,0 +1,162 @@
+# Big demo run 2: python -m faults.run_fault f3_retrieval_down --label lecture2  (2026-09-24, break 10:36:00 UTC, run finished 10:39:29, 209 s)
+# Doctor model: glm:glm-4.5-flash (after .env DOCTOR_MODEL was changed from glm-4.6).
+# Runner output:
+START 2026-09-24T10:36:00Z
+[2026-09-24T10:36:00Z] === f3_retrieval_down-lecture2: Retrieval service stopped (environment)
+[2026-09-24T10:36:01Z] f3_retrieval_down: break applied
+[2026-09-24T10:36:56Z] alert ServiceDown after 46.9s
+[2026-09-24T10:38:57Z] doctor report inc_a7d4de5377: dependency_failure / The retrieval service is not responding to requests, causing the gateway to fail (127.1s after the alert)
+[2026-09-24T10:39:29Z] === f3_retrieval_down-lecture2 done
+RUN_FAULT_SECONDS=209
+10:39:29
+
+[exited with code 0]
+
+# What the audience would see, polled every 2 s (Prometheus metrics + alert states, alert-sink, doctor incidents):
+10:36:00 watching; doctor already has 89 incidents
+10:36:00 METRIC up retrieval: {'{"job": "retrieval"}': 1.0}
+10:36:00 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.0}
+10:36:00 METRIC gateway 5xx ratio (1m): {'{}': 0.0}
+10:36:00 METRIC chat refused_scope/s: {'{}': 0.0}
+10:36:00 PROMETHEUS ALERTS: []
+10:36:06 METRIC up retrieval: {'{"job": "retrieval"}': 0.0}
+10:36:08 PROMETHEUS ALERTS: ['ServiceDown[retrieval]=pending']
+10:36:10 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.04}
+10:36:10 METRIC gateway 5xx ratio (1m): {'{}': 0.03}
+10:36:15 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.12}
+10:36:15 METRIC gateway 5xx ratio (1m): {'{}': 0.094}
+10:36:19 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=pending', 'ServiceDown[retrieval]=pending']
+10:36:21 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.2}
+10:36:21 METRIC gateway 5xx ratio (1m): {'{}': 0.125}
+10:36:21 METRIC chat refused_scope/s: {'{}': 0.018}
+10:36:25 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.28}
+10:36:25 METRIC gateway 5xx ratio (1m): {'{}': 0.167}
+10:36:25 METRIC chat refused_scope/s: {'{}': 0.036}
+10:36:29 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.32}
+10:36:29 METRIC gateway 5xx ratio (1m): {'{}': 0.207}
+10:36:31 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=pending', 'HighLatencyP95[gateway]=pending', 'ServiceDown[retrieval]=pending']
+10:36:35 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.4}
+10:36:35 METRIC gateway 5xx ratio (1m): {'{}': 0.242}
+10:36:35 METRIC chat refused_scope/s: {'{}': 0.055}
+10:36:40 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.44}
+10:36:40 METRIC gateway 5xx ratio (1m): {'{}': 0.294}
+10:36:40 METRIC chat refused_scope/s: {'{}': 0.073}
+10:36:46 METRIC gateway 5xx ratio (1m): {'{}': 0.379}
+10:36:46 METRIC chat refused_scope/s: {'{}': 0.091}
+10:36:50 METRIC gateway 5xx ratio (1m): {'{}': 0.407}
+10:36:50 METRIC chat refused_scope/s: {'{}': 0.127}
+10:36:52 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=pending', 'HighLatencyP95[gateway]=pending', 'ServiceDown[retrieval]=firing']
+10:36:54 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:36:54 METRIC gateway 5xx ratio (1m): {'{}': 0.5}
+10:36:54 METRIC chat refused_scope/s: {'{}': 0.145}
+10:36:58 ALERT-SINK received firing ServiceDown service=retrieval startsAt=2026-09-24T10:36:46.923Z received_at=2026-09-24T10:36:56.814Z
+10:36:58 DOCTOR incident inc_a7d4de5377 trigger=alert alert=ServiceDown status=open class=None model=None alert_to_report_s=None
+10:37:00 METRIC gateway 5xx ratio (1m): {'{}': 0.556}
+10:37:00 METRIC chat refused_scope/s: {'{}': 0.164}
+10:37:05 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:37:05 METRIC gateway 5xx ratio (1m): {'{}': 0.517}
+10:37:05 METRIC chat refused_scope/s: {'{}': 0.182}
+10:37:11 METRIC gateway 5xx ratio (1m): {'{}': 0.448}
+10:37:11 METRIC chat refused_scope/s: {'{}': 0.218}
+10:37:15 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:37:15 METRIC chat refused_scope/s: {'{}': 0.236}
+10:37:19 METRIC gateway 5xx ratio (1m): {'{}': 0.484}
+10:37:19 METRIC chat refused_scope/s: {'{}': 0.218}
+10:37:19 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=pending', 'ServiceDown[retrieval]=firing']
+10:37:25 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:37:25 METRIC gateway 5xx ratio (1m): {'{}': 0.469}
+10:37:25 METRIC chat refused_scope/s: {'{}': 0.236}
+10:37:30 METRIC gateway 5xx ratio (1m): {'{}': 0.467}
+10:37:32 PROMETHEUS ALERTS: ['DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=firing', 'ServiceDown[retrieval]=firing']
+10:37:34 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:37:34 METRIC gateway 5xx ratio (1m): {'{}': 0.452}
+10:37:36 ALERT-SINK received firing HighLatencyP95 service=gateway startsAt=2026-09-24T10:37:25.51Z received_at=2026-09-24T10:37:35.399Z
+10:37:36 DOCTOR incident inc_f0edc74501 trigger=alert alert=HighLatencyP95 status=open class=None model=None alert_to_report_s=None
+10:37:40 METRIC gateway 5xx ratio (1m): {'{}': 0.438}
+10:37:40 METRIC chat refused_scope/s: {'{}': 0.255}
+10:37:40 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=pending', 'DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=firing', 'ServiceDown[retrieval]=firing']
+10:37:44 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:37:44 METRIC gateway 5xx ratio (1m): {'{}': 0.484}
+10:37:44 METRIC chat refused_scope/s: {'{}': 0.236}
+10:37:44 ALERT-SINK received firing DownstreamCallFailures service=gateway startsAt=2026-09-24T10:37:13.987Z received_at=2026-09-24T10:37:43.875Z
+10:37:51 METRIC gateway 5xx ratio (1m): {'{}': 0.452}
+10:37:55 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:37:55 METRIC gateway 5xx ratio (1m): {'{}': 0.419}
+10:37:55 METRIC chat refused_scope/s: {'{}': 0.255}
+10:37:59 METRIC gateway 5xx ratio (1m): {'{}': 0.452}
+10:38:01 DOCTOR incident inc_a7d4de5377 trigger=alert alert=ServiceDown status=collecting class=None model=None alert_to_report_s=None
+10:38:03 DOCTOR incident inc_a7d4de5377 trigger=alert alert=ServiceDown status=diagnosing class=None model=None alert_to_report_s=None
+10:38:05 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:38:05 METRIC gateway 5xx ratio (1m): {'{}': 0.5}
+10:38:05 METRIC chat refused_scope/s: {'{}': 0.218}
+10:38:10 METRIC gateway 5xx ratio (1m): {'{}': 0.516}
+10:38:10 METRIC chat refused_scope/s: {'{}': 0.2}
+10:38:16 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:38:16 METRIC gateway 5xx ratio (1m): {'{}': 0.5}
+10:38:16 METRIC chat refused_scope/s: {'{}': 0.218}
+10:38:20 METRIC gateway 5xx ratio (1m): {'{}': 0.516}
+10:38:24 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:38:24 METRIC gateway 5xx ratio (1m): {'{}': 0.5}
+10:38:30 METRIC gateway 5xx ratio (1m): {'{}': 0.533}
+10:38:30 METRIC chat refused_scope/s: {'{}': 0.2}
+10:38:35 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:38:35 METRIC gateway 5xx ratio (1m): {'{}': 0.567}
+10:38:35 METRIC chat refused_scope/s: {'{}': 0.182}
+10:38:41 METRIC gateway 5xx ratio (1m): {'{}': 0.562}
+10:38:45 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:38:45 METRIC gateway 5xx ratio (1m): {'{}': 0.581}
+10:38:49 METRIC gateway 5xx ratio (1m): {'{}': 0.567}
+10:38:55 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.52}
+10:38:55 METRIC gateway 5xx ratio (1m): {'{}': 0.548}
+10:38:55 DOCTOR incident inc_f0edc74501 trigger=alert alert=HighLatencyP95 status=collecting class=None model=None alert_to_report_s=None
+10:38:55 DOCTOR incident inc_a7d4de5377 trigger=alert alert=ServiceDown status=ok class=dependency_failure model=glm-4.5-flash alert_to_report_s=128.0
+10:38:57 DOCTOR incident inc_f0edc74501 trigger=alert alert=HighLatencyP95 status=diagnosing class=None model=None alert_to_report_s=None
+10:38:59 METRIC chat refused_scope/s: {'{}': 0.2}
+10:39:02 METRIC up retrieval: {'{"job": "retrieval"}': 1.0}
+10:39:06 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.48}
+10:39:06 METRIC gateway 5xx ratio (1m): {'{}': 0.459}
+10:39:08 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=pending', 'DownstreamCallFailures[gateway]=firing', 'HighLatencyP95[gateway]=firing']
+10:39:10 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.4}
+10:39:10 METRIC gateway 5xx ratio (1m): {'{}': 0.375}
+10:39:10 METRIC chat refused_scope/s: {'{}': 0.182}
+10:39:14 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.32}
+10:39:14 METRIC gateway 5xx ratio (1m): {'{}': 0.31}
+10:39:14 METRIC chat refused_scope/s: {'{}': 0.164}
+10:39:20 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.2}
+10:39:20 METRIC gateway 5xx ratio (1m): {'{}': 0.293}
+10:39:20 METRIC chat refused_scope/s: {'{}': 0.145}
+10:39:24 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.08}
+10:39:24 METRIC gateway 5xx ratio (1m): {'{}': 0.233}
+10:39:26 ALERT-SINK received resolved ServiceDown service=retrieval startsAt=2026-09-24T10:36:46.923Z received_at=2026-09-24T10:39:26.809Z
+10:39:31 METRIC gateway->retrieval failures/s: {'{"target": "retrieval"}': 0.0}
+10:39:31 METRIC gateway 5xx ratio (1m): {'{}': 0.195}
+10:39:31 METRIC chat refused_scope/s: {'{}': 0.127}
+10:39:35 METRIC gateway 5xx ratio (1m): {'{}': 0.14}
+10:39:35 METRIC chat refused_scope/s: {'{}': 0.109}
+10:39:39 METRIC gateway 5xx ratio (1m): {'{}': 0.116}
+10:39:39 METRIC chat refused_scope/s: {'{}': 0.091}
+10:39:39 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=pending', 'HighLatencyP95[gateway]=firing']
+10:39:41 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=firing', 'HighLatencyP95[gateway]=firing']
+10:39:45 METRIC gateway 5xx ratio (1m): {'{}': 0.106}
+10:39:45 METRIC chat refused_scope/s: {'{}': 0.055}
+10:39:45 ALERT-SINK received resolved DownstreamCallFailures service=gateway startsAt=2026-09-24T10:37:13.987Z received_at=2026-09-24T10:39:43.872Z
+10:39:45 ALERT-SINK received firing ChatAnswersRefused service=gateway startsAt=2026-09-24T10:39:35.625Z received_at=2026-09-24T10:39:45.509Z
+10:39:45 DOCTOR incident inc_4b242c29a2 trigger=alert alert=ChatAnswersRefused status=open class=None model=None alert_to_report_s=None
+10:39:49 METRIC gateway 5xx ratio (1m): {'{}': 0.061}
+10:39:49 METRIC chat refused_scope/s: {'{}': 0.036}
+10:39:56 METRIC gateway 5xx ratio (1m): {'{}': 0.02}
+10:39:56 METRIC chat refused_scope/s: {'{}': 0.018}
+10:40:00 METRIC gateway 5xx ratio (1m): {'{}': 0.0}
+10:40:00 METRIC chat refused_scope/s: {'{}': 0.0}
+10:40:04 DOCTOR incident inc_f0edc74501 trigger=alert alert=HighLatencyP95 status=ok class=dependency_failure model=glm-4.5-flash alert_to_report_s=159.0
+10:40:50 DOCTOR incident inc_4b242c29a2 trigger=alert alert=ChatAnswersRefused status=collecting class=None model=None alert_to_report_s=None
+10:40:52 DOCTOR incident inc_4b242c29a2 trigger=alert alert=ChatAnswersRefused status=diagnosing class=None model=None alert_to_report_s=None
+10:41:07 PROMETHEUS ALERTS: ['ChatAnswersRefused[gateway]=firing']
+10:41:07 ALERT-SINK received resolved HighLatencyP95 service=gateway startsAt=2026-09-24T10:37:25.51Z received_at=2026-09-24T10:41:05.395Z
+10:41:46 DOCTOR incident inc_4b242c29a2 trigger=alert alert=ChatAnswersRefused status=ok class=dependency_failure model=glm-4.5-flash alert_to_report_s=129.3
+10:42:36 PROMETHEUS ALERTS: []
+10:42:47 ALERT-SINK received resolved ChatAnswersRefused service=gateway startsAt=2026-09-24T10:39:35.625Z received_at=2026-09-24T10:42:45.505Z
+10:43:41 DOCTOR incident inc_ffbeaa1ad2 trigger=ticket alert=UserReport status=collecting class=None model=None alert_to_report_s=None
+10:43:43 DOCTOR incident inc_ffbeaa1ad2 trigger=ticket alert=UserReport status=diagnosing class=None model=None alert_to_report_s=None
+10:44:19 DOCTOR incident inc_ffbeaa1ad2 trigger=ticket alert=UserReport status=ok class=dependency_failure model=glm-4.5-flash alert_to_report_s=519.5
+10:52:00 watch finished
