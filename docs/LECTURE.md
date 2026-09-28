@@ -135,6 +135,10 @@ during testing. If you get `000`, read [Troubleshooting → internet](#the-inter
 | 8 | MLflow | http://localhost:15000/#/experiments/2 | The evaluation runs |
 | 9 | Doctor API | http://localhost:18100/docs | The doctor's three doors (optional) |
 
+The same nine links are on the app's own **Monitoring** page (left sidebar, under Incidents), each with an
+**Open** button and a Reachable/Unreachable badge. The page builds each link from the hostname you opened
+the app with, plus the host ports in `.env`.
+
 All of these returned HTTP 200 on 2026-09-24. I did not click through the pages visually, so the page
 layouts are **not verified**. The data behind every demo was checked through the same services' APIs.
 

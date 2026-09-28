@@ -8,6 +8,7 @@ import PipelineDebug from './pages/PipelineDebug';
 import ModelComparison from './pages/ModelComparison';
 import Settings from './pages/Settings';
 import Incidents from './pages/Incidents';
+import Monitoring from './pages/Monitoring';
 import { api } from './services/api';
 
 export default function App() {
@@ -43,6 +44,8 @@ export default function App() {
         return <ModelComparison />;
       case 'incidents':
         return <Incidents />;
+      case 'monitoring':
+        return <Monitoring />;
       case 'settings':
         return <Settings />;
       default:

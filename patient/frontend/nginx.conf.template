@@ -34,6 +34,14 @@ server {
         proxy_read_timeout 300s;
     }
 
+    # Host ports of the monitoring tools for the Monitoring page. Only ports:
+    # the page links to the hostname the browser already used for this app.
+    location = /service-links.json {
+        default_type application/json;
+        add_header Cache-Control no-store;
+        return 200 '{"grafana": ${GRAFANA_HOST_PORT}, "prometheus": ${PROMETHEUS_HOST_PORT}, "alertmanager": ${ALERTMANAGER_HOST_PORT}, "alert_sink": ${ALERT_SINK_HOST_PORT}, "mlflow": ${MLFLOW_HOST_PORT}, "doctor": ${DOCTOR_HOST_PORT}}';
+    }
+
     location = /healthz {
         access_log off;
         return 200 "ok\n";

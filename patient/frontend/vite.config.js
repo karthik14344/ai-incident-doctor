@@ -40,8 +40,29 @@ export default defineConfig(({ mode }) => {
     }
   }
 
+  // The dev-server twin of nginx's /service-links.json: the same host ports,
+  // read from the repo .env with compose's defaults.
+  const linkPorts = {
+    grafana: env.GRAFANA_HOST_PORT || '3000',
+    prometheus: env.PROMETHEUS_HOST_PORT || '9090',
+    alertmanager: env.ALERTMANAGER_HOST_PORT || '9093',
+    alert_sink: env.ALERT_SINK_HOST_PORT || '9095',
+    mlflow: env.MLFLOW_HOST_PORT || '5000',
+    doctor: env.DOCTOR_HOST_PORT || '8100'
+  }
+  const serviceLinks = {
+    name: 'service-links',
+    configureServer(server) {
+      server.middlewares.use('/service-links.json', (_req, res) => {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify(Object.fromEntries(
+          Object.entries(linkPorts).map(([k, v]) => [k, Number(v)]))))
+      })
+    }
+  }
+
   return {
-    plugins: [react()],
+    plugins: [react(), serviceLinks],
     server: {
       port: 3001,
       proxy

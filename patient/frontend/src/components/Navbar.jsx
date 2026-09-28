@@ -9,6 +9,7 @@ export default function Navbar({ systemStatus, activeTab }) {
       case 'pipeline': return 'RAG Pipeline Visualizer & Debugger';
       case 'compare': return 'Multi-Model RAG Benchmark';
       case 'incidents': return 'Incident Doctor Diagnoses';
+      case 'monitoring': return 'Monitoring Tools';
       case 'settings': return 'System Settings & Config';
       default: return 'KnowledgeAI';
     }
