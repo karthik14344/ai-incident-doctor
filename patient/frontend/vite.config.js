@@ -47,7 +47,6 @@ export default defineConfig(({ mode }) => {
     prometheus: env.PROMETHEUS_HOST_PORT || '9090',
     alertmanager: env.ALERTMANAGER_HOST_PORT || '9093',
     alert_sink: env.ALERT_SINK_HOST_PORT || '9095',
-    mlflow: env.MLFLOW_HOST_PORT || '5000',
     doctor: env.DOCTOR_HOST_PORT || '8100'
   }
   const serviceLinks = {

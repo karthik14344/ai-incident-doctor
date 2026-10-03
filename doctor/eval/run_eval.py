@@ -20,8 +20,9 @@ Every number is reported separately per delivery type - push, environment,
 data - because push faults are the easy case: the deploy record almost gives the
 answer away. The environment numbers are the real score.
 
-Outputs doctor/eval/results/<timestamp>/{runs.jsonl, results.json, results.md}
-and one MLflow run per (comparison, arm, model) with per-repeat child metrics.
+Outputs doctor/eval/results/<timestamp>/{runs.jsonl, results.json, results.md}:
+runs.jsonl is one line per scored replay, results.json every aggregate per
+(comparison, arm, model), and results.md the tables quoted in RESULTS.md.
 """
 
 import argparse
@@ -318,11 +319,6 @@ def main(argv=None) -> int:
     md = write_markdown(results)
     with open(os.path.join(out_dir, "results.md"), "w", encoding="utf-8") as fh:
         fh.write(md)
-    try:
-        from mlflow_log import log_results
-        log_results(results, rows, out_dir)
-    except Exception as exc:  # results stand without MLflow
-        print(f"MLflow logging skipped: {exc}")
     print(f"\nresults: {out_dir}")
     return 0
 

@@ -2,7 +2,7 @@
 #
 #   The patient:   gateway, ingestion, retrieval, llm, chroma, frontend (+ kb-loader)
 #   Monitoring:    prometheus, alertmanager, alert-sink, grafana, loki, alloy, cadvisor
-#   ML ops:        mlflow, minio (+ minio-init)
+#   ML ops:        minio (+ minio-init) - the DVC remote for the knowledge base
 #   The doctor:    doctor (never sabotaged; its own ChromaDB directory)
 #   Optional:      cloudflared  (profile "tunnel" - off by default)
 #
@@ -11,7 +11,7 @@
 #
 # Images are tagged with a git SHA, never only "latest". The patient services
 # carry the SHA being deployed (IMAGE_TAG). The doctor, alert-sink,
-# container-exporter, mlflow and frontend carry the SHA of the last commit that
+# container-exporter and frontend carry the SHA of the last commit that
 # changed their own code (<NAME>_IMAGE_TAG, set by deploy/deploy.py), so a patient
 # deploy does not restart the doctor in the middle of a diagnosis. deploy/deploy.py sets IMAGE_TAG, KB_VERSION and APP_GIT_SHA; to
 # bring the stack up by hand:
@@ -151,7 +151,6 @@ services:
       PROMETHEUS_HOST_PORT: ${PROMETHEUS_HOST_PORT:-9090}
       ALERTMANAGER_HOST_PORT: ${ALERTMANAGER_HOST_PORT:-9093}
       ALERT_SINK_HOST_PORT: ${ALERT_SINK_HOST_PORT:-9095}
-      MLFLOW_HOST_PORT: ${MLFLOW_HOST_PORT:-5000}
       DOCTOR_HOST_PORT: ${DOCTOR_HOST_PORT:-8100}
     ports: ["${FRONTEND_HOST_PORT:-3001}:8080"]
     mem_limit: 64m
@@ -329,32 +328,17 @@ services:
       retries: 3
 
   minio-init:
-    # One-shot: create the buckets MLflow and DVC use.
+    # One-shot: create the bucket the DVC remote uses.
     image: bitnamilegacy/minio-client:2025.7.21-debian-12-r3
     restart: "no"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    entrypoint: ["sh", "-c", "mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" && mc mb -p local/mlflow local/dvc"]
+    entrypoint: ["sh", "-c", "mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" && mc mb -p local/dvc"]
     healthcheck:
       test: ["CMD", "true"]
     depends_on:
       minio: { condition: service_healthy }
-
-  mlflow:
-    <<: *restart
-    image: ${IMAGE_PREFIX:-aid}/mlflow:${MLFLOW_IMAGE_TAG:-${IMAGE_TAG:?set IMAGE_TAG to a git SHA}}
-    build: { <<: *patient-build, dockerfile: monitoring/mlflow/Dockerfile }
-    environment:
-      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
-      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
-      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
-    volumes:
-      - mlflow-data:/mlflow
-    ports: ["${MLFLOW_HOST_PORT:-5000}:5000"]
-    mem_limit: 768m
-    depends_on:
-      minio-init: { condition: service_completed_successfully }
 
   # ------------------------------------------------------------ the doctor
   doctor:
@@ -429,5 +413,4 @@ volumes:
   loki-data:
   alloy-data:
   minio-data:
-  mlflow-data:
   doctor-data:

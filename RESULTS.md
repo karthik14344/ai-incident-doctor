@@ -27,12 +27,9 @@ python -m doctor.eval.run_eval --out doctor/eval/results/glm     # GLM + the mod
 ```
 
 Each folder holds `results.md` (tables), `results.json` (every aggregate) and
-`runs.jsonl` (every scored replay, with its full report). The local-model run is
-in MLflow: experiment
-`incident-doctor-evaluation`, parent run `eval-20260924-084116`, with one child
-run per configuration and one grandchild per repeat. It was logged afterwards
-with `python -m doctor.eval.mlflow_log doctor/eval/results/final`, because
-Docker had been stopped during the replays to free memory.
+`runs.jsonl` (every scored replay, with its full report). Those files are the
+record: the local-model replays were run on 2026-09-24 with Docker stopped to
+free memory, so nothing but the harness and Ollama was up while they ran.
 
 ---
 
@@ -245,10 +242,8 @@ the repair step, and those are scored as failures.
   GLM-4.5-Flash is free, so the evaluation actually cost $0.
 
 The full GLM ablation (all three evidence arms, per delivery type) is in
-`doctor/eval/results/glm/results.md`, and also at the end of this file.
-It is in MLflow as parent run `eval-20260924-141418` (experiment
-`incident-doctor-evaluation`), logged with
-`python -m doctor.eval.mlflow_log doctor/eval/results/glm`.
+`doctor/eval/results/glm/results.md`, and also at the end of this file. It was
+run on 2026-09-24.
 
 ---
 

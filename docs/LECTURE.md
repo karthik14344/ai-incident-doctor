@@ -31,7 +31,7 @@ every live demo.
    - [d. Prometheus from zero](#d-prometheus-from-zero)
    - [e. Grafana dashboards](#e-grafana-dashboards)
    - [f. Alerts](#f-alerts-the-smoke-alarms)
-   - [g. The pipeline, DVC and MLflow](#g-the-pipeline-dvc-and-mlflow)
+   - [g. The pipeline and DVC](#g-the-pipeline-and-dvc)
    - [h. The doctor, step by step](#h-the-doctor-step-by-step)
    - [i. The big live demo](#i-the-big-live-demo-break-it-watch-it-get-diagnosed)
    - [j. The ticket demo](#j-the-ticket-demo-a-person-reports-a-problem)
@@ -105,13 +105,14 @@ $urls = [ordered]@{
  'frontend'='http://localhost:13001/'; 'gateway'='http://localhost:18000/api/health'; 'ingestion'='http://localhost:18001/health'; 'retrieval'='http://localhost:18002/health'; 'llm'='http://localhost:18003/health';
  'chroma'='http://localhost:18010/api/v2/heartbeat'; 'doctor'='http://localhost:18100/health'; 'grafana'='http://localhost:13000/api/health'; 'prometheus'='http://localhost:19090/-/healthy';
  'alertmanager'='http://localhost:19093/-/healthy'; 'alert-sink'='http://localhost:19095/health'; 'loki'='http://localhost:13100/ready'; 'alloy'='http://localhost:22345/-/ready';
- 'cadvisor'='http://localhost:18080/healthz'; 'mlflow'='http://localhost:15000/health'; 'minio'='http://localhost:19000/minio/health/live'; 'ollama'='http://localhost:11434/api/version' }
+ 'cadvisor'='http://localhost:18080/healthz'; 'minio'='http://localhost:19000/minio/health/live'; 'ollama'='http://localhost:11434/api/version' }
 foreach ($k in $urls.Keys) { try { $r = Invoke-WebRequest $urls[$k] -UseBasicParsing -TimeoutSec 10; "{0,-13} {1}" -f $k, $r.StatusCode } catch { "{0,-13} FAILED  {1}" -f $k, $_.Exception.Message } }
 Invoke-RestMethod http://localhost:18100/health
 ```
-**Expected:** 17 lines that each end in `200`, then the doctor's status with
+**Expected:** 16 lines that each end in `200`, then the doctor's status with
 `primary : glm:glm-4.5-flash`, `fallback : ollama:llama3.2`, `busy :` (empty) and `queued : 0`.
-*(run 2026-09-24: all 17 were 200. Saved in [`backup/00_health_check.txt`](lecture/backup/00_health_check.txt).)*
+*(run 2026-09-24: all were 200. Saved in [`backup/00_health_check.txt`](lecture/backup/00_health_check.txt);
+that run listed 17 services, because MLflow was still in the stack then - see DECISIONS.md D-85.)*
 
 **Check the internet.** The doctor reasons with an online model (GLM):
 ```powershell
@@ -132,10 +133,9 @@ during testing. If you get `000`, read [Troubleshooting → internet](#the-inter
 | 5 | Prometheus alerts | http://localhost:19090/alerts | The 16 alarm rules and their state |
 | 6 | Alertmanager | http://localhost:19093 | Alarm routing |
 | 7 | alert-sink log | http://localhost:19095/alerts | The raw trigger log (JSON) |
-| 8 | MLflow | http://localhost:15000/#/experiments/2 | The evaluation runs |
-| 9 | Doctor API | http://localhost:18100/docs | The doctor's three doors (optional) |
+| 8 | Doctor API | http://localhost:18100/docs | The doctor's three doors (optional) |
 
-The same nine links are on the app's own **Monitoring** page (left sidebar, under Incidents), each with an
+The same eight links are on the app's own **Monitoring** page (left sidebar, under Incidents), each with an
 **Open** button and a Reachable/Unreachable badge. The page builds each link from the hostname you opened
 the app with, plus the host ports in `.env`.
 
@@ -152,7 +152,7 @@ and has Explore permission.)*
 Ask one question in the app: Chat Assistant → "What is the minimum attendance required to sit semester
 examinations?". It should answer "75%" within a few seconds. Then leave everything running.
 
-**Do not run `git push pipeline main` before the big demo.** See [g](#g-the-pipeline-dvc-and-mlflow) for
+**Do not run `git push pipeline main` before the big demo.** See [g](#g-the-pipeline-and-dvc) for
 why.
 
 ### If something is not healthy
@@ -183,11 +183,11 @@ why.
 | 0:40-0:46 | 6 | **e** Grafana | Reading a dashboard | ✅ the dashboard | "Which panel would show a memory leak?" |
 | 0:46-0:56 | 10 | **BREAK** | Leave background traffic running | - | - |
 | 0:56-1:04 | 8 | **f** Alerts | `expr`, `for:`, symptoms only; the alarm path | ✅ rules page | "Why doesn't the alarm say *why*?" |
-| 1:04-1:10 | 6 | **g** Pipeline, DVC, MLflow | push → verify → deploy; data and run versioning | backup log + MLflow | "What stops a broken commit from being deployed?" |
+| 1:04-1:10 | 6 | **g** Pipeline and DVC | push → verify → deploy; versioning the knowledge base | backup log + `dvc status` | "What stops a broken commit from being deployed?" |
 | 1:10-1:24 | 14 | **h + i** The doctor + **the big live demo** | Break it, the alarm, the report, the automatic repair | ✅ **main demo** | "Did the doctor blame a commit? Should it have?" |
 | 1:24-1:28 | 4 | **j** Ticket | A person reports a symptom in words | ✅ ticket | "How did it find *when* the problem started?" |
 | 1:28-1:31 | 3 | **k** The 8 faults (+ live `git push`) | What was broken, how, which alarm | ✅ pipeline push runs in the background | "Which fault did monitoring miss?" |
-| 1:31-1:38 | 7 | **l** How it was tested | Replay, baseline, ablation, models, honesty | MLflow | "Why is 'blame the latest deploy' a fair baseline?" |
+| 1:31-1:38 | 7 | **l** How it was tested | Replay, baseline, ablation, models, honesty | `results.md` tables | "Why is 'blame the latest deploy' a fair baseline?" |
 | 1:38-1:43 | 5 | **m** Design decisions | The why behind 8-10 choices | - | "Why can't a git push wake the doctor?" |
 | 1:43-1:45 | 2 | Wrap-up | Three things to remember | - | - |
 | 1:45-2:00 | 15 | **Q&A** | See [section 5](#5-likely-questions-with-short-answers) | - | - |
@@ -603,10 +603,10 @@ would be meaningless.)
 
 ---
 
-### g. The pipeline, DVC and MLflow
+### g. The pipeline and DVC
 
-**Goal:** understand how a change gets from a laptop to the running app, and how data and experiment
-results are versioned.
+**Goal:** understand how a change gets from a laptop to the running app, and how the knowledge base is
+versioned alongside the code.
 
 **Say:**
 - **The pipeline** (CI/CD) is a factory line with a quality check:
@@ -630,8 +630,11 @@ results are versioned.
   `build_kb`. Its output goes to MinIO; `kb/manifest.json` (small, in git) records the version. The
   kb-loader writes every load to `runtime/kb_loads.jsonl`, so the doctor can blame a *data* version, not
   just a commit (D-46).
-- **MLflow** is a lab notebook for experiments. Every evaluation run is logged with its settings and
-  scores.
+- **The evaluation results are files, not a service.** `run_eval.py` writes three of them per run:
+  `runs.jsonl` (one line per scored replay, with the full report), `results.json` (every aggregate) and
+  `results.md` (the tables quoted in RESULTS.md). They are committed, so a result can always be traced to
+  the commit that produced it. An MLflow server used to mirror them; it was removed because it held nothing
+  the files did not (D-85).
 
 **Show at 1:04: the saved pipeline log, not a live push** ([why](#2-the-120-minute-plan)). Open
 [`backup/01_pipeline_push.txt`](lecture/backup/01_pipeline_push.txt). *(run 2026-09-24, 10:05:53 UTC)*
@@ -651,6 +654,9 @@ The push took **65 s** in total:
 
 The deploy record says `"pipeline": "local"`, `"services_changed": ["doctor"]`, 11 commits, 100 files.
 
+The patient count in that saved log is 173. The suite is **171** now: removing MLflow took its two logging
+tests with it (D-85), so a live `verify.sh` prints 171 + 1 + 60 = 232.
+
 **DVC (live, 10 s).** Window A:
 ```powershell
 .venv\Scripts\python.exe -m dvc dag
@@ -666,22 +672,28 @@ The deploy record says `"pipeline": "local"`, `"services_changed": ["doctor"]`, 
 Say this honestly: DVC noticed that a file the data depends on changed, even though only a comment
 changed. See [`backup/06_dvc.txt`](lecture/backup/06_dvc.txt).
 
-**MLflow (live, 1 min).** Tab 8. Experiment **incident-doctor-evaluation**. Two parent runs matter:
-- `eval-20260924-084116`: local models, 5 configurations.
-- `eval-20260924-141418`: GLM, 6 configurations. **It appears twice**, because it was logged twice; both
-  copies hold the same values.
+**The evaluation results (live, 1 min).** There is no server to open: the results are files in the repo.
+Two folders, each holding the same three files (`runs.jsonl`, `results.json`, `results.md`):
 
-Open a child run such as `ablation|logs_commits_incidents|glm:glm-4.5-flash` to see
-`environment.acc_at_1 = 0.56`. That is exactly the RESULTS.md number. See
-[`backup/08_mlflow_runs.txt`](lecture/backup/08_mlflow_runs.txt).
+| Folder | What was evaluated |
+|---|---|
+| `doctor/eval/results/final/` | the local models, 5 configurations |
+| `doctor/eval/results/glm/` | GLM-4.5-Flash, 6 configurations |
+
+Open [`doctor/eval/results/glm/results.md`](../doctor/eval/results/glm/results.md) and point at the first
+table, *environment faults - the real score*. The row
+`ablation: logs_commits_incidents / glm:glm-4.5-flash` reads **0.56 (0.50-0.67)** under acc@1: the mean
+over the three repeats, then the range across them. That is exactly the RESULTS.md number, and the range is
+the honest part - three repeats is few, so the spread matters more than the mean.
 
 > **Explain it to…**
 > - **A non-programmer:** a factory line. Quality check first; if it fails, nothing ships. Every box gets
 >   a batch number, so you can always go back to the last good batch.
-> - **A programmer:** pre-deploy gate (lint + 234 tests + rule tests), immutable SHA-tagged images, smoke
+> - **A programmer:** pre-deploy gate (lint + 232 tests + rule tests), immutable SHA-tagged images, smoke
 >   test, automatic rollback, append-only deploy log.
-> - **An ML person:** DVC = git for datasets (content hashes, remote storage); MLflow = experiment
->   tracking with nested runs per configuration and per repeat.
+> - **An ML person:** DVC = git for datasets (content hashes, remote storage). Experiment tracking is
+>   plain files committed next to the code - one aggregate per (comparison, arm, model), with per-repeat
+>   ranges - which is enough at this scale and leaves nothing to a server being up.
 > - **An ops person:** the local hook and GitHub Actions share one implementation (`verify.sh`,
 >   `deploy.sh`), so the only difference is the environment.
 
@@ -1076,9 +1088,10 @@ When the push finishes, confirm health: `Invoke-RestMethod http://localhost:1800
 - Small sample: 16 incidents, so one incident moves a rate by 0.12-0.5.
 - Retrieval was tuned on f1 r1 (D-76), so that one incident is not held out.
 
-**Show:** MLflow (tab 8). Compare the child runs `ablation|logs_only|…` and
-`ablation|logs_commits_incidents|…` for GLM: environment acc@1 is 0.44 vs 0.56, and false attribution is
-0.00 vs 0.11.
+**Show:** [`doctor/eval/results/glm/results.md`](../doctor/eval/results/glm/results.md), first table.
+Compare the rows `ablation: logs_only / glm:glm-4.5-flash` and
+`ablation: logs_commits_incidents / glm:glm-4.5-flash`: environment acc@1 is 0.44 vs 0.56, and false
+attribution is 0.00 vs 0.11.
 
 > **Explain it to…**
 > - **A non-programmer:** we recorded 16 real illnesses and let each doctor diagnose the same records, 3
@@ -1265,7 +1278,7 @@ every service: JSON log lines ─▶ Alloy ─▶ Loki :13100          every 5 s
                                          logs + commits + past incidents        llama3.2 (3B)
         │ × 3 repeats (seeds 1000-1002)
         ▼
- scoring.py vs ground truth ─▶ results.md / results.json / runs.jsonl ─▶ MLflow
+ scoring.py vs ground truth ─▶ results.md / results.json / runs.jsonl  (committed)
 ```
 
 ---
@@ -1508,8 +1521,7 @@ All from `D:\college\VII-sem\IDT\ai-incident-doctor`. **A** = PowerShell, **B** 
 | **Loki** | The log database. |
 | **LogQL** | Loki's query language (`{compose_service=~".+"} \|= "text"`). |
 | **Metric** | A number measured over time. |
-| **MinIO** | Local S3-compatible file storage (for DVC and MLflow). |
-| **MLflow** | Experiment tracker: records each evaluation run's settings and scores. |
+| **MinIO** | Local S3-compatible file storage; here it is the DVC remote for the knowledge base. |
 | **Observability** | Seeing what's happening inside from logs, metrics and traces. |
 | **Ollama** | The program that runs local AI models on this laptop. |
 | **OOM kill** | The system killing a container that used more memory than its limit. |
@@ -1559,7 +1571,7 @@ All from `D:\college\VII-sem\IDT\ai-incident-doctor`. **A** = PowerShell, **B** 
 | DVC | `dvc dag`, `dvc status` | 2.7 s | 1 stage; 2 deps changed by comments | `06_dvc.txt` |
 | Replay (GLM) | `app.replay ... --provider glm` | 41.3 s | correct | `07_replay_f3_r2_glm/` |
 | Replay (offline) | `app.replay ... --provider ollama --model llama3.2` | 4.6 s | wrong class (`capacity`) | `07b_replay_f3_r2_llama32_offline.md` |
-| MLflow | REST API | - | values match RESULTS.md | `08_mlflow_runs.txt` |
+| MLflow *(removed since; D-85)* | REST API | - | values matched RESULTS.md | `08_mlflow_runs.txt` |
 | Ticket | `POST /doctor-api/ticket` | 39 s to report | onset found; correct | `09_ticket_*.{txt,md}` |
 | Report with a tested fix | from `doctor/eval/results/glm/runs.jsonl` | - | verified; acceptance passed | `10_report_with_verified_fix_f1_glm.md` |
 

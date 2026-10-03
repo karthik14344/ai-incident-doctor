@@ -39,7 +39,7 @@ server {
     location = /service-links.json {
         default_type application/json;
         add_header Cache-Control no-store;
-        return 200 '{"grafana": ${GRAFANA_HOST_PORT}, "prometheus": ${PROMETHEUS_HOST_PORT}, "alertmanager": ${ALERTMANAGER_HOST_PORT}, "alert_sink": ${ALERT_SINK_HOST_PORT}, "mlflow": ${MLFLOW_HOST_PORT}, "doctor": ${DOCTOR_HOST_PORT}}';
+        return 200 '{"grafana": ${GRAFANA_HOST_PORT}, "prometheus": ${PROMETHEUS_HOST_PORT}, "alertmanager": ${ALERTMANAGER_HOST_PORT}, "alert_sink": ${ALERT_SINK_HOST_PORT}, "doctor": ${DOCTOR_HOST_PORT}}';
     }
 
     location = /healthz {

@@ -67,7 +67,7 @@ applied to `main` by hand.
   ModelComparison, Settings - as specified - **plus Documents**, because it is
   the only UI entry point to the ingestion service. Evaluation Lab and Chunk
   Inspector were dropped; the evaluation API stays on the gateway because the
-  harness and MLflow logging use it.
+  harness uses it.
 - **D-6. Not copied:** `evaluation/sg_client.py` and
   `evaluation/output_testing.py` (Week-5 Sourcegraph / output-testing helpers
   used only by scripts that were not copied), old `data/` results, `mds/`.
@@ -178,9 +178,9 @@ applied to `main` by hand.
   recorded too; the "previous SHA" of a deploy is the last *successful* one.
   A dirty working tree cannot be deployed, so an image tag always describes
   exactly the code in it.
-- **D-32. MLflow logging uses the REST API directly**, so the patient images
-  gain no dependency. The server runs `--serve-artifacts` so clients need no
-  S3 credentials.
+- **D-32. MLflow logging used the REST API directly**, so the patient images
+  gained no dependency; the server ran `--serve-artifacts` so clients needed no
+  S3 credentials. *Superseded by D-85: MLflow was removed from the stack.*
 - **D-33. The machine is memory-constrained.** With two compose stacks and the
   usual desktop apps, the laptop reached 0.2 GB free and the Docker engine
   stopped answering (HTTP 500 on every call) during an image build; restarting
@@ -389,7 +389,7 @@ applied to `main` by hand.
   doctor; the run's record points at that incident and notes the blip.
 - **D-73. The doctor is not redeployed with the patient.** Every image used the
   deploy's SHA tag, so each patient deploy recreated the doctor and interrupted a
-  diagnosis in progress. The doctor, alert-sink, container-exporter, mlflow and
+  diagnosis in progress. The doctor, alert-sink, container-exporter and
   frontend are now tagged with the SHA of the last commit that changed their own
   code (`<NAME>_IMAGE_TAG`, computed by deploy.py and stored in the deploy record).
 - **D-74. The capacity surge was calibrated by measurement.** 1.2 chats/s with 32
@@ -495,3 +495,17 @@ applied to `main` by hand.
   ignored `json_schema` in a direct test. A wrong enum value ("increased" for
   "rose") is corrected by the existing one-shot repair step. Paid GLM models on the
   same key answer "insufficient balance", so only `glm-4.5-flash` is evaluated.
+- **D-85. MLflow was removed from the stack** (supersedes D-32). It tracked nothing
+  the files did not already hold: `run_eval.py` writes `runs.jsonl` (every scored
+  replay), `results.json` (every aggregate) and `results.md` (the tables quoted in
+  RESULTS.md), and the MLflow call was best-effort - wrapped in `try/except` with
+  the comment "results stand without MLflow". The published evaluations prove the
+  point: they were replayed with Docker stopped to free memory and backfilled into
+  MLflow afterwards, so no measured number ever depended on the service being up.
+  Against that it cost a 768 MB container, a `monitoring/mlflow` image built and
+  SHA-tagged on every deploy, and two REST clients (`doctor/eval/mlflow_log.py`,
+  `patient/evaluation/mlflow_log.py`) with their own test file. Removing it changed
+  no result in RESULTS.md. **MinIO stays**: it is the DVC remote for the knowledge
+  base (`.dvc/config`, `s3://dvc/knowledge-base`), so only the `mlflow` bucket was
+  dropped from `minio-init`. The evaluation numbers are now read from
+  `doctor/eval/results/*/results.md`, which is what RESULTS.md quotes.

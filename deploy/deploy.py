@@ -66,11 +66,10 @@ COMPONENT_TAGS = {
     "DOCTOR_IMAGE_TAG": ["doctor", "loadgen", "patient/requirements.txt"],
     "ALERT_SINK_IMAGE_TAG": ["alert_sink"],
     "CONTAINER_EXPORTER_IMAGE_TAG": ["container_exporter"],
-    "MLFLOW_IMAGE_TAG": ["monitoring/mlflow"],
     "FRONTEND_IMAGE_TAG": ["patient/frontend"],
 }
 SERVICE_TAG_VARS = {"doctor": "DOCTOR_IMAGE_TAG", "alert-sink": "ALERT_SINK_IMAGE_TAG",
-                    "container-exporter": "CONTAINER_EXPORTER_IMAGE_TAG", "mlflow": "MLFLOW_IMAGE_TAG",
+                    "container-exporter": "CONTAINER_EXPORTER_IMAGE_TAG",
                     "frontend": "FRONTEND_IMAGE_TAG"}
 
 

@@ -205,7 +205,7 @@ development laptop every port is 10000 higher (`:18000`), as explained under
 | D. RESULTS                                                         |
 |                                                                    |
 |   RESULTS.md, doctor/eval/results/final/                           |
-|   MLflow :5000  (the same results, browsable)                      |
+|   results.md (tables), results.json, runs.jsonl (every replay)      |
 +--------------------------------------------------------------------+
 ```
 
@@ -306,8 +306,7 @@ These are the default host ports. Each one can be changed with
 | loki | 3100 | logs |
 | alloy | 12345 | log shipper UI |
 | cadvisor | 8080 | container metrics |
-| mlflow | 5000 | evaluation runs |
-| minio | 9000 / 9001 | object storage for MLflow and DVC (API / console) |
+| minio | 9000 / 9001 | object storage: the DVC remote (API / console) |
 | Ollama | 11434 | **not in compose**; runs on the Windows laptop |
 
 ---

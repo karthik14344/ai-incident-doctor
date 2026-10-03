@@ -20,8 +20,6 @@ const LINKS = [
     why: 'Alert routing: where firing alerts go' },
   { name: 'alert-sink log', port: 'alert_sink', path: '/alerts', probe: '/health',
     why: 'The raw incident trigger log (JSON), one line per alert' },
-  { name: 'MLflow', port: 'mlflow', path: '/#/experiments/2', probe: '/health',
-    why: 'The evaluation runs of the incident doctor' },
   { name: 'Doctor API', port: 'doctor', path: '/docs', probe: '/health',
     why: "The doctor's three doors: /incident, /ticket, and the read endpoints" },
 ];

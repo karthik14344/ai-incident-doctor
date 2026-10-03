@@ -44,7 +44,6 @@ _TEST_ENV = {"PYTHONDONTWRITEBYTECODE": "1", "KNOWLEDGEAI_ENV_FILE": os.devnull,
 
 def _pytest(workdir: str, target: str, timeout: int = SUITE_TIMEOUT_S) -> Dict[str, Any]:
     env = {**os.environ, **_TEST_ENV}
-    env.pop("MLFLOW_TRACKING_URI", None)
     started = time.perf_counter()
     try:
         r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--tb=line", target],
