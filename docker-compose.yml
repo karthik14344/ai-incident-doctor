@@ -308,13 +308,18 @@ services:
   # ------------------------------------------------------------ ML ops
   minio:
     <<: *restart
-    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-    command: ["server", "/data", "--console-address", ":9001"]
+    # quay.io/minio/minio and docker.io/minio/minio both now refuse anonymous
+    # pulls (MinIO restricted free image access in 2025). bitnamilegacy/minio
+    # is the frozen free mirror; it reads the same MINIO_ROOT_USER/PASSWORD
+    # vars and serves the same API, but its data dir is /bitnami/minio/data,
+    # not /data, and its own run.sh (not a passed-in command) wires the ports
+    # from env, so the old `command:` override is dropped.
+    image: bitnamilegacy/minio:2025.7.23-debian-12-r5
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in .env}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
     volumes:
-      - minio-data:/data
+      - minio-data:/bitnami/minio/data
     ports: ["${MINIO_HOST_PORT:-9000}:9000", "${MINIO_CONSOLE_HOST_PORT:-9001}:9001"]
     mem_limit: 512m
     healthcheck:
@@ -325,7 +330,7 @@ services:
 
   minio-init:
     # One-shot: create the buckets MLflow and DVC use.
-    image: quay.io/minio/mc:RELEASE.2025-04-16T18-13-26Z
+    image: bitnamilegacy/minio-client:2025.7.21-debian-12-r3
     restart: "no"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
