@@ -278,6 +278,7 @@ class TelemetryMiddleware:
             obs.REQUEST_ID.reset(token)
 
 
+# Call once per app, before routes receive traffic.
 def instrument(app, service: str) -> obs.ServiceLogger:
     """Structured logging, request metrics and /metrics for one FastAPI app."""
     log = obs.configure(service, config.GIT_SHA)
