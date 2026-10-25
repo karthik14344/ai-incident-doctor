@@ -45,3 +45,7 @@ The SQLite database lives in the appdata volume and the vector index in chroma-d
 ## Guardrail refusals
 
 A refusal is not an outage. Check the guardrails field in the chat response to see which guardrail refused and why.
+
+## Disk usage
+
+Old SHA-tagged images accumulate. `docker image prune` with a filter on the aid/ prefix reclaims space; keep at least the last two deploys for rollback.
