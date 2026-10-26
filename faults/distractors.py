@@ -46,6 +46,19 @@ RUNBOOK_SECTIONS = [
      "which guardrail refused and why."),
     ("Disk usage", "Old SHA-tagged images accumulate. `docker image prune` with a filter on the aid/ prefix "
      "reclaims space; keep at least the last two deploys for rollback."),
+    # Second batch: the first was used up by the campaign and the live demos.
+    ("Restarting Ollama", "Ollama runs on the Windows laptop, outside Docker. Restart it from the system tray; "
+     "the patient containers reconnect on their next request."),
+    ("Health endpoints", "Every service answers GET /health. The gateway's /api/system/status checks the other "
+     "services and Ollama in one call."),
+    ("Request ids", "Send an X-Request-ID header and it is passed to every downstream call and logged by each "
+     "service, so one question can be followed through Loki."),
+    ("Changing the chat model", "The chat model is a setting, not a deploy: change it on the Settings page and "
+     "the next question uses it."),
+    ("Alert routing", "Prometheus evaluates the alert rules; Alertmanager sends firing alerts to alert-sink, "
+     "which keeps every one at /alerts."),
+    ("Ports on the development laptop", "Every host port is the default plus 10000 here because another project "
+     "uses the defaults; the app is on 13001."),
 ]
 
 NOTES_TEST_HEADER = '''"""Small behaviour notes, written down as tests while reading the code."""
@@ -154,6 +167,19 @@ CODE_COMMENTS = [
     ("patient/common/telemetry.py", "def instrument(app, service: str) -> obs.ServiceLogger:",
      "# Call once per app, before routes receive traffic.",
      "Note when to call telemetry.instrument"),
+    # Second batch, mostly on the chat path so a deploy there looks like a plausible suspect.
+    ("patient/llm_service/app/main.py", "def build_prompt(question: str, context: str) -> str:",
+     "# The retrieved context goes above the question so the model reads the evidence before the ask.",
+     "Explain the prompt layout"),
+    ("patient/llm_service/app/main.py", "async def stream_ollama_tokens(req: GenerateRequest):",
+     "# One streamed Ollama call per question; the 120 s client timeout bounds a stuck generation.",
+     "Note the generation timeout"),
+    ("patient/api_gateway/app/main.py", "def _bare_model_name(tag: str) -> str:",
+     "# 'llama3.2:latest' -> 'llama3.2', so installed and configured names compare equal.",
+     "Explain bare model names"),
+    ("patient/api_gateway/app/main.py", "def gateway_health():",
+     "# Liveness only: answers even when other services are down; /api/system/status checks them.",
+     "Clarify what the gateway health check covers"),
 ]
 
 

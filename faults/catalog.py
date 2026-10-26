@@ -108,6 +108,25 @@ _add(Fault(
     expected_alerts=["HighLatencyP95"],
 ))
 
+# 2b. The same surge, a minute after an innocent deploy - the timing trap ------
+_add(Fault(
+    # Environment delivery: no guilty commit. Innocent distractors are pushed through the
+    # real pipeline first, so the slowdown starts right after a deploy. "Blame the last
+    # deploy" is then the obvious, wrong answer; the prompt's rule is that a deploy existing
+    # is not evidence unless its diff explains the symptoms (doctor/app/prompt.py, rule 3).
+    id="f2b_surge_after_deploy", name="User surge one minute after an innocent deploy",
+    delivery="environment", incident_class="capacity", component="ollama", acceptable_components=["llm"],
+    true_cause=("Demand rose sharply - many simultaneous chat questions - and the single local llama3.2 on "
+                "Ollama serialises generation, so requests queue and latency climbs. A deploy landed a minute "
+                "before the surge, but it only changed comments and runbook notes; it did not cause the slowdown."),
+    expected_fix="Bound concurrency at the gateway with a queue/semaphore and shed load (429) beyond it; scale "
+                 "generation capacity. Do not roll back the deploy: no commit caused this.",
+    distractor_paths=["llm_service", "api_gateway"],
+    # The f2 surge, already calibrated on this laptop (DECISIONS D-74).
+    load={"mode": "chat", "rate": 4.0, "concurrency": 96, "duration": 300, "timeout": 240},
+    expected_alerts=["HighLatencyP95"],
+))
+
 # 3. Retrieval unreachable - dependency failure ---------------------------------
 _add(Fault(
     id="f3_retrieval_down", name="Retrieval service stopped",
@@ -236,6 +255,8 @@ _add(Fault(
 TICKET_TEXT = {
     "f1_embed_timeout": "Answers have been wrong or unrelated to my question for a while now.",
     "f2_capacity": "The assistant has become extremely slow; answers take over a minute.",
+    "f2b_surge_after_deploy": "Since the update a few minutes ago the assistant has become extremely slow; "
+                              "answers take over a minute.",
     "f3_retrieval_down": "The assistant says it has nothing relevant in the documents, for every question.",
     "f3b_retrieval_bad_address": "The assistant says it has nothing relevant in the documents, for every question.",
     "f4_memory_leak": "Searches sometimes fail and the assistant seems to be restarting.",

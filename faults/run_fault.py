@@ -126,9 +126,25 @@ def kb_swap(kb_dir: Optional[str], force: bool = False) -> str:
     return out.strip().splitlines()[-1] if out.strip() else ""
 
 
+SURGE_AFTER_DEPLOY_S = 60
+
+
 def inject_environment(fault: Fault, timeline: Dict[str, Any]) -> Dict[str, Any]:
     timeline["t_break"] = iso()
-    if fault.id == "f3_retrieval_down":
+    if fault.id == "f2b_surge_after_deploy":
+        # An innocent deploy first, through the real pipeline; then the surge. The break
+        # is the surge, so t_break is reset after the wait: an alert caused by the deploy
+        # itself began before it and is not counted (wait_alert, D-59).
+        landed = distractors.land(2, fault.distractor_paths)
+        if not landed:
+            raise RuntimeError("no innocent distractor commits left (faults/distractors.py)")
+        rec = push_and_deploy("innocent", timeline)
+        timeline["innocent_deploy"] = rec["short_sha"]
+        timeline["innocent_commits"] = [d["sha"] for d in landed]
+        log(f"innocent deploy {rec['short_sha']} done; surge in {SURGE_AFTER_DEPLOY_S}s")
+        time.sleep(SURGE_AFTER_DEPLOY_S)
+        timeline["t_break"] = iso()
+    elif fault.id == "f3_retrieval_down":
         compose("stop", "retrieval")
     elif fault.id == "f3b_retrieval_bad_address":
         compose("up", "-d", "--no-deps", "gateway",
@@ -145,6 +161,7 @@ def inject_environment(fault: Fault, timeline: Dict[str, Any]) -> Dict[str, Any]
 
 
 def revert_environment(fault: Fault) -> None:
+    # f2/f2b: nothing to undo - the surge ends with its load, and innocent commits stay.
     if fault.id == "f3_retrieval_down":
         compose("start", "retrieval")
     elif fault.id == "f3b_retrieval_bad_address":
@@ -229,6 +246,9 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
     else:
         inject_environment(fault, timeline)
         truth["guilty_kb_version"] = timeline.get("guilty_kb_version")
+        if timeline.get("innocent_deploy"):
+            truth["innocent_deploy"] = timeline["innocent_deploy"]
+            truth["distractor_commits"] = timeline["innocent_commits"]
     write_json(os.path.join(run_dir, "timeline.json"), timeline)
 
     neighbour = load = alert = None
