@@ -10,6 +10,8 @@
 #   5. the knowledge base (first boot), then deploy/deploy.py: SHA-tagged images, compose up
 #      (with the "agents" profile), smoke test, deploy record
 set -eu
+# Start-up scripts run without HOME; git --global and pip need one.
+export HOME="${HOME:-/root}"
 cd "$(dirname "$0")/../.."
 AGAI_DIR=${AGAI_DIR:-/opt/aid/AGAI}
 PY=.venv/bin/python
