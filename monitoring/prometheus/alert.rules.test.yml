@@ -149,3 +149,24 @@ tests:
       - eval_time: 12m
         alertname: HighErrorRate
         exp_alerts: []
+
+  - name: one client flooding the gateway raises PossibleRequestFlood
+    interval: 15s
+    input_series:
+      # 600 requests per 15s scrape from one address = 40 req/s (above 20).
+      - series: 'knowledgeai_client_requests_total{service="gateway", client="203.0.113.7", job="gateway"}'
+        values: "0+600x12"
+      # A normal client at ~1 req/s stays quiet.
+      - series: 'knowledgeai_client_requests_total{service="gateway", client="10.0.0.5", job="gateway"}'
+        values: "0+15x12"
+    alert_rule_test:
+      - eval_time: 30s
+        alertname: PossibleRequestFlood
+        exp_alerts: []
+      - eval_time: 90s
+        alertname: PossibleRequestFlood
+        exp_alerts:
+          - exp_labels: { severity: warning, service: gateway, category: security, client: "203.0.113.7" }
+            exp_annotations:
+              summary: "client 203.0.113.7 is sending 40 requests/sec to the gateway"
+              description: "A single source address has exceeded 20 requests/sec to the gateway for at least 30 seconds, far above normal usage."

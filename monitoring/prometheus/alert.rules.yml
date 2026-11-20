@@ -224,3 +224,28 @@ groups:
         annotations:
           summary: "{{ $value | humanizePercentage }} of chat questions were refused as outside the documents"
           description: "Share of chat answers refused by the scope guardrail over the last 5 minutes is above 30%."
+
+  # ------------------------------------------------------------------
+  # Security: basic cyber-attack monitoring.
+  #
+  # One detector only, on purpose (a starting point, not an IDS): a single
+  # source address sending an abnormal request rate at the gateway - the
+  # signature of an HTTP flood or a brute-force burst (a basic DoS). The
+  # per-client counter is knowledgeai_client_requests_total (common/telemetry.py).
+  #
+  # The threshold (20 req/s from ONE address, sustained 30s) sits above every
+  # load-fault in faults/catalog.py (the busiest is ~6/s), so normal traffic and
+  # the fault campaigns never trip it; a flood from one address does. The
+  # annotation states the symptom only, like every other rule here.
+  - name: knowledgeai-security
+    rules:
+      - alert: PossibleRequestFlood
+        expr: sum by (client) (rate(knowledgeai_client_requests_total{service="gateway"}[1m])) > 20
+        for: 30s
+        labels:
+          severity: warning
+          service: gateway
+          category: security
+        annotations:
+          summary: "client {{ $labels.client }} is sending {{ $value | printf \"%.0f\" }} requests/sec to the gateway"
+          description: "A single source address has exceeded 20 requests/sec to the gateway for at least 30 seconds, far above normal usage."

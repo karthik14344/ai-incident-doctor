@@ -82,7 +82,7 @@ development laptop every port is 10000 higher (`:18000`), as explained under
 +--------------------------------------------------------------------+
 | 5. WATCHING                               folder: monitoring/      |
 |                                                                    |
-|   Prometheus :9090   collects numbers, checks 16 alarm rules       |
+|   Prometheus :9090   collects numbers, checks 17 alarm rules       |
 |                      rules: monitoring/prometheus/alert.rules.yml  |
 |   Loki :3100 + Alloy collects the diary lines (logs)               |
 |   Grafana :3000      dashboards to look at                         |

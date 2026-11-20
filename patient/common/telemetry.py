@@ -52,6 +52,17 @@ HTTP_LATENCY = Histogram(
 HTTP_IN_FLIGHT = Gauge(
     "knowledgeai_http_requests_in_flight", "Requests currently being served", ["service"])
 
+# Security monitoring (basic cyber-attack detection). Requests are also counted
+# per source address so that a single client driving an abnormal request rate -
+# the signature of an HTTP flood or a brute-force burst (a basic DoS) - becomes
+# visible to Prometheus. One real client in this demo is one address, so the
+# label stays low-cardinality; the alert rule keys on it (see
+# knowledgeai-security in alert.rules.yml). Ops metrics above are untouched.
+CLIENT_REQUESTS = Counter(
+    "knowledgeai_client_requests_total",
+    "HTTP requests served, labelled by the source address they came from",
+    ["service", "client"])
+
 DOWNSTREAM_LATENCY = Histogram(
     "knowledgeai_downstream_request_duration_seconds",
     "Time until response headers from a service-to-service call",
@@ -217,6 +228,23 @@ def record_downstream_failure(service: str, target: str, operation: str, exc: Ba
 _SKIP_PATHS = {"/metrics"}
 
 
+def _client_address(scope) -> str:
+    """Source address of a request, for the per-client security counter.
+
+    Prefers the first hop in X-Forwarded-For (set by the nginx proxy) so real
+    browser/attacker addresses survive the proxy; falls back to the ASGI peer
+    address, which is the real client when a service is hit directly.
+    """
+    headers = dict(scope.get("headers") or [])
+    forwarded = headers.get(b"x-forwarded-for")
+    if forwarded:
+        first = forwarded.decode("latin-1").split(",")[0].strip()
+        if first:
+            return first
+    client = scope.get("client")
+    return client[0] if client else "unknown"
+
+
 class TelemetryMiddleware:
     """Pure ASGI middleware, so streamed (SSE) responses are timed to their
     last byte rather than to their first header."""
@@ -266,6 +294,7 @@ class TelemetryMiddleware:
             status = state["status"]
             HTTP_IN_FLIGHT.labels(self.service).dec()
             HTTP_REQUESTS.labels(self.service, endpoint, scope.get("method", ""), str(status)).inc()
+            CLIENT_REQUESTS.labels(self.service, _client_address(scope)).inc()
             HTTP_LATENCY.labels(self.service, endpoint).observe(duration)
             fields = {"method": scope.get("method"), "endpoint": endpoint, "path": scope.get("path"),
                       "status": status, "duration_ms": round(duration * 1000, 1)}
