@@ -223,7 +223,27 @@ def wait_resolved(first_alert: Dict[str, Any], timeout: float = 900) -> Optional
     return None
 
 
-def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None) -> str:
+def hold_for_fix(run_dir: str, seconds: float, timeline: Dict[str, Any]) -> None:
+    """Demo mode (--hold): keep the bug in place after the doctor has reported, so its
+    fix can be applied in VS Code while the bug is really there (faults/ide_fix.py).
+    Ends when the demo page presses Finish (a `release` file appears) or after
+    `seconds`, whichever comes first. The revert that follows is the normal one."""
+    from faults import ide_fix
+
+    release = os.path.join(run_dir, "release")
+    timeline["hold_started"] = iso()
+    log(f"HOLD: the bug stays live for up to {int(seconds)}s - apply the fix in VS Code, then press Finish")
+    deadline = time.time() + seconds
+    while time.time() < deadline and not os.path.exists(release):
+        time.sleep(2)
+    timeline["hold_released"] = "page" if os.path.exists(release) else "timeout"
+    undone = ide_fix.undo(REPO)  # `git revert` needs the working tree as it was
+    if undone.get("undone"):
+        log(f"HOLD: took the applied fix back out ({undone['message']})")
+    log(f"HOLD over ({timeline['hold_released']}): reverting")
+
+
+def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None, hold: float = 0) -> str:
     fault = FAULTS[fault_id]
     run_id = f"{fault_id}-{label or time.strftime('%m%d%H%M')}"
     run_dir = os.path.join(RUNS_DIR, run_id)
@@ -278,6 +298,8 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
                 log(f"doctor report {inc['id']}: {inc['incident_class']} / {(inc.get('top_cause') or '')[:80]} "
                     f"({timeline['doctor_s']}s after the alert)")
                 export_incident(inc["id"], run_dir)
+                if hold and fault.delivery == "push":
+                    hold_for_fix(run_dir, hold, timeline)
             else:
                 log("no doctor report within the timeout")
         else:
@@ -331,8 +353,11 @@ def main() -> int:
     ap.add_argument("fault", choices=sorted(FAULTS))
     ap.add_argument("--variant", choices=["guilty_last", "guilty_earlier"], default="guilty_last")
     ap.add_argument("--label")
+    ap.add_argument("--hold", type=float, default=0, metavar="SECONDS",
+                    help="demo mode, push faults only: after the doctor's report, keep the bug in place this "
+                         "long (or until the demo page presses Finish) before the revert. Default 0: no hold.")
     args = ap.parse_args()
-    run(args.fault, args.variant, args.label)
+    run(args.fault, args.variant, args.label, args.hold)
     return 0
 
 
