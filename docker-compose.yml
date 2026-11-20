@@ -399,6 +399,8 @@ services:
       GITHUB_TOKEN: ${AGAI_GITHUB_TOKEN:-}
       CODEFIX_A2A_TOKEN: ${AGAI_A2A_TOKEN:-}
       CODEFIX_DATA_DIR: /data
+      # The team's models (deploy/agai/models.yaml says why); remove to use AGAI's own.
+      CODEFIX_CONFIG: /repo/deploy/agai/models.yaml
       PORT: "8080"
     volumes:
       - .:/repo:ro
