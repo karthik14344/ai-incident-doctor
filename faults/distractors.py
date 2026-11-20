@@ -9,6 +9,7 @@ Each is applied at most once (its text is its own marker) and none is reverted.
 
 import os
 import subprocess
+import sys
 from typing import Callable, Dict, List, Optional
 
 from faults.common import REPO, commit, log
@@ -258,7 +259,7 @@ def land(n: int, prefer_paths: Optional[List[str]] = None) -> List[Dict[str, str
     for d in candidates[:n]:
         paths = d["apply"]()
         if paths[0].endswith(".py"):
-            subprocess.run([os.path.join(REPO, ".venv", "Scripts", "python.exe") if os.name == "nt" else "python3",
+            subprocess.run([sys.executable,  # the venv running this fault, on any OS
                             "-m", "ruff", "check", *paths], cwd=REPO, check=True, capture_output=True)
         sha = commit(paths, d["message"])
         landed.append({"sha": sha, "message": d["message"], "id": d["id"]})
