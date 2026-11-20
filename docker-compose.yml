@@ -368,6 +368,10 @@ services:
       DOCTOR_OLLAMA_NUM_CTX: ${DOCTOR_OLLAMA_NUM_CTX:-16384}
       DOCTOR_MAX_PROMPT_TOKENS: ${DOCTOR_MAX_PROMPT_TOKENS:-6500}
       DOCTOR_MAX_COMPLETION_TOKENS: ${DOCTOR_MAX_COMPLETION_TOKENS:-2500}
+      # The agent team every report is handed to (empty = no hand-off).
+      DOCTOR_AGENTS_URL: ${DOCTOR_AGENTS_URL:-}
+      DOCTOR_AGENTS_PUBLIC_URL: ${DOCTOR_AGENTS_PUBLIC_URL:-}
+      DOCTOR_AGENTS_REPO: /repo
     volumes:
       - .:/repo:ro
       - ${RUNTIME_DIR:-./runtime}:/runtime:ro
@@ -379,6 +383,30 @@ services:
       alert-sink: { condition: service_healthy }
 
   # ------------------------------------------------------------ optional
+  # ------------------------------------------------------------ the agent team
+  # CodeFix AI (the separate AGAI project): a Manager agent delegating to a
+  # Diagnoser, Fixer, Tester and PR agent. The doctor hands it every report
+  # (doctor/app/agents.py). Built from AGAI's own checkout by deploy/agai/build.sh;
+  # profile "agents" keeps it off unless asked for. It reads this repo (mounted
+  # read-only), works on throw-away clones, and pushes only codefix/<id> branches
+  # after a person confirms the PR on the Incidents page.
+  agai:
+    profiles: ["agents"]
+    <<: *restart
+    image: ${IMAGE_PREFIX:-aid}/agai:${AGAI_IMAGE_TAG:-local}
+    environment:
+      ZAI_API_KEY: ${ZAI_API_KEY:-}
+      GITHUB_TOKEN: ${AGAI_GITHUB_TOKEN:-}
+      CODEFIX_A2A_TOKEN: ${AGAI_A2A_TOKEN:-}
+      CODEFIX_DATA_DIR: /data
+      PORT: "8080"
+    volumes:
+      - .:/repo:ro
+      - agai-data:/data
+    ports: ["${AGAI_HOST_PORT:-8200}:8080"]
+    mem_limit: 3g
+    memswap_limit: 3g
+
   cloudflared:
     # Public link to the frontend ONLY. Off by default:
     #   docker compose --profile tunnel up -d cloudflared
@@ -414,3 +442,4 @@ volumes:
   alloy-data:
   minio-data:
   doctor-data:
+  agai-data:

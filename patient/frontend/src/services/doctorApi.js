@@ -35,4 +35,27 @@ export async function submitTicket(text, since) {
   return res.json();
 }
 
-export const doctorApi = { listIncidents, getIncident, submitTicket };
+// The agent team (Manager -> Diagnoser -> Fixer -> Tester) the doctor hands each incident to.
+export async function getAgents(id) {
+  const res = await fetch(`${DOCTOR_BASE}/api/incidents/${encodeURIComponent(id)}/agents`, { cache: 'no-store' });
+  if (!res.ok) throw new Error(await parseError(res, 'Failed to fetch the agent team'));
+  return res.json();
+}
+
+export async function startAgents(id) {
+  const res = await fetch(`${DOCTOR_BASE}/api/incidents/${encodeURIComponent(id)}/agents`, { method: 'POST' });
+  if (!res.ok) throw new Error(await parseError(res, 'Could not hand the incident to the agent team'));
+  return res.json();
+}
+
+export async function decidePullRequest(id, confirm) {
+  const res = await fetch(`${DOCTOR_BASE}/api/incidents/${encodeURIComponent(id)}/agents/pr`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ confirm })
+  });
+  if (!res.ok) throw new Error(await parseError(res, 'The pull request step failed'));
+  return res.json();
+}
+
+export const doctorApi = { listIncidents, getIncident, submitTicket, getAgents, startAgents, decidePullRequest };

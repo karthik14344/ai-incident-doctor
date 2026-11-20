@@ -126,6 +126,15 @@ class Settings:
     # switch, which starves the app being diagnosed (measured: 35 s per chat).
     ollama_num_ctx: int = field(default_factory=lambda: int(get("DOCTOR_OLLAMA_NUM_CTX", "16384")))
     auto_diagnose: bool = field(default_factory=lambda: get("DOCTOR_AUTO_DIAGNOSE", "true").lower() == "true")
+    # The agent team (CodeFix AI, the AGAI project) that every report is handed to
+    # (app/agents.py). Empty URL = no hand-off; the doctor works exactly as before.
+    agents_url: Optional[str] = field(default_factory=lambda: get("DOCTOR_AGENTS_URL"))
+    # Link a person's browser opens for the team's run page (can differ from the
+    # container-to-container URL above).
+    agents_public_url: Optional[str] = field(default_factory=lambda: get("DOCTOR_AGENTS_PUBLIC_URL"))
+    # This repository's path as the team's container sees it.
+    agents_repo: str = field(default_factory=lambda: get("DOCTOR_AGENTS_REPO", "/repo"))
+    agents_max_attempts: int = field(default_factory=lambda: int(get("DOCTOR_AGENTS_MAX_ATTEMPTS", "3")))
 
     @property
     def primary(self) -> Optional[ProviderConfig]:

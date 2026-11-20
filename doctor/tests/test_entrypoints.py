@@ -154,7 +154,10 @@ def test_main_module_has_exactly_the_documented_trigger_routes():
     tree = ast.parse(open(main.__file__, encoding="utf-8").read())
     posts = [d.args[0].value for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
              for d in n.decorator_list if isinstance(d, ast.Call) and getattr(d.func, "attr", "") == "post"]
-    assert sorted(posts) == ["/api/incidents/{incident_id}/resolve", "/incident", "/ticket"]
+    # The agent-team routes act on an incident the doctor has already diagnosed;
+    # they never start a diagnosis, so the three trigger routes stay the only ones.
+    assert sorted(posts) == ["/api/incidents/{incident_id}/agents", "/api/incidents/{incident_id}/agents/pr",
+                             "/api/incidents/{incident_id}/resolve", "/incident", "/ticket"]
 
 
 def test_concurrent_incident_updates_never_corrupt_the_file(tmp_path, monkeypatch):

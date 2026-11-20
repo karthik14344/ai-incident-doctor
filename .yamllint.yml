@@ -5,6 +5,7 @@ ignore: |
   kb/
   runtime/
   patient/frontend/
+  AGAI/
 rules:
   line-length: { max: 160 }
   document-start: disable

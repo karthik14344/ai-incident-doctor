@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { listIncidents, getIncident, submitTicket } from '../services/doctorApi';
+import { listIncidents, getIncident, submitTicket, getAgents, startAgents, decidePullRequest } from '../services/doctorApi';
+import { fixInVsCode, undoFix, CONSOLE_COMMAND } from '../services/fixApi';
 
 const REFRESH_MS = 10000;
 const IN_PROGRESS = new Set(['collecting', 'diagnosing']);
@@ -323,6 +324,368 @@ function EvidencePanel({ evidence }) {
   );
 }
 
+// ---------- Fix in VS Code ----------
+
+const FIX_HEAD = {
+  applied: ['✓ Fix applied in VS Code', 'ok'],
+  already: ['✓ Already in the code', 'ok'],
+  preview: ['Fix opened in VS Code as a comparison', 'info'],
+  none: ['No code change to apply', 'warn'],
+  error: ['Could not apply the fix', 'warn']
+};
+const FIX_TONE = {
+  ok: 'border-emerald-500/40 bg-emerald-500/5 text-emerald-300',
+  info: 'border-sky-500/40 bg-sky-500/5 text-sky-300',
+  warn: 'border-amber-500/40 bg-amber-500/5 text-amber-300'
+};
+
+function FixInVsCode({ incidentId }) {
+  const [busy, setBusy] = useState(false);
+  const [out, setOut] = useState(null);
+
+  const run = async () => {
+    setBusy(true);
+    setOut(null);
+    try {
+      setOut(await fixInVsCode(incidentId));
+    } catch (err) {
+      setOut({ failed: err.message, consoleDown: !!err.consoleDown });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const undo = async () => {
+    try {
+      await undoFix();
+      setOut(null);
+    } catch (err) {
+      setOut({ failed: err.message });
+    }
+  };
+
+  const [head, tone] = out && !out.failed ? FIX_HEAD[out.mode] || [out.mode, 'warn'] : [null, 'warn'];
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          onClick={run}
+          disabled={busy}
+          className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold text-sm rounded-xl shadow-lg shadow-indigo-600/30 transition-all"
+        >
+          {busy ? 'Opening VS Code…' : 'Fix in VS Code'}
+        </button>
+        {out?.mode === 'applied' && (
+          <button onClick={undo} className="px-3 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">
+            Undo
+          </button>
+        )}
+        <span className="text-xs text-slate-500">Opens the file with the change made, as a diff you can review. Nothing is committed.</span>
+      </div>
+      {out?.failed && (
+        <div className={`p-3 rounded-xl border text-xs ${FIX_TONE.warn}`}>
+          <div className="font-semibold text-sm">{out.failed}</div>
+          {out.consoleDown && (
+            <p className="mt-1 text-slate-300">
+              Start it from the repository root, then press the button again:{' '}
+              <code className="font-mono text-indigo-300">{CONSOLE_COMMAND}</code>
+            </p>
+          )}
+        </div>
+      )}
+      {out && !out.failed && (
+        <div className={`p-3 rounded-xl border text-xs ${FIX_TONE[tone]}`}>
+          <div className="font-semibold text-sm">{head}</div>
+          <p className="mt-1 text-slate-300">{out.message}</p>
+          {out.source && (
+            <p className="mt-1 text-slate-400">
+              Where the fix came from: {out.source_label}
+              {out.commit && <span className="font-mono text-indigo-300"> ({shortSha(out.commit)})</span>}. {out.why}
+            </p>
+          )}
+          {out.opened === false && out.abs_file && (
+            <a className="mt-1 inline-block underline text-indigo-300" href={`vscode://file/${out.abs_file}:${out.line}`}>
+              Open {out.file} in VS Code
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// The answer in three boxes: what happened, why, and what to do about it.
+function AnswerCard({ incidentId, report }) {
+  const diagnosis = report.diagnosis || {};
+  const top = [...(diagnosis.hypotheses || [])].sort((a, b) => (b.confidence || 0) - (a.confidence || 0))[0];
+  const fix = diagnosis.fix || {};
+  const verified = report.verification?.status === 'verified';
+  const inCode =
+    !!fix.unified_diff ||
+    fix.kind === 'code_diff' ||
+    !!top?.suspected_commit ||
+    diagnosis.incident_class === 'code_defect';
+
+  return (
+    <div className="bg-slate-900 border border-indigo-500/30 rounded-2xl p-5 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">What happened</h4>
+          <p className="text-sm text-slate-100 leading-relaxed">{diagnosis.summary || 'No summary provided.'}</p>
+          <Badge className={classStyle(diagnosis.incident_class)}>{diagnosis.incident_class || 'unknown'}</Badge>
+        </div>
+        <div className="space-y-2">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            Most likely cause{typeof top?.confidence === 'number' ? ` · ${fmtPct(top.confidence)} sure` : ''}
+          </h4>
+          <p className="text-sm text-slate-100 leading-relaxed">{top?.cause || 'No cause named.'}</p>
+          <p className="text-xs text-slate-400">
+            {top?.component && <span className="font-mono text-slate-300">{top.component}</span>}
+            {top?.suspected_commit ? (
+              <span> · commit <span className="font-mono text-indigo-300">{shortSha(top.suspected_commit)}</span></span>
+            ) : (
+              <span> · no commit blamed</span>
+            )}
+          </p>
+        </div>
+        <div className="space-y-2">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">The fix</h4>
+          <p className="text-sm text-slate-100 leading-relaxed">{fix.action || fix.rationale || 'No fix proposed.'}</p>
+          <Badge
+            className={
+              verified
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+            }
+          >
+            {verified ? 'tested on a spare copy' : report.verification?.status || 'not verified'}
+          </Badge>
+        </div>
+      </div>
+      {fix.unified_diff && <DiffView diff={fix.unified_diff} />}
+      {inCode ? (
+        <FixInVsCode incidentId={incidentId} />
+      ) : (
+        <p className="text-xs text-slate-500">No code to change here: the fix is an action a person takes.</p>
+      )}
+    </div>
+  );
+}
+
+// ---------- the agent team (hierarchical stage after the doctor) ----------
+
+const TEAM_ROLES = [
+  ['manager', 'Manager', 'decides who works next'],
+  ['diagnoser', 'Diagnoser', 'finds the faulty code'],
+  ['fixer', 'Fixer', 'writes the patch'],
+  ['tester', 'Tester', 'runs our tests on a copy'],
+  ['pr', 'PR', 'opens a pull request, if you agree']
+];
+
+const TEAM_STATUS = {
+  starting: ['Handing over to the team…', 'info'],
+  running: ['The team is working on it…', 'info'],
+  awaiting_approval: ['Patch ready and tests pass: open a pull request?', 'ok'],
+  done: ['Finished', 'ok'],
+  escalated: ['No code patch passed: the team wrote up what it tried', 'warn'],
+  failed: ['The team could not fix it', 'warn'],
+  error: ['The team hit an error', 'warn'],
+  rejected: ['The team refused the input', 'warn'],
+  unreachable: ['The agent team could not be reached', 'warn'],
+  stalled: ['The team stopped answering', 'warn'],
+  lost: ['The team no longer has this run', 'warn'],
+  off: ['The agent team is switched off', 'warn']
+};
+const TEAM_ACTIVE = new Set(['starting', 'running']);
+
+function AgentTeam({ incidentId }) {
+  const [team, setTeam] = useState(null);
+  const [err, setErr] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      setTeam(await getAgents(incidentId));
+      setErr(null);
+    } catch (e) {
+      setErr(e.message);
+    }
+  }, [incidentId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => {
+    if (!team || !(TEAM_ACTIVE.has(team.status) || team.status === 'none')) return undefined;
+    const t = setInterval(load, 6000);
+    return () => clearInterval(t);
+  }, [team, load]);
+
+  const act = async (fn) => {
+    setBusy(true);
+    try {
+      await fn();
+      await load();
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!team) return err ? <p className="text-xs text-rose-400">{err}</p> : null;
+  if (team.status === 'none' && !team.enabled) return null;
+
+  const [head, tone] = TEAM_STATUS[team.status] || [team.status === 'none' ? 'Not handed over yet' : team.status, 'info'];
+  const busyAgent = TEAM_ACTIVE.has(team.status)
+    ? [...(team.steps || [])].reverse().find((s) => s.status === 'in_progress')?.agent
+    : null;
+  const usedAgents = new Set((team.steps || []).map((s) => s.agent));
+
+  return (
+    <Section
+      title="Agent team: Manager → Diagnoser → Fixer → Tester"
+      right={
+        team.url && (
+          <a href={team.url} target="_blank" rel="noreferrer" className="text-xs text-indigo-300 underline">
+            Open the team's live run ↗
+          </a>
+        )
+      }
+    >
+      <p className="text-xs text-slate-400">
+        After its report, the doctor hands the incident to a team of AI agents. The Manager gives the work out, and when the
+        tests fail it sends the Fixer back with the failure log (up to {team.max_attempts || 3} tries).
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+        {TEAM_ROLES.map(([key, name, what]) => {
+          const working = busyAgent === key;
+          const used = usedAgents.has(key);
+          return (
+            <div
+              key={key}
+              className={`px-3 py-2 rounded-xl border text-xs ${
+                working
+                  ? 'border-indigo-400 bg-indigo-500/10 text-indigo-200'
+                  : used
+                  ? 'border-slate-600 bg-slate-800/60 text-slate-200'
+                  : 'border-slate-800 text-slate-500'
+              }`}
+            >
+              <div className="font-semibold flex items-center gap-1.5">
+                {working && <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />}
+                {name}
+              </div>
+              <div className="text-[10px]">{what}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className={`p-3 rounded-xl border text-xs ${FIX_TONE[tone]}`}>
+        <div className="font-semibold text-sm flex items-center gap-2">
+          {TEAM_ACTIVE.has(team.status) && <span className="w-2 h-2 rounded-full bg-current animate-pulse" />}
+          {head}
+        </div>
+        <p className="mt-1 text-slate-400">
+          {typeof team.attempts === 'number' && `Fixer attempts: ${team.attempts}/${team.max_attempts || 3}. `}
+          {team.tests && `Tests: ${team.tests.total - (team.tests.failed || 0)}/${team.tests.total} passed. `}
+          {typeof team.cost_usd === 'number' && `Model cost: $${team.cost_usd.toFixed(3)}.`}
+        </p>
+        {team.error && <p className="mt-1 font-mono text-rose-300">{team.error}</p>}
+      </div>
+
+      {team.diagnosis?.root_cause && (
+        <div className="space-y-1">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Team's root cause</h4>
+          <p className="text-sm text-slate-100">{team.diagnosis.root_cause}</p>
+          {team.diagnosis.implicated_files?.length > 0 && (
+            <p className="text-xs font-mono text-slate-400">{team.diagnosis.implicated_files.join(', ')}</p>
+          )}
+        </div>
+      )}
+
+      {team.decisions?.length > 0 && (
+        <div className="space-y-1">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Manager's decisions</h4>
+          <ol className="text-xs text-slate-300 space-y-1 list-decimal list-inside">
+            {team.decisions.map((d, i) => (
+              <li key={i}>
+                <span className="text-slate-400">{d.event}</span> → <span className="font-semibold text-indigo-300">{d.choice}</span>
+                {d.why && <span className="text-slate-500"> ({d.why})</span>}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {team.patch?.diff && (
+        <div className="space-y-1">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            Team's patch{team.patch.attempt ? ` (attempt ${team.patch.attempt})` : ''}
+          </h4>
+          {team.patch.rationale && <p className="text-xs text-slate-400">{team.patch.rationale}</p>}
+          <DiffView diff={team.patch.diff} />
+        </div>
+      )}
+
+      {team.escalation && (
+        <div className="space-y-1">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Escalated to a person</h4>
+          <p className="text-sm text-slate-200 whitespace-pre-wrap">{team.escalation.summary || team.escalation.reason}</p>
+          <p className="text-xs text-slate-500">The doctor's suggested fix above still applies.</p>
+        </div>
+      )}
+
+      {team.status === 'awaiting_approval' && (
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            disabled={busy}
+            onClick={() => act(() => decidePullRequest(incidentId, true))}
+            className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold text-sm rounded-xl"
+          >
+            {busy ? 'Opening…' : 'Open pull request'}
+          </button>
+          <button
+            disabled={busy}
+            onClick={() => act(() => decidePullRequest(incidentId, false))}
+            className="px-3 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+          >
+            No thanks
+          </button>
+          <span className="text-xs text-slate-500">Nothing is pushed until you press the button.</span>
+        </div>
+      )}
+
+      {team.pr && (
+        <p className="text-xs text-slate-300">
+          {team.pr.url ? (
+            <a href={team.pr.url} target="_blank" rel="noreferrer" className="underline text-emerald-300">
+              Pull request: {team.pr.url}
+            </a>
+          ) : (
+            team.pr.note || 'Pull request declined.'
+          )}
+        </p>
+      )}
+
+      {team.enabled && !TEAM_ACTIVE.has(team.status) && team.status !== 'awaiting_approval' && (
+        <button
+          disabled={busy}
+          onClick={() => act(() => startAgents(incidentId))}
+          className="px-3 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+        >
+          {team.status === 'none' ? 'Hand to the agent team' : 'Run the agent team again'}
+        </button>
+      )}
+      {err && <p className="text-xs text-rose-400">{err}</p>}
+    </Section>
+  );
+}
+
 function ReportView({ report }) {
   const diagnosis = report.diagnosis || {};
   const dvc = diagnosis.demand_vs_capacity;
@@ -333,12 +696,8 @@ function ReportView({ report }) {
 
   return (
     <>
-      <Section title="Diagnosis">
-        <p className="text-sm text-slate-200 leading-relaxed">{diagnosis.summary || 'No summary provided.'}</p>
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-slate-500">Incident class:</span>
-          <Badge className={classStyle(diagnosis.incident_class)}>{diagnosis.incident_class || 'unknown'}</Badge>
-        </div>
+      {dvc && (
+      <Section title="Demand vs capacity">
         {dvc && (
           <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs space-y-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -357,8 +716,9 @@ function ReportView({ report }) {
           </div>
         )}
       </Section>
+      )}
 
-      <Section title={`Ranked hypotheses (${hypotheses.length})`}>
+      <Section title={`All hypotheses, ranked (${hypotheses.length})`}>
         {hypotheses.length === 0 ? (
           <p className="text-xs text-slate-500">No hypotheses.</p>
         ) : (
@@ -406,14 +766,12 @@ function ReportView({ report }) {
         )}
       </Section>
 
-      {fix && (
+      {fix?.rationale && fix.action && (
         <Section
-          title="Proposed fix"
+          title="Why this fix"
           right={fix.kind && <Badge className="bg-violet-500/10 text-violet-300 border-violet-500/20">{fix.kind}</Badge>}
         >
-          {fix.action && <p className="text-sm text-slate-200">{fix.action}</p>}
-          {fix.rationale && <p className="text-xs text-slate-400">{fix.rationale}</p>}
-          <DiffView diff={fix.unified_diff} />
+          <p className="text-xs text-slate-400">{fix.rationale}</p>
         </Section>
       )}
 
@@ -522,12 +880,26 @@ function IncidentDetail({ summary, detail, loading, error }) {
       )}
 
       {report?.diagnosis ? (
-        <ReportView report={report} />
+        <>
+          <AnswerCard incidentId={summary.id} report={report} />
+          <AgentTeam incidentId={summary.id} />
+        </>
       ) : (
         detail && !inProgress && status !== 'failed' && (
           <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 text-sm">No report available for this incident.</div>
         )
       )}
+
+      {/* Everything behind the answer stays one click away, out of the way. */}
+      {detail && (
+      <details className="group">
+        <summary className="cursor-pointer select-none list-none px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-sm font-semibold text-slate-300 hover:text-white flex items-center gap-2">
+          <span className="text-indigo-400 group-open:rotate-90 transition-transform">▸</span>
+          Technical details
+          <span className="text-xs font-normal text-slate-500">all hypotheses · verification · evidence · raw report</span>
+        </summary>
+        <div className="space-y-4 mt-4">
+      {report?.diagnosis && <ReportView report={report} />}
 
       {detail?.resolution && (
         <Section title="Resolution">
@@ -559,6 +931,9 @@ function IncidentDetail({ summary, detail, loading, error }) {
             <p className="text-xs text-slate-500">Markdown report as written by the doctor.</p>
           )}
         </Section>
+      )}
+        </div>
+      </details>
       )}
     </div>
   );
@@ -679,7 +1054,6 @@ export default function Incidents() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-6 items-start">
         <div className="space-y-4">
-          <TicketForm onCreated={handleTicketCreated} />
           <IncidentList
             incidents={incidents}
             selectedId={selectedId}
@@ -688,6 +1062,7 @@ export default function Incidents() {
             error={listError}
             lastRefresh={lastRefresh}
           />
+          <TicketForm onCreated={handleTicketCreated} />
         </div>
         <IncidentDetail
           key={selectedId || 'none'}

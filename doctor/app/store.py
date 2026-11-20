@@ -74,5 +74,6 @@ def list_incidents(settings: Settings = SETTINGS) -> List[Dict[str, Any]]:
             "provider": (report or {}).get("provider"), "model": (report or {}).get("model"),
             "alert_to_report_s": meta.get("alert_to_report_s") or (report or {}).get("alert_to_report_s"),
             "resolved": load(incident_id, "resolution.json", settings) is not None,
+            "agents": (load(incident_id, "agents.json", settings) or {}).get("status"),
         })
     return sorted(out, key=lambda r: r.get("started") or "", reverse=True)

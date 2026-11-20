@@ -20,6 +20,13 @@ Read endpoints for the Incidents page:
     POST /api/incidents/{id}/resolve   record the real resolution (joins the
                                        past-incident index)
 
+After every report the incident is handed to the agent team (app/agents.py):
+a Manager agent delegates to Diagnoser, Fixer and Tester agents, retries the
+Fixer with the failure log, and prepares a PR that waits for a person.
+    GET  /api/incidents/{id}/agents        the team's run (live while it runs)
+    POST /api/incidents/{id}/agents        hand an incident to the team (again)
+    POST /api/incidents/{id}/agents/pr     {"confirm": true|false} - the human gate
+
 Every incident's evidence is snapshotted to disk under its id (bundle.json)
 before reasoning, so it can be replayed any number of times. Nothing is ever
 applied to the running system.
@@ -36,7 +43,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_
 from pydantic import BaseModel
 from starlette.responses import Response
 
-from app import collectors, evidence, indexes, reasoner, report, store, ticket
+from app import agents, collectors, evidence, indexes, reasoner, report, store, ticket
 from app.settings import SETTINGS, get
 
 app = FastAPI(title="Incident Doctor", version="1.1.0")
@@ -127,6 +134,10 @@ def run_diagnosis(incident_id: str) -> Dict[str, Any]:
             alert_to_report_s=result["alert_to_report_s"])
     DIAGNOSES.labels(result.get("status", "failed")).inc()
     ALERT_TO_REPORT.observe(result["alert_to_report_s"])
+    # Hierarchical stage: the agent team's Manager takes over from the report.
+    # Runs in the background so the next incident is not kept waiting.
+    threading.Thread(target=agents.hand_off, args=(incident_id, result, bundle), daemon=True,
+                     name=f"handoff-{incident_id}").start()
     return result
 
 
@@ -175,6 +186,7 @@ def _start() -> None:
         if inc["status"] in ("open", "collecting", "diagnosing"):
             _update(inc["id"], status="interrupted", error="the doctor restarted before this incident finished")
     threading.Thread(target=worker, daemon=True).start()
+    agents.resume_all()
     if SETTINGS.auto_diagnose and SETTINGS.alert_sink_url:
         threading.Thread(target=catch_up, daemon=True).start()
 
@@ -238,6 +250,7 @@ def get_incident(incident_id: str):
         raise HTTPException(404, "unknown incident")
     return {"incident": meta, "report": rep, "markdown": store.load(incident_id, "report.md"),
             "resolution": store.load(incident_id, "resolution.json"),
+            "agents": store.load(incident_id, agents.FILE),
             "evidence": {"alert": (bundle or {}).get("alert"), "related_alerts": (bundle or {}).get("related_alerts"),
                          "windows": (bundle or {}).get("windows"), "logs": (bundle or {}).get("logs", [])[:10],
                          "deploys": (bundle or {}).get("deploys"), "kb_changes": (bundle or {}).get("kb_changes"),
@@ -251,6 +264,50 @@ def get_bundle(incident_id: str):
     if bundle is None:
         raise HTTPException(404, "no evidence snapshot for this incident")
     return bundle
+
+
+# ---------------------------------------------------------------- the agent team
+
+@app.get("/api/incidents/{incident_id}/agents")
+def get_agents(incident_id: str):
+    """The agent team's run for this incident (refreshed from the team while it runs)."""
+    state = store.load(incident_id, agents.FILE)
+    if state is None:
+        if store.load(incident_id, "incident.json") is None:
+            raise HTTPException(404, "unknown incident")
+        return {"status": "none", "enabled": agents.enabled()}
+    if state.get("task_id") and state.get("status") not in agents.FINISHED:
+        state = agents.refresh(incident_id)
+    return {**state, "enabled": agents.enabled()}
+
+
+@app.post("/api/incidents/{incident_id}/agents")
+def start_agents(incident_id: str):
+    """Hand an already-diagnosed incident to the team (again), e.g. one from before the team existed."""
+    rep, bundle = store.load(incident_id, "report.json"), store.load(incident_id, "bundle.json")
+    if rep is None or bundle is None:
+        raise HTTPException(409, "the doctor has not finished this incident yet")
+    if not agents.enabled():
+        raise HTTPException(503, "the agent team is not configured (DOCTOR_AGENTS_URL)")
+    current = store.load(incident_id, agents.FILE) or {}
+    if current.get("status") in ("starting", "running"):
+        raise HTTPException(409, "the team is already working on this incident")
+    return agents.hand_off(incident_id, rep, bundle)
+
+
+class PRDecision(BaseModel):
+    confirm: bool
+
+
+@app.post("/api/incidents/{incident_id}/agents/pr")
+def agents_pr(incident_id: str, req: PRDecision):
+    """Human-in-the-loop gate: open (or decline) the Pull Request the team prepared."""
+    try:
+        return agents.open_pr(incident_id, req.confirm)
+    except LookupError as e:
+        raise HTTPException(404, str(e)) from None
+    except ValueError as e:
+        raise HTTPException(409, str(e)) from None
 
 
 class Resolution(BaseModel):

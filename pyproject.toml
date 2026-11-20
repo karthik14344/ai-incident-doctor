@@ -14,4 +14,7 @@ extend-exclude = [
 select = ["E9", "F"]
 
 [tool.pytest.ini_options]
+# For a bare `pytest` at the repo root (the agent team's Tester runs exactly that).
+# faults/acceptance/ holds fault fixtures that only make sense inside a fault run.
+testpaths = ["patient/tests", "alert_sink", "doctor/tests"]
 filterwarnings = ["ignore::DeprecationWarning"]

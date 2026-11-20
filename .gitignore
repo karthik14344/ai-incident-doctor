@@ -37,3 +37,7 @@ patient/storage/documents/*
 .DS_Store
 Thumbs.db
 .claude/
+
+# The agent team is a separate project (its own repo and its own .env with keys).
+# It is used from here, never committed here: see deploy/agai/.
+/AGAI/
