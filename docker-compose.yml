@@ -402,6 +402,16 @@ services:
       # The team's models (deploy/agai/models.yaml says why); remove to use AGAI's own.
       CODEFIX_CONFIG: /repo/deploy/agai/models.yaml
       PORT: "8080"
+      # The Tester runs OUR pytest suite with this environment. The patient's
+      # settings refuse to start without service addresses, so pin the same
+      # placeholders the doctor's verifier uses (doctor/app/verify.py _TEST_ENV);
+      # the tests never contact them.
+      KNOWLEDGEAI_ENV_FILE: /dev/null
+      OLLAMA_BASE_URL: http://localhost:11434
+      INGESTION_SERVICE_URL: http://127.0.0.1:18001
+      RETRIEVAL_SERVICE_URL: http://127.0.0.1:18002
+      LLM_SERVICE_URL: http://127.0.0.1:18003
+      CHROMA_HOST: ""
     volumes:
       - .:/repo:ro
       - agai-data:/data
