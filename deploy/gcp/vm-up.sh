@@ -44,4 +44,10 @@ fi
 
 say "deploy"
 "$PY" deploy/deploy.py --pipeline manual --reason "GCP VM boot $(git rev-parse --short HEAD)"
+
+# Load both models now, not on the first user request: a cold load takes 30-90 s
+# and would trip the latency alerts on a healthy app (seen 2026-11-21).
+say "warming the models"
+curl -fsS -m 300 http://127.0.0.1:11434/api/generate -d '{"model":"llama3.2","prompt":"ok","keep_alive":-1}' >/dev/null || true
+curl -fsS -m 300 http://127.0.0.1:11434/api/embed -d '{"model":"nomic-embed-text","input":"ok","keep_alive":-1}' >/dev/null || true
 say "up: app :3001  grafana :3000  doctor :8100  agent team :8200"

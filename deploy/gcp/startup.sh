@@ -66,10 +66,19 @@ command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,driver_version,m
 if ! command -v ollama >/dev/null; then
   echo "=== installing Ollama"
   curl -fsSL https://ollama.com/install.sh | sh
-  # The patient containers reach it at host.docker.internal; the GCP firewall
-  # does not open 11434, so it stays private to the VM.
-  mkdir -p /etc/systemd/system/ollama.service.d
-  printf '[Service]\nEnvironment="OLLAMA_HOST=0.0.0.0"\n' > /etc/systemd/system/ollama.service.d/listen.conf
+fi
+# Ollama settings, re-applied every boot (Ollama restarts only when they change):
+#   OLLAMA_HOST=0.0.0.0   the patient containers reach it at host.docker.internal;
+#                         the GCP firewall does not open 11434, so it stays private
+#   OLLAMA_KEEP_ALIVE=-1  keep the models loaded. Unloaded after the default 5 idle
+#                         minutes, the next requests wait for a reload and the p95
+#                         latency alert fires on a healthy app (seen 2026-11-21).
+mkdir -p /etc/systemd/system/ollama.service.d
+want='[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+Environment="OLLAMA_KEEP_ALIVE=-1"'
+if [ "$want" != "$(cat /etc/systemd/system/ollama.service.d/listen.conf 2>/dev/null)" ]; then
+  printf '%s\n' "$want" > /etc/systemd/system/ollama.service.d/listen.conf
   systemctl daemon-reload
   systemctl restart ollama
 fi
