@@ -58,6 +58,7 @@ def settings() -> dict:
         "CONTAINER_OLLAMA_BASE_URL": "http://host.docker.internal:11434",
         "DOCTOR_PROVIDER": "glm",
         "DOCTOR_MODEL": meta_or("aid-doctor-model", "glm-4.5-flash"),
+        "AGAI_MODELS_FILE": "",           # AGAI's own models unless aid-env-AGAI_MODELS_FILE says otherwise
         "DOCTOR_FALLBACK_PROVIDER": "ollama",
         "DOCTOR_FALLBACK_MODEL": "llama3.2",
         "RUNTIME_DIR": "./runtime",
@@ -68,6 +69,12 @@ def settings() -> dict:
     }
     for key, name in SECRETS.items():
         values[key] = secret(project, token, name)
+    # Per-VM overrides without a commit: instance metadata `aid-env-KEY=value`
+    # becomes KEY=value here (e.g. aid-env-DOCTOR_MODEL=glm-5.3). Set with
+    #   gcloud compute instances add-metadata aid-vm --metadata aid-env-KEY=value
+    # and take effect at the next boot (or a manual run of this script).
+    attrs = json.loads(meta("instance/attributes/?recursive=true"))
+    values.update({k[len("aid-env-"):]: v for k, v in attrs.items() if k.startswith("aid-env-")})
     return values
 
 

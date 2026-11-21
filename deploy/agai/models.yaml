@@ -1,7 +1,7 @@
 # Model file for the agent team (AGAI) when it runs next to the doctor.
-# AGAI reads it through its own CODEFIX_CONFIG setting (docker-compose.yml);
-# AGAI's code and its own config/models.yaml are untouched. Delete the
-# CODEFIX_CONFIG line in docker-compose.yml to go back to AGAI's models.
+# AGAI reads it through its own CODEFIX_CONFIG setting (docker-compose.yml) when
+# .env sets AGAI_MODELS_FILE=/repo/deploy/agai/models.yaml (on the GCP VM: instance
+# metadata aid-env-AGAI_MODELS_FILE). Unset, AGAI uses its own config/models.yaml.
 #
 # Why: AGAI's own models (glm-5.3, glm-5.3-flash) need a paid Z.AI plan. The
 # key the team uses here serves only the free flash models, so every role is

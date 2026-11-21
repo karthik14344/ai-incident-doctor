@@ -275,6 +275,35 @@ def export_incident(incident_id: str, run_dir: str) -> None:
         fh.write(detail.get("markdown") or "")
 
 
+AGENTS_FINISHED = {"awaiting_approval", "done", "escalated", "failed", "error", "rejected", "unreachable",
+                   "off", "lost", "stalled"}
+
+
+def wait_for_agents(incident_id: str, run_dir: str, seconds: float, timeline: Dict[str, Any]) -> None:
+    """Keep the fault in place until the agent team has finished with the incident.
+
+    The doctor hands every report to the team (doctor/app/agents.py), which reads
+    and patches the live repository; reverting the moment the doctor reports
+    would leave it analysing code that is already fixed. Saves the team's final
+    state as agents.json next to the doctor's report.
+    """
+    timeline["agents_wait_started"] = iso()
+    log(f"waiting up to {int(seconds)}s for the agent team on {incident_id}")
+    deadline, state = time.time() + seconds, {}
+    while time.time() < deadline:
+        try:
+            state = http(f"{doctor_url()}/api/incidents/{incident_id}/agents")
+        except Exception:
+            state = state or {}
+        if state.get("status") in AGENTS_FINISHED:
+            break
+        time.sleep(15)
+    timeline["agents_status"] = state.get("status") or "unknown"
+    timeline["agents_wait_finished"] = iso()
+    write_json(os.path.join(run_dir, "agents.json"), state)
+    log(f"agent team: {timeline['agents_status']} (attempts {state.get('attempts')})")
+
+
 def write_json(path: str, obj: Any) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:

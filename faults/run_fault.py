@@ -33,7 +33,8 @@ import httpx
 from faults import distractors
 from faults.catalog import FAULTS, Fault
 from faults.common import (RUNS_DIR, REPO, Load, commit, compose, export_incident, git, iso, log,
-                           parse_ts, push_and_deploy, setting, wait_alert, wait_report, write_json)
+                           parse_ts, push_and_deploy, setting, wait_alert, wait_for_agents, wait_report,
+                           write_json)
 
 
 # ---------------------------------------------------------------- the noisy neighbour
@@ -243,7 +244,8 @@ def hold_for_fix(run_dir: str, seconds: float, timeline: Dict[str, Any]) -> None
     log(f"HOLD over ({timeline['hold_released']}): reverting")
 
 
-def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None, hold: float = 0) -> str:
+def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None, hold: float = 0,
+        agents_wait: float = 0) -> str:
     fault = FAULTS[fault_id]
     run_id = f"{fault_id}-{label or time.strftime('%m%d%H%M')}"
     run_dir = os.path.join(RUNS_DIR, run_id)
@@ -298,6 +300,8 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
                 log(f"doctor report {inc['id']}: {inc['incident_class']} / {(inc.get('top_cause') or '')[:80]} "
                     f"({timeline['doctor_s']}s after the alert)")
                 export_incident(inc["id"], run_dir)
+                if agents_wait:
+                    wait_for_agents(inc["id"], run_dir, agents_wait, timeline)
                 if hold and fault.delivery == "push":
                     hold_for_fix(run_dir, hold, timeline)
             else:
@@ -320,6 +324,8 @@ def run(fault_id: str, variant: str = "guilty_last", label: Optional[str] = None
                     log(f"doctor ticket report {inc['id']}: {inc['incident_class']} / {(inc.get('top_cause') or '')[:80]} "
                         f"({timeline['doctor_s']}s after the ticket)")
                     export_incident(inc["id"], run_dir)
+                    if agents_wait:
+                        wait_for_agents(inc["id"], run_dir, agents_wait, timeline)
 
         if neighbour:
             neighbour.stop()
@@ -356,8 +362,11 @@ def main() -> int:
     ap.add_argument("--hold", type=float, default=0, metavar="SECONDS",
                     help="demo mode, push faults only: after the doctor's report, keep the bug in place this "
                          "long (or until the demo page presses Finish) before the revert. Default 0: no hold.")
+    ap.add_argument("--wait-agents", type=float, default=0, metavar="SECONDS",
+                    help="after the doctor's report, keep the fault in place until the agent team has finished "
+                         "(at most this long) and save its result as agents.json. Default 0: do not wait.")
     args = ap.parse_args()
-    run(args.fault, args.variant, args.label, args.hold)
+    run(args.fault, args.variant, args.label, args.hold, args.wait_agents)
     return 0
 
 

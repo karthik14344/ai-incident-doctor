@@ -43,6 +43,9 @@ def main() -> int:
     ap.add_argument("--cooldown", type=int, default=720)
     ap.add_argument("--round", default=None, help="only runs with this label (r1/r2)")
     ap.add_argument("--skip-done", action="store_true", help="skip runs that already have a ground_truth.json")
+    ap.add_argument("--wait-agents", type=float, default=0, metavar="SECONDS",
+                    help="per run: keep the fault in place until the agent team finishes (at most SECONDS)")
+    ap.add_argument("--suffix", default="", help="appended to every run label, e.g. gpu -> f5_typo-r1-gpu")
     ap.add_argument("--background", action="store_true",
                     help="also run the normal background traffic in this process (one process = less memory)")
     args = ap.parse_args()
@@ -57,6 +60,8 @@ def main() -> int:
         log("background traffic running inside the campaign process; settling 600 s first")
         time.sleep(600)
     plan = [p for p in PLAN if (not args.only or p[0] in args.only) and (not args.round or p[2] == args.round)]
+    if args.suffix:
+        plan = [(f, v, f"{lbl}-{args.suffix}") for f, v, lbl in plan]
     if args.skip_done:
         from faults.common import RUNS_DIR
         plan = [p for p in plan if not os.path.exists(os.path.join(RUNS_DIR, f"{p[0]}-{p[2]}", "ground_truth.json"))]
@@ -65,7 +70,7 @@ def main() -> int:
     for i, (fault, variant, label) in enumerate(plan):
         started = iso()
         try:
-            run_dir = run(fault, variant, label)
+            run_dir = run(fault, variant, label, agents_wait=args.wait_agents)
             status = "done"
         except Exception as exc:
             run_dir, status = None, f"error: {type(exc).__name__}: {exc}"

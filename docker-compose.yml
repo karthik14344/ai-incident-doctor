@@ -399,8 +399,9 @@ services:
       GITHUB_TOKEN: ${AGAI_GITHUB_TOKEN:-}
       CODEFIX_A2A_TOKEN: ${AGAI_A2A_TOKEN:-}
       CODEFIX_DATA_DIR: /data
-      # The team's models (deploy/agai/models.yaml says why); remove to use AGAI's own.
-      CODEFIX_CONFIG: /repo/deploy/agai/models.yaml
+      # The team's models: AGAI's own config/models.yaml unless AGAI_MODELS_FILE names
+      # another (e.g. /repo/deploy/agai/models.yaml, the free GLM flash models).
+      CODEFIX_CONFIG: ${AGAI_MODELS_FILE:-/app/config/models.yaml}
       PORT: "8080"
       # The Tester runs OUR pytest suite with this environment. The patient's
       # settings refuse to start without service addresses, so pin the same
