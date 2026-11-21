@@ -33,7 +33,8 @@ param(
     # The project with GPU quota (1 x L4 in asia-south1, granted 2026-11-21). The
     # first project, monumento-cf0b5, was refused GPUs for lack of usage history.
     [string]$Project = "gen-lang-client-0747635989",
-    [string]$Zone = "asia-south1-a",
+    # Singapore: on 2026-11-21 every asia-south1 zone was out of L4s (quota is not stock).
+    [string]$Zone = "asia-southeast1-c",
     [string]$Name = "aid-vm",
     # 8 vCPU / 32 GB + one NVIDIA L4: Ollama on CPU alone was far too slow (4 vCPU:
     # chat p95 120 s vs the 40 s alert). startup.sh installs the GPU driver.
