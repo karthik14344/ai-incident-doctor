@@ -38,6 +38,25 @@ https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_C
   apt-get update -q
   apt-get install -y -q docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin
 fi
+# GPU machines (g2-* carry an NVIDIA L4): the driver first, then one reboot to
+# load it. This script runs again after the reboot and carries on from here;
+# Ollama, installed after the driver, finds the GPU and uses it by itself.
+if grep -qs 0x10de /sys/bus/pci/devices/*/vendor && ! nvidia-smi >/dev/null 2>&1; then
+  if [ ! -f "$ROOT/.nvidia-installed" ]; then
+    echo "=== installing the NVIDIA driver (one reboot)"
+    apt-get update -q
+    apt-get install -y -q ubuntu-drivers-common
+    ubuntu-drivers install --gpgpu
+    v=$(dpkg-query -W -f='${Package}\n' 'nvidia-headless-no-dkms-*-server' 2>/dev/null \
+        | sed -n 's/nvidia-headless-no-dkms-\([0-9]*\)-server/\1/p' | head -1)
+    [ -n "$v" ] && apt-get install -y -q "nvidia-utils-$v-server"
+    touch "$ROOT/.nvidia-installed"
+    reboot
+    exit 0
+  fi
+  echo "=== WARNING: NVIDIA driver installed but not working - Ollama will run on the CPU"
+fi
+command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 if ! command -v ollama >/dev/null; then
   echo "=== installing Ollama"
   curl -fsSL https://ollama.com/install.sh | sh

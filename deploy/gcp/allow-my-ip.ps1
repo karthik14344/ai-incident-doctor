@@ -16,7 +16,7 @@
   ./deploy/gcp/allow-my-ip.ps1
 #>
 param(
-    [string]$Project = "monumento-cf0b5",
+    [string]$Project = "gen-lang-client-0747635989",
     [string]$Rule = "aid-web-from-my-ip"
 )
 $ErrorActionPreference = "Stop"

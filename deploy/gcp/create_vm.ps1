@@ -21,7 +21,7 @@
 
   The VM then installs Docker and Ollama, pulls this repo from GitHub and runs
   deploy/gcp/vm-up.sh. The first boot takes about 20-30 minutes; follow it with
-    gcloud compute ssh aid-vm --zone asia-south1-a -- sudo tail -f /var/log/aid-startup.log
+    gcloud compute ssh aid-vm --zone asia-south1-a --project gen-lang-client-0747635989 -- sudo tail -f /var/log/aid-startup.log
 
   The VM pulls origin/main from GitHub at every boot: push before (re)starting it.
 
@@ -30,11 +30,18 @@
   ./deploy/gcp/create_vm.ps1 -Project my-project -Zone asia-south1-b
 #>
 param(
-    [string]$Project = "monumento-cf0b5",
+    # The project with GPU quota (1 x L4 in asia-south1, granted 2026-11-21). The
+    # first project, monumento-cf0b5, was refused GPUs for lack of usage history.
+    [string]$Project = "gen-lang-client-0747635989",
     [string]$Zone = "asia-south1-a",
     [string]$Name = "aid-vm",
-    [string]$MachineType = "e2-standard-4",
+    # 8 vCPU / 32 GB + one NVIDIA L4: Ollama on CPU alone was far too slow (4 vCPU:
+    # chat p95 120 s vs the 40 s alert). startup.sh installs the GPU driver.
+    [string]$MachineType = "g2-standard-8",
     [string]$AgaiDir = "AGAI",
+    # Which key the agent team uses: "agai" = AGAI/.env ZAI_API_KEY (its paid plan),
+    # "doctor" = .env DOCTOR_API_KEY (free flash models only; see deploy/agai/models.yaml).
+    [ValidateSet("agai", "doctor")][string]$AgentKey = "agai",
     [string]$RepoUrl = "https://github.com/karthik14344/ai-incident-doctor.git"
 )
 $ErrorActionPreference = "Stop"
@@ -82,7 +89,7 @@ if (-not (Exists @("iam", "service-accounts", "describe", $SA))) {
 Put-Secret "aid-doctor-api-key" (EnvValue ".env" "DOCTOR_API_KEY")
 Put-Secret "aid-grafana-password" (EnvValue ".env" "GRAFANA_ADMIN_PASSWORD")
 Put-Secret "aid-minio-password" (EnvValue ".env" "MINIO_ROOT_PASSWORD")
-Put-Secret "aid-zai-api-key" (EnvValue "$AgaiDir/.env" "ZAI_API_KEY")
+Put-Secret "aid-zai-api-key" ($(if ($AgentKey -eq "doctor") { EnvValue ".env" "DOCTOR_API_KEY" } else { EnvValue "$AgaiDir/.env" "ZAI_API_KEY" }))
 Put-Secret "aid-github-token" (EnvValue "$AgaiDir/.env" "GITHUB_TOKEN")
 if (-not (Exists @("secrets", "describe", "aid-a2a-token"))) {
     Put-Secret "aid-a2a-token" ([Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)))
@@ -99,11 +106,13 @@ if (Exists @("compute", "instances", "describe", $Name, "--zone", $Zone)) {
         "--metadata-from-file", "startup-script=deploy/gcp/startup.sh")
     Write-Host "  $Name exists - metadata refreshed"
 } else {
-    G @("compute", "instances", "create", $Name, "--zone", $Zone, "--machine-type", $MachineType,
+    # A VM with a GPU cannot be live-migrated: it must stop for host maintenance.
+    $gpu = if ($MachineType -like "g2-*") { @("--maintenance-policy", "TERMINATE") } else { @() }
+    G (@("compute", "instances", "create", $Name, "--zone", $Zone, "--machine-type", $MachineType,
         "--image-family", "ubuntu-2404-lts-amd64", "--image-project", "ubuntu-os-cloud",
         "--boot-disk-size", "80GB", "--boot-disk-type", "pd-balanced", "--tags", "aid",
         "--service-account", $SA, "--scopes", "cloud-platform",
-        "--metadata", $meta, "--metadata-from-file", "startup-script=deploy/gcp/startup.sh")
+        "--metadata", $meta, "--metadata-from-file", "startup-script=deploy/gcp/startup.sh") + $gpu)
 }
 
 Write-Host "6. uploads (agent team bundle + knowledge base)"
