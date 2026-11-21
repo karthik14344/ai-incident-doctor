@@ -41,10 +41,30 @@ https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_C
   apt-get update -q
   apt-get install -y -q docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin
 fi
+# GPU machines (g2-* carry an NVIDIA L4): Ubuntu's driver, pre-built for the gcp
+# kernel, BEFORE Ollama. With a working nvidia-smi, Ollama's installer leaves the
+# driver alone; its own fallback (NVIDIA's cuda-drivers 620, built with DKMS)
+# does not compile against kernel 7.0-gcp. Measured 2026-11-21: L4, driver 595,
+# llama3.2 at ~104 tokens/s.
+NVIDIA_PKGS="linux-modules-nvidia-595-server-open-gcp nvidia-headless-no-dkms-595-server-open nvidia-utils-595-server"
+if grep -qs 0x10de /sys/bus/pci/devices/*/vendor && ! nvidia-smi >/dev/null 2>&1; then
+  echo "=== installing the NVIDIA driver"
+  apt-get update -q
+  # shellcheck disable=SC2086
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -q $NVIDIA_PKGS
+  if ! { modprobe nvidia && modprobe nvidia_uvm && nvidia-smi >/dev/null 2>&1; }; then
+    if [ ! -f "$ROOT/.gpu-reboot-done" ]; then
+      echo "=== rebooting once to load the NVIDIA driver"
+      touch "$ROOT/.gpu-reboot-done"
+      reboot
+      exit 0
+    fi
+    echo "=== WARNING: NVIDIA GPU present but the driver is not working - Ollama runs on the CPU"
+  fi
+fi
+command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
 if ! command -v ollama >/dev/null; then
   echo "=== installing Ollama"
-  # On a GPU machine (g2-* carries an NVIDIA L4) Ollama's installer also installs
-  # NVIDIA's driver (cuda-drivers); it takes effect after the reboot below.
   curl -fsSL https://ollama.com/install.sh | sh
   # The patient containers reach it at host.docker.internal; the GCP firewall
   # does not open 11434, so it stays private to the VM.
@@ -53,18 +73,6 @@ if ! command -v ollama >/dev/null; then
   systemctl daemon-reload
   systemctl restart ollama
 fi
-# GPU present but the driver not loaded yet (first boot): reboot once. This
-# script runs again after the reboot and carries on from here.
-if grep -qs 0x10de /sys/bus/pci/devices/*/vendor && ! nvidia-smi >/dev/null 2>&1; then
-  if [ ! -f "$ROOT/.gpu-reboot-done" ]; then
-    echo "=== rebooting once to load the NVIDIA driver"
-    touch "$ROOT/.gpu-reboot-done"
-    reboot
-    exit 0
-  fi
-  echo "=== WARNING: NVIDIA GPU present but the driver is not working - Ollama runs on the CPU"
-fi
-command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
 for _ in $(seq 60); do curl -fsS http://127.0.0.1:11434/api/version >/dev/null && break; sleep 2; done
 for model in llama3.2 nomic-embed-text; do
   ollama list | grep -q "^$model" || ollama pull "$model" || echo "=== WARNING: could not pull $model"
