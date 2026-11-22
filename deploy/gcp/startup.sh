@@ -82,6 +82,10 @@ if [ "$want" != "$(cat /etc/systemd/system/ollama.service.d/listen.conf 2>/dev/n
   systemctl daemon-reload
   systemctl restart ollama
 fi
+# Always enabled and running: on 2026-11-22 the service had become disabled (after
+# driver packages were changed), Ollama did not start at boot, the deploy's smoke
+# test failed and the deploy rolled back to an older commit.
+systemctl enable --now ollama
 for _ in $(seq 60); do curl -fsS http://127.0.0.1:11434/api/version >/dev/null && break; sleep 2; done
 for model in llama3.2 nomic-embed-text; do
   ollama list | grep -q "^$model" || ollama pull "$model" || echo "=== WARNING: could not pull $model"
