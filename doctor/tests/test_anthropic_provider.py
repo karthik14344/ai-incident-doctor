@@ -67,6 +67,13 @@ def test_request_fits_claude_opus_5_5(monkeypatch):
     assert comp.cost_usd == round(1200 / 1e6 * 4.0 + 800 / 1e6 * 20.0, 6)
 
 
+def test_the_anthropic_key_wins_over_another_providers_key(monkeypatch):
+    made = install(monkeypatch, reply=reply())
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "the-claude-key")
+    llm.make_provider(CFG).complete("SYS", "USER", {}, llm.CallBudget(3))   # CFG.api_key is "test-key"
+    assert made["client"].client_kwargs["api_key"] == "the-claude-key"
+
+
 def test_a_refusal_is_not_retried(monkeypatch):
     install(monkeypatch, reply=reply(text="", stop_reason="refusal"))
     budget = llm.CallBudget(5)

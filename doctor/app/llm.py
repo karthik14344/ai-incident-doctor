@@ -169,7 +169,9 @@ class AnthropicProvider(Provider):
 
         from app.settings import get
 
-        key = self.cfg.api_key or get("ANTHROPIC_API_KEY")
+        # ANTHROPIC_API_KEY first: DOCTOR_API_KEY usually still holds another
+        # provider's key (GLM) when the doctor is switched to Claude.
+        key = get("ANTHROPIC_API_KEY") or self.cfg.api_key
         client = anthropic.Anthropic(api_key=key, base_url=self.cfg.base_url or None,
                                      timeout=self.timeout_s, max_retries=0)
         try:
