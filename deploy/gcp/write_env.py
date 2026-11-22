@@ -24,6 +24,7 @@ META = "http://metadata.google.internal/computeMetadata/v1/"
 SECRETS = {
     "DOCTOR_API_KEY": "aid-doctor-api-key",
     "ZAI_API_KEY": "aid-zai-api-key",
+    "ANTHROPIC_API_KEY": "aid-anthropic-api-key",
     "AGAI_GITHUB_TOKEN": "aid-github-token",
     "AGAI_A2A_TOKEN": "aid-a2a-token",
     "GRAFANA_ADMIN_PASSWORD": "aid-grafana-password",

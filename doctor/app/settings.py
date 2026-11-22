@@ -37,7 +37,8 @@ def get(name: str, default: Optional[str] = None) -> Optional[str]:
 
 
 # Base URLs of the OpenAI-compatible endpoints. Overridable per provider with
-# DOCTOR_BASE_URL (primary) / DOCTOR_FALLBACK_BASE_URL.
+# DOCTOR_BASE_URL (primary) / DOCTOR_FALLBACK_BASE_URL. "anthropic" needs none
+# (the SDK's default endpoint).
 PROVIDER_BASE_URLS = {
     "glm": "https://api.z.ai/api/paas/v4",
     "gemini": "https://generativelanguage.googleapis.com/v1beta/openai",
@@ -55,6 +56,14 @@ DEFAULT_PRICES = {
     "groq": (0.59, 0.79),
     "openai": (1.25, 10.0),
     "ollama": (0.0, 0.0),
+}
+
+# Per-model prices where one provider sells several tiers (Claude, list prices
+# per million tokens). Looked up before the provider default above.
+MODEL_PRICES = {
+    "claude-opus-5-5": (4.0, 20.0),
+    "claude-sonnet-5-5": (2.0, 10.0),
+    "claude-haiku-5-5": (0.10, 0.50),
 }
 
 
@@ -81,7 +90,7 @@ def provider_config(prefix: str = "DOCTOR") -> Optional[ProviderConfig]:
     provider = provider.lower()
     base = get(f"{prefix}_BASE_URL") or (
         doctor_ollama_url() if provider == "ollama" else PROVIDER_BASE_URLS.get(provider))
-    pin, pout = DEFAULT_PRICES.get(provider, (0.0, 0.0))
+    pin, pout = MODEL_PRICES.get(model) or DEFAULT_PRICES.get(provider, (0.0, 0.0))
     return ProviderConfig(
         provider=provider, model=model, api_key=get(f"{prefix}_API_KEY"), base_url=base,
         price_in=float(get(f"{prefix}_PRICE_IN", str(pin))),

@@ -92,6 +92,8 @@ Put-Secret "aid-grafana-password" (EnvValue ".env" "GRAFANA_ADMIN_PASSWORD")
 Put-Secret "aid-minio-password" (EnvValue ".env" "MINIO_ROOT_PASSWORD")
 Put-Secret "aid-zai-api-key" ($(if ($AgentKey -eq "doctor") { EnvValue ".env" "DOCTOR_API_KEY" } else { EnvValue "$AgaiDir/.env" "ZAI_API_KEY" }))
 Put-Secret "aid-github-token" (EnvValue "$AgaiDir/.env" "GITHUB_TOKEN")
+# Claude (doctor and/or agent team on DOCTOR_PROVIDER=anthropic / deploy/agai/models-claude.yaml)
+Put-Secret "aid-anthropic-api-key" ($(if (EnvValue ".env" "ANTHROPIC_API_KEY") { EnvValue ".env" "ANTHROPIC_API_KEY" } else { EnvValue "$AgaiDir/.env" "ANTHROPIC_API_KEY" }))
 if (-not (Exists @("secrets", "describe", "aid-a2a-token"))) {
     Put-Secret "aid-a2a-token" ([Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)))
 }

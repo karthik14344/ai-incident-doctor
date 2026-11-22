@@ -1,8 +1,9 @@
 """Pluggable reasoning providers: GLM, Gemini, Groq, OpenAI (all through the
-OpenAI-compatible client) and local Ollama.
+OpenAI-compatible client), Claude (the Anthropic SDK) and local Ollama.
 
 Selected in .env:
     DOCTOR_PROVIDER=glm            DOCTOR_MODEL=glm-4.6     DOCTOR_API_KEY=...
+    DOCTOR_PROVIDER=anthropic      DOCTOR_MODEL=claude-opus-5-5  (key: DOCTOR_API_KEY or ANTHROPIC_API_KEY)
     DOCTOR_FALLBACK_PROVIDER=ollama DOCTOR_FALLBACK_MODEL=llama3.2
 
 Ollama is the one exception to "OpenAI-compatible": its /v1 endpoint silently
@@ -145,6 +146,61 @@ class OpenAICompatible(Provider):
                           completion_tokens=getattr(usage, "completion_tokens", 0) or 0)
 
 
+class AnthropicProvider(Provider):
+    """Claude through the official Anthropic SDK (DOCTOR_PROVIDER=anthropic).
+
+    Claude Opus 5.5 always thinks: there is no switch to turn it off (and
+    `temperature` is rejected), so depth is set with `effort` and the thinking
+    shares `max_tokens` with the answer - hence the floor below. The answer is
+    asked for as JSON in the prompt and validated by the doctor like every other
+    provider's (schema_errors + one repair round), rather than with structured
+    outputs, whose schema subset would reject DIAGNOSIS_SCHEMA's numeric bounds.
+
+    A refusal is re-run on a fallback model inside the same request (server-side
+    fallbacks, routed by refusal category); if the whole chain refuses, the
+    doctor moves on to DOCTOR_FALLBACK_PROVIDER as it does for any failure.
+    """
+
+    MIN_MAX_TOKENS = 16000
+    FALLBACK_BETA = "server-side-fallback-2026-07-01"
+
+    def _call(self, system, user, schema, max_tokens, temperature, seed) -> Completion:
+        import anthropic
+
+        from app.settings import get
+
+        key = self.cfg.api_key or get("ANTHROPIC_API_KEY")
+        client = anthropic.Anthropic(api_key=key, base_url=self.cfg.base_url or None,
+                                     timeout=self.timeout_s, max_retries=0)
+        try:
+            r = client.beta.messages.create(
+                model=self.cfg.model, max_tokens=max(max_tokens, self.MIN_MAX_TOKENS),
+                system=[{"type": "text", "text": system}],
+                messages=[{"role": "user", "content": user}],
+                output_config={"effort": get("DOCTOR_EFFORT", "high")},
+                cache_control={"type": "ephemeral"},  # the repair round re-sends the same prefix
+                betas=[self.FALLBACK_BETA], fallbacks="default")
+        except (anthropic.RateLimitError, anthropic.APITimeoutError, anthropic.APIConnectionError,
+                anthropic.InternalServerError) as exc:
+            err = ProviderError(f"{type(exc).__name__}: {exc}", retryable=True)
+            response = getattr(exc, "response", None)
+            err.retry_after = response.headers.get("retry-after") if response is not None else None
+            raise err from exc
+        except anthropic.APIStatusError as exc:
+            raise ProviderError(f"HTTP {exc.status_code}: {str(exc)[:300]}", retryable=False) from exc
+        if r.stop_reason == "refusal":
+            category = getattr(getattr(r, "stop_details", None), "category", None)
+            raise ProviderError(f"anthropic: {r.model} refused (category {category})", retryable=False)
+        u = r.usage
+        prompt_tokens = ((u.input_tokens or 0) + (getattr(u, "cache_read_input_tokens", 0) or 0)
+                         + (getattr(u, "cache_creation_input_tokens", 0) or 0))
+        return Completion(text="".join(b.text for b in r.content if b.type == "text"),
+                          provider="anthropic", model=r.model or self.cfg.model, prompt_tokens=prompt_tokens,
+                          completion_tokens=u.output_tokens or 0,
+                          raw={"stop_reason": r.stop_reason,
+                               "cache_read_input_tokens": getattr(u, "cache_read_input_tokens", 0) or 0})
+
+
 class OllamaNative(Provider):
     def _call(self, system, user, schema, max_tokens, temperature, seed) -> Completion:
         from app.settings import SETTINGS
@@ -169,7 +225,11 @@ class OllamaNative(Provider):
 
 
 def make_provider(cfg: ProviderConfig) -> Provider:
-    return OllamaNative(cfg) if cfg.provider == "ollama" else OpenAICompatible(cfg)
+    if cfg.provider == "ollama":
+        return OllamaNative(cfg)
+    if cfg.provider == "anthropic":
+        return AnthropicProvider(cfg)
+    return OpenAICompatible(cfg)
 
 
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)```", re.S)
