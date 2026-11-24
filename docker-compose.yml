@@ -354,7 +354,10 @@ services:
       DOCTOR_LOKI_URL: http://loki:3100
       DOCTOR_ALERT_SINK_URL: http://alert-sink:9095
       DOCTOR_DEPLOY_LOG: /runtime/deploys.jsonl
-      DOCTOR_OLLAMA_BASE_URL: ${CONTAINER_OLLAMA_BASE_URL:?set CONTAINER_OLLAMA_BASE_URL in .env}
+      # DOCTOR_CONTAINER_OLLAMA_BASE_URL: the doctor's own Ollama, when it reasons with a
+      # local model the patient also serves at a smaller context (one Ollama would reload
+      # the model at every switch); unset, it shares the patient's.
+      DOCTOR_OLLAMA_BASE_URL: ${DOCTOR_CONTAINER_OLLAMA_BASE_URL:-${CONTAINER_OLLAMA_BASE_URL:?set CONTAINER_OLLAMA_BASE_URL in .env}}
       DOCTOR_PROVIDER: ${DOCTOR_PROVIDER:-}
       DOCTOR_MODEL: ${DOCTOR_MODEL:-}
       DOCTOR_API_KEY: ${DOCTOR_API_KEY:-}
