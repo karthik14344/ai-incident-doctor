@@ -1,0 +1,109 @@
+{
+  "run_id": "f4_memory_leak-r2-gpu",
+  "fault_id": "f4_memory_leak",
+  "delivery": "push",
+  "variant": "guilty_earlier",
+  "started": "2026-11-22T13:02:41Z",
+  "trigger": "alert",
+  "t_break": "2026-11-22T13:02:41Z",
+  "pushes": [
+    {
+      "label": "guilty",
+      "sha": "8645aa3d7483d3af0effa58e01524f655335cc81",
+      "pushed_at": "2026-11-22T13:02:41Z",
+      "push_returned_at": "2026-11-22T13:03:24Z",
+      "push_seconds": 42.8,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for 8645aa3d7483d3af0effa58e01524f655335cc81 - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/8645aa3d7483d3af0effa58e01524f655335cc81.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   50c9efc..8645aa3  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T13:03:24Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "distractors-after",
+      "sha": "8645aa3d7483d3af0effa58e01524f655335cc81",
+      "pushed_at": "2026-11-22T13:03:24Z",
+      "push_returned_at": "2026-11-22T13:03:24Z",
+      "push_seconds": 0.0,
+      "ok": false,
+      "output_tail": [
+        "Everything up-to-date"
+      ],
+      "deploy_ts": "2026-11-22T13:03:24Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "b26c3a975d83f7f79578af3722d5b4a8bb20ec4f",
+      "pushed_at": "2026-11-22T13:19:15Z",
+      "push_returned_at": "2026-11-22T13:19:57Z",
+      "push_seconds": 42.8,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for b26c3a975d83f7f79578af3722d5b4a8bb20ec4f - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/b26c3a975d83f7f79578af3722d5b4a8bb20ec4f.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   8645aa3..b26c3a9  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T13:19:57Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "load": {
+    "mode": "search",
+    "rate": 6.0,
+    "concurrency": 12,
+    "duration": 900,
+    "unique": true
+  },
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "MemoryClimbing",
+    "startsAt": "2026-11-22T13:16:11.176Z",
+    "received_at": "2026-11-22T13:16:16.184Z",
+    "labels": {
+      "alertname": "MemoryClimbing",
+      "instance": "retrieval:8002",
+      "job": "retrieval",
+      "service": "retrieval",
+      "severity": "warning",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-11-22T13:16:11.176Z",
+  "unnoticed_s": 810.2,
+  "expected_alert": true,
+  "incident_id": "inc_9d36531d7e",
+  "t_report": "2026-11-22T13:18:28Z",
+  "doctor_s": 136.8,
+  "joined_alerts": [],
+  "agents_wait_started": "2026-11-22T13:18:29Z",
+  "agents_status": "awaiting_approval",
+  "agents_wait_finished": "2026-11-22T13:19:15Z",
+  "load_summary": {
+    "requests": 5366,
+    "ok": 5366,
+    "errors": 0,
+    "error_rate": 0.0,
+    "p50_s": 0.053,
+    "p95_s": 0.092,
+    "p99_s": 0.129,
+    "mean_s": 0.06,
+    "max_s": 0.749,
+    "throughput_rps": 5.961,
+    "error_kinds": {},
+    "outcomes": {},
+    "wall_s": 900.2
+  },
+  "t_revert_start": "2026-11-22T13:19:15Z",
+  "t_reverted": "2026-11-22T13:19:57Z",
+  "t_alert_resolved": "2026-11-22T13:19:46.187Z",
+  "finished": "2026-11-22T13:19:57Z"
+}

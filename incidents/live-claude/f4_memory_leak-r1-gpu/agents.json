@@ -1,0 +1,141 @@
+{
+  "status": "awaiting_approval",
+  "requested_at": "2026-11-22T10:29:10Z",
+  "error": null,
+  "task_id": "20261122-102910-bef102",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-102910-bef102",
+  "started_at": "2026-11-22T10:29:10Z",
+  "outcome": "passed",
+  "failure_stage": null,
+  "attempts": 1,
+  "max_attempts": 3,
+  "duration_ms": 42388,
+  "cost_usd": 0.1613,
+  "diagnosis": {
+    "root_cause": "Commit 6cd5503 added a module-level `_RECENT` dict to patient/retrieval_service/app/main.py. It is used as a response cache with no size limit and no eviction.\n\nEvery request with a new (collection, top_k, model, normalized question) key stores a new entry: the full response (raw_chunks with full chunk text, the assembled context and sources) plus `list(query_emb)`, which is about 768 boxed Python floats. These entries are never removed, so resident memory grows in proportion to the number of distinct questions served. That matches the monotonic RSS climb from 103 MB to 317 MB after the 10:14 deploy. The 6x traffic surge only speeds this up.\n\nThe cache is also a correctness hazard. Its key ignores knowledge-base changes, so it can serve stale context after ingestion.\n\nThis is a code defect, not a capacity problem. Two fixes would work:\n- Smallest safe fix: remove the cache (revert 6cd5503).\n- Alternative: cap it (for example an insertion-ordered dict limited to 256 entries that evicts the oldest) and stop storing the redundant `query_embedding` list.\n\nEither keeps module-state growth well below the acceptance threshold of 1500 entries for 3000 questions. A restart is needed afterwards to reclaim memory that has already leaked.",
+    "implicated_files": [
+      "patient/retrieval_service/app/main.py"
+    ],
+    "evidence": [
+      "patient/retrieval_service/app/main.py:67-68: `_RECENT: Dict[str, Dict[str, Any]] = {}` at module level, with no max size or eviction anywhere in the file",
+      "patient/retrieval_service/app/main.py:76-78: the key is collection:top_k:model:question.lower(), so every distinct question adds a new key; a hit returns the cached object",
+      "patient/retrieval_service/app/main.py:106: `_RECENT[key] = {**response, \"query_embedding\": list(query_emb)}` stores raw_chunks, the assembled context and a full embedding copy on every miss",
+      "patient/retrieval_service/app/main.py:97-105: the response includes raw_chunks (full chunk text) and assembled_context, which makes each entry large",
+      "faults/acceptance/test_f4_memory_leak.py:27-32: the test sends 3000 distinct questions and requires module-level container growth < 1500 entries, which fails with the current unbounded dict (3000 entries)",
+      "Incident metrics: process_memory_mb{retrieval} 102.7 -> 317.1, rising monotonically since the 10:14:15Z deploy of 6cd5503, while other services stay flat"
+    ],
+    "confidence": 0.95,
+    "degraded": false,
+    "react_steps": 3
+  },
+  "patch": {
+    "diff": "diff --git a/patient/retrieval_service/app/main.py b/patient/retrieval_service/app/main.py\n--- a/patient/retrieval_service/app/main.py\n+++ b/patient/retrieval_service/app/main.py\n@@ -64,18 +64,10 @@\n     }\n \n \n-# Recent retrievals, so a repeated question skips the embedding round-trip.\n-_RECENT: Dict[str, Dict[str, Any]] = {}\n-\n-\n @app.post(\"/retrieve\")\n def retrieve_context(req: QueryRequest):\n     if not req.question.strip():\n         raise HTTPException(status_code=400, detail=\"Question cannot be empty\")\n-\n-    key = f\"{req.collection_name}:{req.top_k}:{req.embedding_model}:{req.question.strip().lower()}\"\n-    if key in _RECENT:\n-        return _RECENT[key]\n \n     # 1. Embed query\n     query_emb = telemetry.instrumented_embedding(\"retrieval\", req.question, req.embedding_model, req.ollama_base_url)\n@@ -103,7 +95,6 @@\n         \"assembled_context\": assembled[\"assembled_context\"],\n         \"raw_chunks\": chunks\n     }\n-    _RECENT[key] = {**response, \"query_embedding\": list(query_emb)}\n     return response\n \n @app.get(\"/health\")\n",
+    "rationale": "Root cause: commit 6cd5503 added a module-level `_RECENT` dict to retrieval_service/app/main.py and used it as a response cache with no size limit and no eviction. On every miss, `retrieve_context` stored the full response (raw_chunks, assembled_context, sources) plus `list(query_emb)`, about 768 boxed floats. Each distinct question therefore leaked one large entry for the life of the process, which explains the steady RSS climb. The cache key also ignores knowledge-base changes, so it could serve stale context after ingestion.\n\nThe smallest safe fix is to revert the cache entirely:\n- remove the `_RECENT` declaration;\n- remove the key lookup and early return;\n- remove the store on the miss path.\n\nWith those gone, the endpoint keeps no per-request module state. Memory no longer grows with distinct questions, so the acceptance test's growth limit of 1500 entries for 3000 questions is met. The stale-context hazard also disappears, and every response is built fresh, exactly as before 6cd5503. The response shape is unchanged; the cache never returned `query_embedding` on a miss anyway. A restart of retrieval is still needed afterwards to reclaim memory that has already leaked.",
+    "files": [
+      "patient/retrieval_service/app/main.py"
+    ],
+    "attempt": 1
+  },
+  "tests": {
+    "passed": true,
+    "total": 253,
+    "failed": 0,
+    "failure_stage": null,
+    "failing_assertions": [],
+    "duration_ms": 8082
+  },
+  "escalation": null,
+  "pr": {
+    "branch": "codefix/20261122-102910-bef102",
+    "pushed": false,
+    "note": "Committed in isolated workspace 20261122-102910-bef102-a1. Awaiting human confirmation to push/open PR.",
+    "commit_sha": "c06a52eced38b4f661bc38cef03c9471516de93a"
+  },
+  "steps": [
+    {
+      "t": "2026-11-22T10:29:12.480561+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:29:33.175440+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T10:29:33.202266+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:29:44.544193+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "patch",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T10:29:44.569599+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:29:52.860050+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "test_report",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T10:29:52.886751+00:00",
+      "agent": "pr",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:29:53.139867+00:00",
+      "agent": "pr",
+      "to": "manager",
+      "kind": "pr_result",
+      "status": "success"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T10:29:12.476065+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T10:29:33.186355+00:00",
+      "event": "diagnosis_ready",
+      "choice": "fixer",
+      "why": "only legal transition"
+    },
+    {
+      "t": "2026-11-22T10:29:44.557951+00:00",
+      "event": "patch_ready",
+      "choice": "tester",
+      "why": "verify patch"
+    },
+    {
+      "t": "2026-11-22T10:29:52.873019+00:00",
+      "event": "tests_passed",
+      "choice": "pr_prepare",
+      "why": "tests green"
+    }
+  ],
+  "updated_at": "2026-11-22T10:29:56Z",
+  "poll_error": null,
+  "enabled": true
+}

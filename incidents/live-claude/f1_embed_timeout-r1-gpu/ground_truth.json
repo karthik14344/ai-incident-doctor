@@ -1,0 +1,27 @@
+{
+  "fault_id": "f1_embed_timeout",
+  "name": "Embedding timeout lowered from 45 s to 10 s (silent fallback)",
+  "delivery": "push",
+  "incident_class": "code_defect",
+  "acceptable_classes": [
+    "code_defect"
+  ],
+  "component": "retrieval",
+  "acceptable_components": [
+    "ingestion",
+    "ollama",
+    "retrieval"
+  ],
+  "true_cause": "EMBED_TIMEOUT_S in embedder.py was lowered from 45 to 10 s. When Ollama is slow to serve nomic-embed-text (cold load while other models hold the GPU), embedding calls time out and the embedder silently substitutes hash vectors, so retrieval returns unrelated chunks and answers are wrong. Nothing errors; the fallback counter rises.",
+  "expected_fix": "Restore EMBED_TIMEOUT_S to 45 s and make the fallback loud (log/raise or at least count and alert) instead of silently answering from hash vectors.",
+  "acceptance_test": "faults/acceptance/test_f1_embed_timeout.py",
+  "run_id": "f1_embed_timeout-r1-gpu",
+  "guilty_commit": "771ab7700d574657aa6247b46305c72216e5adb5",
+  "guilty_kb_version": null,
+  "guilty_deploy": "ee1a12f",
+  "distractor_commits": [
+    "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+    "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "ee1a12fe7a80bedba7b56259640568c4fefbe5fc"
+  ]
+}

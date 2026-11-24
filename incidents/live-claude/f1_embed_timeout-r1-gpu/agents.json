@@ -1,0 +1,73 @@
+{
+  "status": "escalated",
+  "requested_at": "2026-11-22T08:42:36Z",
+  "error": null,
+  "task_id": "20261122-084236-e2fd65",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-084236-e2fd65",
+  "started_at": "2026-11-22T08:42:36Z",
+  "outcome": "escalated",
+  "failure_stage": "diagnosis",
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": 60609,
+  "cost_usd": 0.3115,
+  "diagnosis": {
+    "root_cause": "Diagnoser failed: claude-opus-5-5 refused: reasoning_extraction",
+    "implicated_files": [],
+    "evidence": [],
+    "confidence": 0.0,
+    "degraded": true,
+    "react_steps": 0
+  },
+  "patch": null,
+  "tests": null,
+  "escalation": {
+    "reason": "no usable diagnosis",
+    "summary": "Escalation: KnowledgeAI user report of wrong or unrelated answers since 2026-11-22T08:18:07Z on commit 1a290b0795de. The pipeline could not produce a usable diagnosis, so no fix was attempted.\n\nWhat we know: the incident doctor found no metric, log or deploy that explains the symptom. Retrieval latency (p50 0.026s, p95 0.054s), embed p95 and embedding fallbacks (0) are all nominal. Chat answered/refused rates track traffic. The knowledge base is unchanged (kb=38ba55c908d1). Doctor confidence is low.\n\nHypotheses:\n1) Knowledge base or collection content does not match what the user asks (0.4).\n2) A runtime settings change in the gateway settings table (embedding_model, top_k, llm_model, ollama_base_url) silently degrades relevance (0.3). These settings are read in patient/api_gateway/app/main.py chat_stream via get_settings_map() and can be edited without a deploy.\n\nWhy escalated: no code or config diff is implicated, so a source patch cannot be justified. Confirming either hypothesis needs access to production data and settings plus user examples.\n\nSuggested next steps:\n(1) Get the user's example questions and session_id. Replay them via POST /api/retrieval/search with the same collection_name and judge whether the returned chunks are relevant.\n(2) Inspect the gateway settings table. embedding_model must be nomic-embed-text, the model used at ingestion. Check top_k, llm_model and ollama_base_url against defaults and revert any unintended change.\n(3) Check the Chroma collection: document count, sources, and kb version. Re-ingest if documents are missing or stale.\n(4) Track the separate LLM saturation (in_flight 100, p95 about 118s) as its own capacity issue.\n(5) Consider adding an audit log for settings changes, so silent runtime changes leave a trace.",
+    "attempts": 0,
+    "tried": [
+      "No fix attempts were made. The pipeline stopped at diagnosis with no usable diagnosis: low confidence, a data or settings issue, and no implicated code change."
+    ]
+  },
+  "pr": null,
+  "steps": [
+    {
+      "t": "2026-11-22T08:42:36.686993+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T08:43:29.662340+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T08:43:37.181438+00:00",
+      "agent": "manager",
+      "to": "human",
+      "kind": "escalation",
+      "status": "failure"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T08:42:36.682694+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T08:43:29.674438+00:00",
+      "event": "diagnosis_failed",
+      "choice": "escalate",
+      "why": "diagnoser failed"
+    }
+  ],
+  "updated_at": "2026-11-22T08:43:37Z",
+  "poll_error": null,
+  "enabled": true
+}

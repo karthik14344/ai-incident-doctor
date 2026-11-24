@@ -1,0 +1,89 @@
+{
+  "run_id": "f5_typo-r1-gpu",
+  "fault_id": "f5_typo",
+  "delivery": "push",
+  "variant": "guilty_earlier",
+  "started": "2026-11-22T08:56:20Z",
+  "trigger": "alert",
+  "t_break": "2026-11-22T08:56:20Z",
+  "pushes": [
+    {
+      "label": "guilty",
+      "sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+      "pushed_at": "2026-11-22T08:56:20Z",
+      "push_returned_at": "2026-11-22T08:57:03Z",
+      "push_seconds": 42.5,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for 225b7d25e15feb2dc9185cebc5f640448d9e7f1c - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/225b7d25e15feb2dc9185cebc5f640448d9e7f1c.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   70c3dff..225b7d2  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T08:57:03Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "distractors-after",
+      "sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+      "pushed_at": "2026-11-22T08:57:03Z",
+      "push_returned_at": "2026-11-22T08:57:45Z",
+      "push_seconds": 42.0,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for 5dc7f1a615f801249e55ad06500fd4258bfb972b - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/5dc7f1a615f801249e55ad06500fd4258bfb972b.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   225b7d2..5dc7f1a  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T08:57:45Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+      "pushed_at": "2026-11-22T09:06:35Z",
+      "push_returned_at": "2026-11-22T09:07:18Z",
+      "push_seconds": 43.1,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for 4c8b3c072b8e5c74786bc5b88059e865763c86cf - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/4c8b3c072b8e5c74786bc5b88059e865763c86cf.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   5dc7f1a..4c8b3c0  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T09:07:18Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "load": null,
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "HighErrorRate",
+    "startsAt": "2026-11-22T09:04:03.987Z",
+    "received_at": "2026-11-22T09:04:08.993Z",
+    "labels": {
+      "alertname": "HighErrorRate",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-11-22T09:04:03.987Z",
+  "unnoticed_s": 464.0,
+  "expected_alert": true,
+  "incident_id": "inc_297e429a9b",
+  "t_report": "2026-11-22T09:05:42Z",
+  "doctor_s": 98.0,
+  "joined_alerts": [],
+  "agents_wait_started": "2026-11-22T09:05:50Z",
+  "agents_status": "awaiting_approval",
+  "agents_wait_finished": "2026-11-22T09:06:35Z",
+  "t_revert_start": "2026-11-22T09:06:35Z",
+  "t_reverted": "2026-11-22T09:07:18Z",
+  "t_alert_resolved": "2026-11-22T09:08:18.507Z",
+  "finished": "2026-11-22T09:08:18Z"
+}

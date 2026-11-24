@@ -1,0 +1,193 @@
+{
+  "status": "escalated",
+  "requested_at": "2026-11-22T10:46:30Z",
+  "error": null,
+  "task_id": "20261122-104630-5aadb1",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-104630-5aadb1",
+  "started_at": "2026-11-22T10:46:30Z",
+  "outcome": "escalated",
+  "failure_stage": "patch",
+  "attempts": 2,
+  "max_attempts": 3,
+  "duration_ms": 129711,
+  "cost_usd": 0.8817,
+  "diagnosis": {
+    "root_cause": "No code defect: this is a capacity incident, and no code change fixes it. Chat traffic that needs LLM generation rose about 4-5x (llm rps 0.27 -> 1.15; answered chats 0.20 -> 1.07). That exceeds what the single local Ollama server can generate. Generate calls queue inside Ollama, in-flight saturates at 100 in the gateway and the llm service, and generate p95 grows from about 2 s to about 118 s, which sets end-to-end /api/chat latency.\n\nThe code adds nothing on top of the demand:\n- The gateway chat_stream makes exactly one retrieval call (30 s timeout) and one streamed /generate call (120 s timeout), with no retries or fan-out.\n- The llm service's stream_ollama_tokens makes exactly one Ollama /api/generate call per request, with no retry loop. On failure it falls back to canned text instead of re-calling Ollama.\n- llm requests (x4.3) track answered chats (x5.4) one-to-one, so the code does not multiply load.\n- Embed latency and retrieval latency are flat, which isolates the bottleneck to generation throughput.\n\nRemediation is operational:\n1. Rate-limit or shed the surge and identify its source; the repo ships loadgen/loadgen.py, which can produce exactly this pattern.\n2. Add Ollama capacity or parallelism (OLLAMA_NUM_PARALLEL, more GPU or instances) and keep models loaded (OLLAMA_KEEP_ALIVE).\n3. Optionally add fast 429/503 load-shedding on llm in-flight so requests are not held for about 2 minutes. That would be a new feature, not a bug fix.",
+    "implicated_files": [],
+    "evidence": [
+      "patient/api_gateway/app/main.py:510-512 - a single retrieval POST with timeout=30.0; no retry",
+      "patient/api_gateway/app/main.py:574-575 - a single streamed POST to LLM_SERVICE_URL/generate with timeout=120.0; no retry or fan-out (passes the f6 acceptance check that chat-path timeouts are >=20 s)",
+      "patient/llm_service/app/main.py:110-126 - one httpx stream to Ollama /api/generate per request, returning on success",
+      "patient/llm_service/app/main.py:130-145 - on an exception it logs and yields canned fallback text; it does not retry Ollama",
+      "patient/llm_service/app/main.py:147-165 - the /generate handler calls stream_ollama_tokens exactly once in both the streaming and non-streaming branches",
+      "Doctor metrics: requests_rps{llm} x4.3 tracks chat_outcomes{answered} x5.4, so there is no per-chat amplification; generate p95 2.4 -> 118 s while embed p95 stays at about 0.05 s; no errors, restarts or OOMs; first incident sample of generate p95 was a normal 1.91 s"
+    ],
+    "confidence": 0.8,
+    "degraded": false,
+    "react_steps": 5
+  },
+  "patch": {
+    "diff": "",
+    "rationale": "",
+    "files": [],
+    "attempt": 2
+  },
+  "tests": {
+    "passed": false,
+    "total": 0,
+    "failed": 0,
+    "failure_stage": "patch",
+    "failing_assertions": [],
+    "duration_ms": 0
+  },
+  "escalation": {
+    "reason": "manager escalated early: Both attempts failed identically at the patch stage with 'edits produce no change' and no files touched, so the Fixer is stuck and a third retry with the same inputs is unlikely to help. Escalating lets a human check the diagnosis or the target files.",
+    "summary": "Incident: gateway /api/chat p95 latency hit about 85-118 s, starting 2026-11-22T10:44:30Z on commit 4e34716445e8. The incident doctor classified this as a capacity problem, not a code bug. LLM-generation demand rose about 4-5x (llm rps 0.27 -> 1.15, answered chats 0.20 -> 1.07). The single local Ollama server's generate path became the bottleneck: generate p95 went from 2.4 s to 118 s while embed p95 stayed flat at about 0.05 s. in_flight saturated at 100 on both gateway and llm. There were no errors, restarts or OOM kills, and no recent commit (the only deploy touched retrieval, which behaves normally) explains the change. A per-request Ollama slowdown (model reload, GPU contention) was considered less likely (0.15), because generate p95 was normal at incident start and degradation tracked load. What happened in the pipeline: the Fixer ran twice and both attempts ended with 'edits produce no change', touching no files. This is consistent with there being no code defect to patch, so the manager escalated rather than repeat the same attempt. Conclusion: no code change is expected to fix this, because it is a capacity/demand issue. Suggested next steps for the operator: (1) identify the source of the /api/chat surge (client, load test or bot) and rate-limit or shed it at the gateway; (2) add generation capacity by raising OLLAMA_NUM_PARALLEL if GPU memory allows, or adding a GPU or another Ollama instance behind the llm service; (3) check that models stay resident (OLLAMA_KEEP_ALIVE=-1) and look for GPU contention to rule out hypothesis 2; (4) as a follow-up hardening code change, consider capping llm in-flight concurrency with fast 429/503 rejection and timeouts so requests fail fast instead of queueing for about 2 minutes; (5) monitor in_flight{llm} draining and generate p95 returning to about 2-4 s.",
+    "attempts": 2,
+    "tried": [
+      "Attempt 1: Fixer could not produce an applicable patch ('edits produce no change'); no files touched.",
+      "Attempt 2: Same result, 'edits produce no change' with no files touched; manager escalated because the failure repeated identically and the diagnosis points to capacity rather than code."
+    ]
+  },
+  "pr": null,
+  "steps": [
+    {
+      "t": "2026-11-22T10:46:31.316117+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:47:07.761607+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T10:47:10.576853+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:47:40.379303+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T10:47:40.409524+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:48:00.082068+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "patch",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T10:48:00.109105+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:48:00.114327+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "test_report",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T10:48:02.338742+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:48:29.372194+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "patch",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T10:48:29.401190+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T10:48:29.406047+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "test_report",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T10:48:40.505242+00:00",
+      "agent": "manager",
+      "to": "human",
+      "kind": "escalation",
+      "status": "failure"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T10:46:31.305757+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T10:47:10.569886+00:00",
+      "event": "diagnosis_ready",
+      "choice": "diagnoser",
+      "why": "The diagnosis implicates no files and finds no code defect, and its central capacity claim rests on doctor metrics the Diagnoser did not inspect itself, so sending this to the Fixer would mean changing code without a target. One re-diagnosis is worth it to confirm nothing in the code amplifies load;"
+    },
+    {
+      "t": "2026-11-22T10:47:40.392106+00:00",
+      "event": "diagnosis_ready",
+      "choice": "fixer",
+      "why": "only legal transition"
+    },
+    {
+      "t": "2026-11-22T10:48:00.095278+00:00",
+      "event": "patch_ready",
+      "choice": "tester",
+      "why": "verify patch"
+    },
+    {
+      "t": "2026-11-22T10:48:02.319988+00:00",
+      "event": "tests_failed",
+      "choice": "fixer",
+      "why": "The first attempt failed only at the patch stage because the edits produced no change, which is a source-editing problem and not a test-infrastructure issue. Two attempts remain, so retrying the Fixer with this feedback (it must make a real, applicable change) is reasonable."
+    },
+    {
+      "t": "2026-11-22T10:48:29.386794+00:00",
+      "event": "patch_ready",
+      "choice": "tester",
+      "why": "verify patch"
+    },
+    {
+      "t": "2026-11-22T10:48:31.608500+00:00",
+      "event": "tests_failed",
+      "choice": "escalate",
+      "why": "Both attempts failed identically at the patch stage with 'edits produce no change' and no files touched, so the Fixer is stuck and a third retry with the same inputs is unlikely to help. Escalating lets a human check the diagnosis or the target files."
+    }
+  ],
+  "updated_at": "2026-11-22T10:48:47Z",
+  "poll_error": null,
+  "enabled": true
+}

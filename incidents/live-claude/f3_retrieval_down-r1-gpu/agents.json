@@ -1,0 +1,73 @@
+{
+  "status": "escalated",
+  "requested_at": "2026-11-22T07:38:26Z",
+  "error": null,
+  "task_id": "20261122-073826-9e30a2",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-073826-9e30a2",
+  "started_at": "2026-11-22T07:38:26Z",
+  "outcome": "escalated",
+  "failure_stage": "diagnosis",
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": 22917,
+  "cost_usd": 0.137,
+  "diagnosis": {
+    "root_cause": "Diagnoser failed: claude-opus-5-5 refused: reasoning_extraction",
+    "implicated_files": [],
+    "evidence": [],
+    "confidence": 0.0,
+    "degraded": true,
+    "react_steps": 0
+  },
+  "patch": null,
+  "tests": null,
+  "escalation": {
+    "reason": "no usable diagnosis",
+    "summary": "Escalation: retrieval service down (ServiceDown alert, started 2026-11-22T07:36:31Z, commit 1a290b0795de). The pipeline did not produce a usable code diagnosis, and no fix attempts were made. This looks operational, not a code bug. The incident doctor found that the retrieval container stopped or was removed and dropped off the Docker network. Its DNS name no longer resolves, so the gateway gets ConnectError 'Temporary failure in name resolution' (x24, raised from patient/common/telemetry.py:194, which only reports the failure). Prometheus cannot scrape retrieval:8002, and gateway 5xx reached about 63%. The recent commits only touch GCP/Ollama start-up scripts and agent config, so no commit is implicated. A secondary hypothesis (0.15) is a crash or OOM-kill during a roughly 14x traffic surge with no restart policy; memory was only 96MB, which makes OOM less likely but not ruled out. Suggested next steps for an operator: (1) Run `docker compose ps retrieval` and `docker inspect <container> --format '{{.State.ExitCode}} {{.State.OOMKilled}} {{.State.Error}}'`, and save `docker compose logs --tail=300 retrieval`. (2) Run `docker compose up -d retrieval`. (3) Verify that `curl retrieval:8002/metrics` succeeds from the gateway container, that up{job=retrieval}=1, and that the ConnectErrors stop. (4) If the exit was an OOM-kill or a crash under load, add `restart: unless-stopped` and a memory limit to the compose file. If the logs show an application exception, reopen this ticket for a code fix, attaching the traceback.",
+    "attempts": 0,
+    "tried": [
+      "Diagnosis: no usable code-level diagnosis; the root cause appears to be a stopped or removed container (operational), so no Fixer attempts were made."
+    ]
+  },
+  "pr": null,
+  "steps": [
+    {
+      "t": "2026-11-22T07:38:26.764795+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T07:38:42.624162+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T07:38:49.575592+00:00",
+      "agent": "manager",
+      "to": "human",
+      "kind": "escalation",
+      "status": "failure"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T07:38:26.760010+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T07:38:42.634174+00:00",
+      "event": "diagnosis_failed",
+      "choice": "escalate",
+      "why": "diagnoser failed"
+    }
+  ],
+  "updated_at": "2026-11-22T07:38:50Z",
+  "poll_error": null,
+  "enabled": true
+}

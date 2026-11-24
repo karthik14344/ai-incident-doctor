@@ -1,0 +1,476 @@
+{
+ "incident": {
+  "id": "inc_c5f9b75968",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-11-22T07:36:36.928Z",
+   "status": "firing",
+   "alertname": "ServiceDown",
+   "fingerprint": "3e6bc34864145b12",
+   "startsAt": "2026-11-22T07:36:31.923Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "ServiceDown",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "critical",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds.",
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=up%7Bjob%3D~%22gateway%7Cingestion%7Cretrieval%7Cllm%22%7D+%3D%3D+0&g0.tab=1",
+   "groupKey": "{}:{alertname=\"ServiceDown\", service=\"retrieval\"}"
+  },
+  "service": "retrieval",
+  "received_at": "2026-11-22T07:36:36Z",
+  "diagnose_after": "2026-11-22T07:37:46Z",
+  "collection_started": "2026-11-22T07:37:46Z",
+  "evidence_saved": "2026-11-22T07:37:46Z",
+  "report_finished": "2026-11-22T07:38:26Z",
+  "alert_to_report_s": 114.7
+ },
+ "report": {
+  "incident_id": "inc_c5f9b75968",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-11-22T07:36:36.928Z",
+   "status": "firing",
+   "alertname": "ServiceDown",
+   "fingerprint": "3e6bc34864145b12",
+   "startsAt": "2026-11-22T07:36:31.923Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "ServiceDown",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "critical",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds.",
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=up%7Bjob%3D~%22gateway%7Cingestion%7Cretrieval%7Cllm%22%7D+%3D%3D+0&g0.tab=1",
+   "groupKey": "{}:{alertname=\"ServiceDown\", service=\"retrieval\"}"
+  },
+  "created_at": "2026-11-22T07:38:26Z",
+  "live_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+  "retrieval": {
+   "time_filtered": [
+    "763af4c291a2108276c7835c896f82e2d867d78a",
+    "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "09770921d31b390faaee760557f0c3551350c6cb",
+    "25a35db6a36f692c398c514272f10dcca911fb71",
+    "1a290b0795debfc42250e3e8fb55122b549c2076"
+   ],
+   "ranked": [
+    {
+     "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+     "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+     "deployed_in": "1a290b0",
+     "lexical": 6.6,
+     "semantic": 0.5836,
+     "score": 0.8334,
+     "matched_terms": [
+      "service",
+      "latency",
+      "generate",
+      "default",
+      "embed",
+      "ollama",
+      "api"
+     ]
+    },
+    {
+     "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+     "subject": "GCP start-up: always enable and start Ollama",
+     "deployed_in": "1a290b0",
+     "lexical": 4.31,
+     "semantic": 0.5697,
+     "score": 0.6203,
+     "matched_terms": [
+      "service",
+      "failed",
+      "packages",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+     "subject": "Claude for the doctor and the agent team",
+     "deployed_in": "1a290b0",
+     "lexical": 2.05,
+     "semantic": 0.6191,
+     "score": 0.4342,
+     "matched_terms": [
+      "timeout",
+      "call",
+      "llm",
+      "default",
+      "api",
+      "refused"
+     ]
+    },
+    {
+     "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+     "deployed_in": "1a290b0",
+     "lexical": 2.29,
+     "semantic": 0.5442,
+     "score": 0.4263,
+     "matched_terms": [
+      "common",
+      "name",
+      "failed",
+      "ollama",
+      "exit"
+     ]
+    },
+    {
+     "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+     "deployed_in": "1a290b0",
+     "lexical": 1.22,
+     "semantic": 0.5237,
+     "score": 0.3203,
+     "matched_terms": [
+      "name",
+      "ollama",
+      "exit"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/common/telemetry.py::<module>",
+    "patient/common/telemetry.py::record_downstream_failure",
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/api_gateway/app/main.py::_run_retrieval"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 6219,
+  "provider_failures": [],
+  "status": "ok",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "diagnosis": {
+   "summary": "The retrieval container stopped and dropped off the Docker network. Its DNS name no longer resolves, so every gateway call to retrieval fails with ConnectError 'Temporary failure in name resolution', Prometheus cannot scrape retrieval:8002, and gateway 5xx reached about 63%. The deployed commits only change GCP/Ollama start-up scripts and agent config, which does not explain retrieval disappearing, so no commit is blamed.",
+   "incident_class": "dependency_failure",
+   "demand_vs_capacity": {
+    "traffic_change": "rose",
+    "deploy_before_onset": true,
+    "verdict": "capacity_fell",
+    "reasoning": "Traffic did rise (traffic_rps x6.9, gateway rps x14). But the failure is not saturation. Retrieval latency stayed low (p95 0.097s falling to 0.047s), in_flight peaked at 1, and retrieval memory was flat at about 96MB. The failure is a hard outage: up=0, and ConnectError with [Errno -3] name resolution failures from 07:35:44, a sign the retrieval container is no longer running on the compose network. Deploy 1a290b0 landed at 07:23:16, about 12 minutes before onset. Its commits (09770921 Ollama keep-alive in startup.sh, 1a290b0 'systemctl enable --now ollama', 25a35db Claude config) do not touch the retrieval service, compose service definitions or networking. The deploy is therefore not plausibly causal. Capacity fell because a component went down, not because demand outgrew a healthy system."
+   },
+   "hypotheses": [
+    {
+     "cause": "The retrieval container exited or was removed, so Docker's embedded DNS no longer resolves 'retrieval'. Gateway calls fail at name resolution and the Prometheus scrape of retrieval:8002 fails.",
+     "component": "retrieval",
+     "confidence": 0.75,
+     "evidence": [
+      "ConnectError:bf91e0cfbf34 x24 NEW from 2026-11-22T07:35:44Z: httpx.ConnectError: [Errno -3] Temporary failure in name resolution (gateway -> retrieval)",
+      "service_up went 1 -> 0; ServiceDown alert for retrieval:8002 at 07:36:31Z",
+      "downstream_failures_per_min{reason=ConnectError,target=retrieval} appeared, max 46.9/min",
+      "requests_rps{service=retrieval} collapsed to 0.119 at window end while gateway rps stayed at 0.73",
+      "error_ratio_5xx{gateway} appeared, max 0.63"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    },
+    {
+     "cause": "The traffic surge (gateway rps x14, retrieval rps x14) put the retrieval process under resource pressure (e.g. container OOM-kill or crash under load), after which it was not restarted.",
+     "component": "infrastructure",
+     "confidence": 0.15,
+     "evidence": [
+      "traffic_rps rose x6.9 and retrieval requests_rps rose to max 1.15 just before the outage",
+      "retrieval process_memory_mb rose from a baseline mean of 85 to 96MB, though it remained small"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    },
+    {
+     "cause": "Compose-level activity around deploy 1a290b0 (services=['compose','doctor']) recreated or stopped containers, leaving retrieval detached from the network.",
+     "component": "infrastructure",
+     "confidence": 0.1,
+     "evidence": [
+      "deploy 1a290b0 at 07:23:16Z touched 'compose', about 12 min before onset",
+      "none of the deployed diffs modify the retrieval service, so this is only a timing correlation"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "edits": [],
+    "action": "Bring the retrieval service back on the compose network. First record the cause: run `docker compose ps retrieval` and `docker inspect <retrieval container> --format '{{.State.ExitCode}} {{.State.OOMKilled}} {{.State.Error}}'`, then capture `docker compose logs --tail=300 retrieval`. Then restart it with `docker compose up -d retrieval`. Verify that `curl retrieval:8002/metrics` from the gateway container succeeds, that up{job=retrieval}=1, and that gateway ConnectError failures stop. If the exit was an OOM-kill or crash under load, add `restart: unless-stopped` and a suitable memory limit for retrieval in the compose file as a follow-up change.",
+    "rationale": "The symptoms show the retrieval container is missing from Docker DNS: name-resolution ConnectErrors and a failed scrape, while latency and memory before the outage were healthy. No candidate commit changes retrieval, so the remedy is operational: restart the service and capture its exit reason to rule out an OOM-kill under the traffic surge. This should be done by an operator, not applied automatically.",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": true,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 2,
+   "prompt_tokens": 22478,
+   "completion_tokens": 3964,
+   "cost_usd": 0.169192,
+   "seconds": 35.23
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 4.81,
+   "llm_s": 35.23,
+   "total_s": 40.04
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 114.7,
+  "received_to_report_s": 110.7
+ },
+ "markdown": "# Incident inc_c5f9b75968\n\n**Alert:** ServiceDown - retrieval is not answering Prometheus scrapes\n**Started:** 2026-11-22T07:36:31.923Z  \n**Running commit:** 1a290b0  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** anthropic:claude-opus-5-5\n\n## What broke\n\nThe retrieval container stopped and dropped off the Docker network. Its DNS name no longer resolves, so every gateway call to retrieval fails with ConnectError 'Temporary failure in name resolution', Prometheus cannot scrape retrieval:8002, and gateway 5xx reached about 63%. The deployed commits only change GCP/Ollama start-up scripts and agent config, which does not explain retrieval disappearing, so no commit is blamed.\n\n**Incident class:** `dependency_failure`\n\n**Demand versus capacity:** traffic rose, deploy before onset: True, verdict: capacity_fell. Traffic did rise (traffic_rps x6.9, gateway rps x14). But the failure is not saturation. Retrieval latency stayed low (p95 0.097s falling to 0.047s), in_flight peaked at 1, and retrieval memory was flat at about 96MB. The failure is a hard outage: up=0, and ConnectError with [Errno -3] name resolution failures from 07:35:44, a sign the retrieval container is no longer running on the compose network. Deploy 1a290b0 landed at 07:23:16, about 12 minutes before onset. Its commits (09770921 Ollama keep-alive in startup.sh, 1a290b0 'systemctl enable --now ollama', 25a35db Claude config) do not touch the retrieval service, compose service definitions or networking. The deploy is therefore not plausibly causal. Capacity fell because a component went down, not because demand outgrew a healthy system.\n\n## Evidence\n\n- alert 2026-11-22T07:36:31.923Z **ServiceDown** retrieval: retrieval is not answering Prometheus scrapes\n- alert 2026-11-22T07:36:53.987Z **DownstreamCallFailures** gateway: calls from gateway to retrieval are failing\n- log `WARNING:a4dace19f999` x48 in gateway:  request\n- log `ConnectError:bf91e0cfbf34` x24 in gateway: ConnectError [Errno -3] Temporary failure in name resolution\n- metric `traffic_rps{all}` baseline 0.1292 -> 0.8909 (x6.9)\n- metric `requests_rps{service=gateway}` baseline 0.0824 -> 1.1636 (x14.1)\n- metric `requests_rps{service=ingestion}` baseline 0.0663 -> 0.2727 (x4.1)\n- metric `requests_rps{service=llm}` baseline 0.07 -> 0.5455 (x7.8)\n- metric `requests_rps{service=retrieval}` baseline 0.0825 -> 1.1455 (x13.9)\n- metric `error_ratio_5xx{service=gateway}` baseline None -> 0.6304 (appeared (no baseline))\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.1713 -> 0.3455 (x2.0)\n- metric `chat_outcomes_rps{outcome=refused_scope}` baseline None -> 0.2364 (appeared (no baseline))\n\nDeploys in the lookback window: 1; candidate commits (time filter only): 6\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.75 | retrieval | none | The retrieval container exited or was removed, so Docker's embedded DNS no longer resolves 'retrieval'. Gateway calls fail at name resolution and the Prometheus scrape of retrieval:8002 fails. |\n| 2 | 0.15 | infrastructure | none | The traffic surge (gateway rps x14, retrieval rps x14) put the retrieval process under resource pressure (e.g. container OOM-kill or crash under load), after which it was not restarted. |\n| 3 | 0.10 | infrastructure | none | Compose-level activity around deploy 1a290b0 (services=['compose','doctor']) recreated or stopped containers, leaving retrieval detached from the network. |\n\nEvidence for #1:\n- ConnectError:bf91e0cfbf34 x24 NEW from 2026-11-22T07:35:44Z: httpx.ConnectError: [Errno -3] Temporary failure in name resolution (gateway -> retrieval)\n- service_up went 1 -> 0; ServiceDown alert for retrieval:8002 at 07:36:31Z\n- downstream_failures_per_min{reason=ConnectError,target=retrieval} appeared, max 46.9/min\n- requests_rps{service=retrieval} collapsed to 0.119 at window end while gateway rps stayed at 0.73\n- error_ratio_5xx{gateway} appeared, max 0.63\n\nEvidence for #2:\n- traffic_rps rose x6.9 and retrieval requests_rps rose to max 1.15 just before the outage\n- retrieval process_memory_mb rose from a baseline mean of 85 to 96MB, though it remained small\n\nEvidence for #3:\n- deploy 1a290b0 at 07:23:16Z touched 'compose', about 12 min before onset\n- none of the deployed diffs modify the retrieval service, so this is only a timing correlation\n\n## Proposed fix\n\n**Kind:** action\n\nThe symptoms show the retrieval container is missing from Docker DNS: name-resolution ConnectErrors and a failed scrape, while latency and memory before the outage were healthy. No candidate commit changes retrieval, so the remedy is operational: restart the service and capture its exit reason to rule out an OOM-kill under the traffic surge. This should be done by an operator, not applied automatically.\n\n**Recommended action:** Bring the retrieval service back on the compose network. First record the cause: run `docker compose ps retrieval` and `docker inspect <retrieval container> --format '{{.State.ExitCode}} {{.State.OOMKilled}} {{.State.Error}}'`, then capture `docker compose logs --tail=300 retrieval`. Then restart it with `docker compose up -d retrieval`. Verify that `curl retrieval:8002/metrics` from the gateway container succeeds, that up{job=retrieval}=1, and that gateway ConnectError failures stop. If the exit was an OOM-kill or crash under load, add `restart: unless-stopped` and a suitable memory limit for retrieval in the compose file as a follow-up change.\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n2 calls, 22478 prompt + 3964 completion tokens, $0.169192; reasoning 35.23s, total 40.04s\n",
+ "resolution": null,
+ "agents": {
+  "status": "running",
+  "requested_at": "2026-11-22T07:38:26Z",
+  "error": null,
+  "task_id": "20261122-073826-9e30a2",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-073826-9e30a2",
+  "started_at": "2026-11-22T07:38:26Z",
+  "outcome": null,
+  "failure_stage": null,
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": null,
+  "cost_usd": 0.0,
+  "diagnosis": null,
+  "patch": null,
+  "tests": null,
+  "escalation": null,
+  "pr": null,
+  "steps": [],
+  "decisions": [],
+  "updated_at": "2026-11-22T07:38:26Z",
+  "poll_error": null
+ },
+ "evidence": {
+  "alert": {
+   "received_at": "2026-11-22T07:36:36.928Z",
+   "status": "firing",
+   "alertname": "ServiceDown",
+   "fingerprint": "3e6bc34864145b12",
+   "startsAt": "2026-11-22T07:36:31.923Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "ServiceDown",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "critical",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "The /metrics endpoint of retrieval has failed every scrape for at least 45 seconds.",
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=up%7Bjob%3D~%22gateway%7Cingestion%7Cretrieval%7Cllm%22%7D+%3D%3D+0&g0.tab=1",
+   "groupKey": "{}:{alertname=\"ServiceDown\", service=\"retrieval\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "ServiceDown",
+    "startsAt": "2026-11-22T07:36:31.923Z",
+    "labels": {
+     "alertname": "ServiceDown",
+     "instance": "retrieval:8002",
+     "job": "retrieval",
+     "service": "retrieval",
+     "severity": "critical",
+     "stack": "knowledgeai"
+    },
+    "summary": "retrieval is not answering Prometheus scrapes"
+   },
+   {
+    "alertname": "DownstreamCallFailures",
+    "startsAt": "2026-11-22T07:36:53.987Z",
+    "labels": {
+     "alertname": "DownstreamCallFailures",
+     "pattern": "outage",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai",
+     "target": "retrieval"
+    },
+    "summary": "calls from gateway to retrieval are failing"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-11-22T07:26:31Z",
+    "2026-11-22T07:37:31Z"
+   ],
+   "baseline": [
+    "2026-11-22T06:56:31Z",
+    "2026-11-22T07:26:31Z"
+   ]
+  },
+  "logs": [
+   {
+    "signature": "WARNING:a4dace19f999",
+    "count": 48,
+    "first_seen": "2026-11-22T07:35:44Z",
+    "last_seen": "2026-11-22T07:37:26Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "WARNING",
+    "message": "request",
+    "exc_type": null,
+    "exc_message": "",
+    "error_file": null,
+    "error_line": null,
+    "error_function": null,
+    "stack_tail": [],
+    "git_shas": [
+     "1a290b0"
+    ],
+    "target": null,
+    "new_in_incident": true
+   },
+   {
+    "signature": "ConnectError:bf91e0cfbf34",
+    "count": 24,
+    "first_seen": "2026-11-22T07:35:44Z",
+    "last_seen": "2026-11-22T07:37:23Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "ERROR",
+    "message": "retrieval call failed",
+    "exc_type": "ConnectError",
+    "exc_message": "[Errno -3] Temporary failure in name resolution",
+    "error_file": "/app/common/telemetry.py",
+    "error_line": 194,
+    "error_function": "handle_async_request",
+    "stack_tail": [
+     "    response = await transport.handle_async_request(request)",
+     "  File \"/app/common/telemetry.py\", line 194, in handle_async_request",
+     "    response = await self._inner.handle_async_request(request)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 393, in handle_async_request",
+     "    with map_httpcore_exceptions():",
+     "  File \"/usr/local/lib/python3.10/contextlib.py\", line 153, in __exit__",
+     "    self.gen.throw(typ, value, traceback)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions",
+     "    raise mapped_exc(message) from exc",
+     "httpx.ConnectError: [Errno -3] Temporary failure in name resolution"
+    ],
+    "git_shas": [
+     "1a290b0"
+    ],
+    "target": "retrieval",
+    "new_in_incident": true
+   }
+  ],
+  "deploys": [
+   {
+    "ts": "2026-11-22T07:23:16Z",
+    "git_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "short_sha": "1a290b0",
+    "previous_sha": "d6d9c50b2e17b3cd4811e0ca96e939fc7d73b2e3",
+    "commits": [
+     "763af4c291a2108276c7835c896f82e2d867d78a",
+     "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "09770921d31b390faaee760557f0c3551350c6cb",
+     "25a35db6a36f692c398c514272f10dcca911fb71",
+     "a67398e8669ee79457191ee57821cb760edd50f3",
+     "1a290b0795debfc42250e3e8fb55122b549c2076"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "deploy/agai/models-claude.yaml",
+     "deploy/agai/models.yaml",
+     "deploy/gcp/create_vm.ps1",
+     "deploy/gcp/startup.sh",
+     "deploy/gcp/vm-up.sh",
+     "deploy/gcp/write_env.py",
+     "docker-compose.yml",
+     "doctor/app/llm.py",
+     "doctor/app/settings.py",
+     "doctor/requirements.txt",
+     "doctor/tests/test_anthropic_provider.py",
+     "faults/campaign.py",
+     "faults/campaign_report.py",
+     "faults/common.py",
+     "faults/run_fault.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 3.8
+    },
+    "duration_s": 33.2,
+    "reason": "GCP VM boot 1a290b0",
+    "pipeline": "manual",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "763af4c291a2108276c7835c896f82e2d867d78a",
+    "subject": "Faults: keep each fault live until the agent team is done; one-table campaign report",
+    "date": "2026-11-21T10:01:25+05:30"
+   },
+   {
+    "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+    "date": "2026-11-21T10:05:59+05:30"
+   },
+   {
+    "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+    "date": "2026-11-21T10:24:55+05:30"
+   },
+   {
+    "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+    "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+    "date": "2026-11-21T10:52:03+05:30"
+   },
+   {
+    "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+    "subject": "Claude for the doctor and the agent team",
+    "date": "2026-11-22T11:44:37+05:30"
+   },
+   {
+    "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "subject": "GCP start-up: always enable and start Ollama",
+    "date": "2026-11-22T12:51:53+05:30"
+   }
+  ]
+ }
+}

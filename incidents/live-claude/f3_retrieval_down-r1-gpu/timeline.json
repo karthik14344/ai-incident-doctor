@@ -1,0 +1,38 @@
+{
+  "run_id": "f3_retrieval_down-r1-gpu",
+  "fault_id": "f3_retrieval_down",
+  "delivery": "environment",
+  "variant": null,
+  "started": "2026-11-22T07:35:43Z",
+  "trigger": "alert",
+  "t_break": "2026-11-22T07:35:43Z",
+  "load": null,
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "ServiceDown",
+    "startsAt": "2026-11-22T07:36:31.923Z",
+    "received_at": "2026-11-22T07:36:36.928Z",
+    "labels": {
+      "alertname": "ServiceDown",
+      "instance": "retrieval:8002",
+      "job": "retrieval",
+      "service": "retrieval",
+      "severity": "critical",
+      "stack": "knowledgeai"
+    }
+  },
+  "t_alert": "2026-11-22T07:36:31.923Z",
+  "unnoticed_s": 48.9,
+  "expected_alert": true,
+  "incident_id": "inc_c5f9b75968",
+  "t_report": "2026-11-22T07:38:26Z",
+  "doctor_s": 114.1,
+  "joined_alerts": [],
+  "agents_wait_started": "2026-11-22T07:38:29Z",
+  "agents_status": "escalated",
+  "agents_wait_finished": "2026-11-22T07:38:59Z",
+  "t_revert_start": "2026-11-22T07:38:59Z",
+  "t_reverted": "2026-11-22T07:39:00Z",
+  "t_alert_resolved": "2026-11-22T07:39:06.931Z",
+  "finished": "2026-11-22T07:39:10Z"
+}

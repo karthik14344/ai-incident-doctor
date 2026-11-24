@@ -1,0 +1,73 @@
+{
+  "status": "escalated",
+  "requested_at": "2026-11-22T09:41:28Z",
+  "error": null,
+  "task_id": "20261122-094128-1777fa",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-094128-1777fa",
+  "started_at": "2026-11-22T09:41:28Z",
+  "outcome": "escalated",
+  "failure_stage": "diagnosis",
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": 30951,
+  "cost_usd": 0.1898,
+  "diagnosis": {
+    "root_cause": "Diagnoser failed: claude-opus-5-5 refused: reasoning_extraction",
+    "implicated_files": [],
+    "evidence": [],
+    "confidence": 0.0,
+    "degraded": true,
+    "react_steps": 0
+  },
+  "patch": null,
+  "tests": null,
+  "escalation": {
+    "reason": "no usable diagnosis",
+    "summary": "Escalation: gateway->retrieval DownstreamCallFailures (httpx.ReadTimeout) on KnowledgeAI, starting 2026-11-22T09:38:21Z, 14 s after deploy 952e417 (09:38:07Z). The running commit is 952e4172e9cc.\n\nPipeline status: CodeFix did not produce a usable diagnosis. No Fixer attempts were made and no patch was written or tested. The pipeline has not independently confirmed the root cause.\n\nWhat the monitoring agent (incident doctor) reported, at 0.9 confidence:\n- Commit cf515c924f7539f495f6ea70261a8b52ef14b155 changed the chat_stream retrieval client in patient/api_gateway/app/main.py from `timeout=30.0` to `timeout=0.05`.\n- Retrieval /retrieve p95 latency was 0.054 s at baseline and peaked at 0.16 s during the incident. Both are above the 50 ms budget, so routine calls time out.\n- Logs show a new ReadTimeout signature (x24) raised at patient/common/telemetry.py:194.\n- downstream_failures_per_min{reason=ReadTimeout,target=retrieval} peaked at 12/min.\n\nA secondary factor, at 0.2 confidence: traffic was up 2.4x and Ollama generate p95 rose from 2.3 s to 10.3 s. This would push more calls past the timeout and slow /api/chat overall. It does not explain the error onset, which matches the deploy.\n\nSuggested next steps for the engineer:\n1. Open patient/api_gateway/app/main.py and find `telemetry.async_client(\"gateway\", timeout=0.05)` in chat_stream.\n2. Restore it to 30.0, matching the other retrieval callers (30 s and 60 s). If fail-fast behaviour was intended, use a budget of a few seconds instead.\n3. Run the existing tests, then ship through normal review and deploy.\n4. As a faster mitigation, you could roll back to the deploy before 952e417.\n5. After the fix, watch ReadTimeout counts and /api/chat latency. If LLM latency stays high under the 2.4x load, treat that as a separate capacity issue.",
+    "attempts": 0,
+    "tried": [
+      "Diagnoser produced no usable diagnosis; no fix attempts made, no patch tested"
+    ]
+  },
+  "pr": null,
+  "steps": [
+    {
+      "t": "2026-11-22T09:41:28.940883+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T09:41:52.018328+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T09:41:59.778707+00:00",
+      "agent": "manager",
+      "to": "human",
+      "kind": "escalation",
+      "status": "failure"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T09:41:28.936570+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T09:41:52.027451+00:00",
+      "event": "diagnosis_failed",
+      "choice": "escalate",
+      "why": "diagnoser failed"
+    }
+  ],
+  "updated_at": "2026-11-22T09:42:00Z",
+  "poll_error": null,
+  "enabled": true
+}

@@ -1,0 +1,142 @@
+{
+  "status": "awaiting_approval",
+  "requested_at": "2026-11-22T09:05:42Z",
+  "error": null,
+  "task_id": "20261122-090542-0a4683",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-090542-0a4683",
+  "started_at": "2026-11-22T09:05:42Z",
+  "outcome": "passed",
+  "failure_stage": null,
+  "attempts": 1,
+  "max_attempts": 3,
+  "duration_ms": 38997,
+  "cost_usd": 0.1466,
+  "diagnosis": {
+    "root_cause": "Commit 19871dd added a typo to chat_stream in patient/api_gateway/app/main.py. The new-session title code reads `len(req.qestion)` instead of `len(req.question)` (line 478). ChatRequest is a pydantic BaseModel whose only fields are session_id, question, collection_name and stream. Reading the undefined `qestion` makes pydantic's __getattr__ raise AttributeError. That line is only in the else-branch, which runs for new sessions (no session_id) whose question has no '?'. Only that request type fails, and FastAPI returns a 500 for it. Questions with '?' and existing sessions skip the line, which explains the partial ~5.5% 5xx rate. The minimal fix is to change `req.qestion` to `req.question` on line 478.",
+    "implicated_files": [
+      "patient/api_gateway/app/main.py"
+    ],
+    "evidence": [
+      "patient/api_gateway/app/main.py:478 - `title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")` uses the misspelt attribute `qestion`.",
+      "patient/api_gateway/app/main.py:475-478 - the typo is only in the else-branch, so only questions without '?' reach it. Branch condition is `if \"?\" in req.question`.",
+      "patient/api_gateway/app/main.py:472 - the title logic runs only when `not session_id`, i.e. for new sessions.",
+      "patient/api_gateway/app/main.py:84-88 - ChatRequest defines session_id, question, collection_name and stream. There is no `qestion` field or alias.",
+      "Stack trace: AttributeError \"'ChatRequest' object has no attribute 'qestion'\" raised from pydantic/main.py __getattr__, called from chat_stream. The trace says line 477 but the code is now at 478. A line added above this code by a later commit could explain the offset, but I did not check this.",
+      "faults/acceptance/test_f5_typo.py:4-11 - a keyword query with no '?' must return 200 and currently hits the typo. A question with '?' must still return 200.",
+      "Per the incident report, traffic was flat and the error ratio rose right after the deploy containing 19871dd, which points to a code defect, not load."
+    ],
+    "confidence": 0.97,
+    "degraded": false,
+    "react_steps": 4
+  },
+  "patch": {
+    "diff": "diff --git a/patient/api_gateway/app/main.py b/patient/api_gateway/app/main.py\n--- a/patient/api_gateway/app/main.py\n+++ b/patient/api_gateway/app/main.py\n@@ -475,7 +475,7 @@\n         if \"?\" in req.question:\n             title = req.question.split(\"?\")[0].strip()[:60] + \"?\"\n         else:\n-            title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")\n+            title = req.question.strip()[:60] + (\"...\" if len(req.question) > 60 else \"\")\n         cursor.execute(\"INSERT INTO chat_sessions (id, title, created_at) VALUES (?, ?, ?)\", (session_id, title, datetime.utcnow().isoformat()))\n         conn.commit()\n \n",
+    "rationale": "Commit 19871dd added a typo to chat_stream. In the new-session title branch for questions without '?', it calls len(req.qestion). ChatRequest is a pydantic BaseModel. Its only fields are session_id, question, collection_name and stream, so reading req.qestion raises AttributeError and FastAPI returns a 500. The fix changes the misspelt attribute to req.question. This keeps the intended 60-character title truncation with a trailing '...'. Questions containing '?' and existing sessions never reached this line, so their behaviour does not change. The keyword query in faults/acceptance/test_f5_typo.py ('hostel curfew timings') should now return 200 instead of 500.",
+    "files": [
+      "patient/api_gateway/app/main.py"
+    ],
+    "attempt": 1
+  },
+  "tests": {
+    "passed": true,
+    "total": 253,
+    "failed": 0,
+    "failure_stage": null,
+    "failing_assertions": [],
+    "duration_ms": 8518
+  },
+  "escalation": null,
+  "pr": {
+    "branch": "codefix/20261122-090542-0a4683",
+    "pushed": false,
+    "note": "Committed in isolated workspace 20261122-090542-0a4683-a1. Awaiting human confirmation to push/open PR.",
+    "commit_sha": "911e747620a8085dfde44292f3b21010a296956d"
+  },
+  "steps": [
+    {
+      "t": "2026-11-22T09:05:44.133687+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T09:06:06.688876+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T09:06:06.717236+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T09:06:12.457465+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "patch",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T09:06:12.488143+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T09:06:21.392063+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "test_report",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T09:06:21.419819+00:00",
+      "agent": "pr",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T09:06:21.619604+00:00",
+      "agent": "pr",
+      "to": "manager",
+      "kind": "pr_result",
+      "status": "success"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T09:05:44.129066+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T09:06:06.701016+00:00",
+      "event": "diagnosis_ready",
+      "choice": "fixer",
+      "why": "only legal transition"
+    },
+    {
+      "t": "2026-11-22T09:06:12.473263+00:00",
+      "event": "patch_ready",
+      "choice": "tester",
+      "why": "verify patch"
+    },
+    {
+      "t": "2026-11-22T09:06:21.405988+00:00",
+      "event": "tests_passed",
+      "choice": "pr_prepare",
+      "why": "tests green"
+    }
+  ],
+  "updated_at": "2026-11-22T09:06:22Z",
+  "poll_error": null,
+  "enabled": true
+}

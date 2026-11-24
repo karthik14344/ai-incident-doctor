@@ -1,0 +1,695 @@
+{
+ "incident": {
+  "id": "inc_297e429a9b",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-11-22T09:04:08.993Z",
+   "status": "firing",
+   "alertname": "HighErrorRate",
+   "fingerprint": "7e293efa4fbf39ec",
+   "startsAt": "2026-11-22T09:04:03.987Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighErrorRate",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "More than 3% of requests to gateway failed with 5xx over 5 minutes, in at least 4 of those minutes.",
+    "summary": "gateway is answering 5.556% of requests with 5xx"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=%28sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%7D%5B5m%5D%29%29%29+%3E+0.03+and+on+%28service%29+count_over_time%28%28sum+by+%28service%29+%28increase%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B1m%5D%29%29+%3E+0%29%5B5m%3A1m%5D%29+%3E%3D+4&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighErrorRate\", service=\"gateway\"}"
+  },
+  "service": "gateway",
+  "received_at": "2026-11-22T09:04:08Z",
+  "diagnose_after": "2026-11-22T09:05:18Z",
+  "collection_started": "2026-11-22T09:05:18Z",
+  "evidence_saved": "2026-11-22T09:05:18Z",
+  "report_finished": "2026-11-22T09:05:42Z",
+  "alert_to_report_s": 98.6
+ },
+ "report": {
+  "incident_id": "inc_297e429a9b",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-11-22T09:04:08.993Z",
+   "status": "firing",
+   "alertname": "HighErrorRate",
+   "fingerprint": "7e293efa4fbf39ec",
+   "startsAt": "2026-11-22T09:04:03.987Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighErrorRate",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "More than 3% of requests to gateway failed with 5xx over 5 minutes, in at least 4 of those minutes.",
+    "summary": "gateway is answering 5.556% of requests with 5xx"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=%28sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%7D%5B5m%5D%29%29%29+%3E+0.03+and+on+%28service%29+count_over_time%28%28sum+by+%28service%29+%28increase%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B1m%5D%29%29+%3E+0%29%5B5m%3A1m%5D%29+%3E%3D+4&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighErrorRate\", service=\"gateway\"}"
+  },
+  "created_at": "2026-11-22T09:05:36Z",
+  "live_sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+  "retrieval": {
+   "time_filtered": [
+    "763af4c291a2108276c7835c896f82e2d867d78a",
+    "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "09770921d31b390faaee760557f0c3551350c6cb",
+    "25a35db6a36f692c398c514272f10dcca911fb71",
+    "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+    "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "771ab7700d574657aa6247b46305c72216e5adb5",
+    "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+    "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "44405f4f619e1f069afe5d29393331144f66f23e",
+    "5dc7f1a615f801249e55ad06500fd4258bfb972b"
+   ],
+   "ranked": [
+    {
+     "sha": "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+     "subject": "Title new chat sessions after the question",
+     "deployed_in": "225b7d2",
+     "lexical": 13.91,
+     "semantic": 0.6356,
+     "score": 0.8543,
+     "matched_terms": [
+      "gateway",
+      "api",
+      "api_gateway",
+      "qestion",
+      "chat",
+      "name",
+      "req",
+      "question",
+      "title",
+      "strip"
+     ]
+    },
+    {
+     "sha": "44405f4f619e1f069afe5d29393331144f66f23e",
+     "subject": "Clarify what the gateway health check covers",
+     "deployed_in": "5dc7f1a",
+     "lexical": 11.24,
+     "semantic": 0.6842,
+     "score": 0.7587,
+     "matched_terms": [
+      "gateway",
+      "api",
+      "api_gateway"
+     ]
+    },
+    {
+     "sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+     "subject": "Note the generation timeout",
+     "deployed_in": "ee1a12f",
+     "lexical": 9.25,
+     "semantic": 0.6662,
+     "score": 0.6656,
+     "matched_terms": [
+      "timeout",
+      "service",
+      "llm",
+      "ollama",
+      "question",
+      "call"
+     ]
+    },
+    {
+     "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+     "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+     "deployed_in": "1a290b0",
+     "lexical": 8.39,
+     "semantic": 0.599,
+     "score": 0.6014,
+     "matched_terms": [
+      "service",
+      "api",
+      "latency",
+      "generate",
+      "embed",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "771ab7700d574657aa6247b46305c72216e5adb5",
+     "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+     "deployed_in": "ee1a12f",
+     "lexical": 7.89,
+     "semantic": 0.6411,
+     "score": 0.5969,
+     "matched_terms": [
+      "timeout",
+      "service",
+      "embed",
+      "ollama",
+      "call"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/api_gateway/app/main.py::ChatRequest",
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/api_gateway/app/main.py::chat_stream",
+    "patient/api_gateway/app/main.py::RepoRunRequest"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 6374,
+  "provider_failures": [],
+  "status": "ok",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "diagnosis": {
+   "summary": "Commit 19871dd changed how the gateway titles new chat sessions and introduced a typo (req.qestion). Any new-session chat whose question has no '?' now raises AttributeError and returns a 5xx. Traffic was flat, so this is a code defect, not load.",
+   "incident_class": "code_defect",
+   "demand_vs_capacity": {
+    "traffic_change": "flat",
+    "deploy_before_onset": true,
+    "verdict": "capacity_fell",
+    "reasoning": "Demand did not rise. traffic_rps mean was 0.592 in the baseline and 0.562 in the incident window, and gateway in_flight mean fell from 0.45 to 0.21. Gateway 5xx went from 0 to as high as 10.7% right after the gateway-only deploy 225b7d2 at 08:57:03Z, which contains commit 19871dd. The first AttributeError appeared at 08:56:59Z, and the stack trace points to the line that diff added. Ollama, retrieval and llm latencies, as well as restarts and OOM kills, look the same as baseline."
+   },
+   "hypotheses": [
+    {
+     "cause": "Typo introduced by commit 19871dd in chat_stream: len(req.qestion) instead of len(req.question). Pydantic raises AttributeError for any new session (no session_id) whose question contains no '?', and the gateway returns 500.",
+     "component": "gateway",
+     "confidence": 0.95,
+     "evidence": [
+      "New log signature AttributeError:c869db82b3fd x19 in gateway: 'ChatRequest' object has no attribute 'qestion' at api_gateway/app/main.py chat_stream, first seen 08:56:59Z, absent in baseline",
+      "Diff line in 19871dd: + title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")",
+      "error_ratio_5xx{service=gateway} rose from 0.0 to max 0.1071 after deploy 225b7d2 (08:57:03Z); traffic_rps flat (0.59 -> 0.56)",
+      "ChatRequest defines only 'question', not 'qestion'"
+     ],
+     "suspected_commit": "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+     "suspected_files": [
+      "patient/api_gateway/app/main.py"
+     ]
+    },
+    {
+     "cause": "Commit 44405f4 (also gateway, deployed in 5dc7f1a) only adds a comment to the health check and cannot explain the errors. It is listed only to rule it out.",
+     "component": "gateway",
+     "confidence": 0.03,
+     "evidence": [
+      "Diff adds only a comment line above gateway_health",
+      "AttributeError started before 5dc7f1a was deployed (08:56:59Z vs 08:57:45Z)"
+     ],
+     "suspected_commit": null,
+     "suspected_files": [
+      "patient/api_gateway/app/main.py"
+     ]
+    }
+   ],
+   "fix": {
+    "kind": "code_diff",
+    "edits": [
+     {
+      "file": "patient/api_gateway/app/main.py",
+      "find": "title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")",
+      "replace": "title = req.question.strip()[:60] + (\"...\" if len(req.question.strip()) > 60 else \"\")"
+     }
+    ],
+    "action": null,
+    "rationale": "Fix the misspelled attribute so chat_stream no longer raises AttributeError for new sessions whose question has no '?'. This keeps the intended 60-character title behaviour from 19871dd. The alternative is to revert 19871dd. Review and deploy through the normal pipeline.",
+    "unified_diff": "--- a/patient/api_gateway/app/main.py\n+++ b/patient/api_gateway/app/main.py\n@@ -475,7 +475,7 @@\n         if \"?\" in req.question:\n             title = req.question.split(\"?\")[0].strip()[:60] + \"?\"\n         else:\n-            title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")\n+            title = req.question.strip()[:60] + (\"...\" if len(req.question.strip()) > 60 else \"\")\n         cursor.execute(\"INSERT INTO chat_sessions (id, title, created_at) VALUES (?, ?, ?)\", (session_id, title, datetime.utcnow().isoformat()))\n         conn.commit()\n \n",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": false,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 1,
+   "prompt_tokens": 10620,
+   "completion_tokens": 1305,
+   "cost_usd": 0.06858,
+   "seconds": 13.03
+  },
+  "verification": {
+   "kind": "code",
+   "sha": "5dc7f1a",
+   "applied": true,
+   "suite": {
+    "passed": true,
+    "returncode": 0,
+    "summary": "171 passed, 4 warnings in 4.49s",
+    "output_tail": "........................................................................ [ 84%]\n...........................                                              [100%]\n=============================== warnings summary ===============================\n../../../usr/local/lib/python3.10/site-packages/starlette/testclient.py:53\n  /usr/local/lib/python3.10/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\ntests/test_gateway_regression.py::test_saving_settings_never_writes_the_string_none\ntests/test_gateway_regression.py::test_saving_settings_round_trips_changed_values\ntests/test_gateway_regression.py::test_saving_settings_round_trips_changed_values\n  /tmp/doctor_sandbox_e2vupapr/patient/api_gateway/app/main.py:941: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/\n    settings_dict = req.dict(exclude_none=True)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n171 passed, 4 warnings in 4.49s",
+    "seconds": 5.6
+   },
+   "status": "verified"
+  },
+  "timings": {
+   "retrieval_s": 5.22,
+   "llm_s": 13.03,
+   "total_s": 23.93
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 98.6,
+  "received_to_report_s": 94.6
+ },
+ "markdown": "# Incident inc_297e429a9b\n\n**Alert:** HighErrorRate - gateway is answering 5.556% of requests with 5xx\n**Started:** 2026-11-22T09:04:03.987Z  \n**Running commit:** 5dc7f1a  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** anthropic:claude-opus-5-5\n\n## What broke\n\nCommit 19871dd changed how the gateway titles new chat sessions and introduced a typo (req.qestion). Any new-session chat whose question has no '?' now raises AttributeError and returns a 5xx. Traffic was flat, so this is a code defect, not load.\n\n**Incident class:** `code_defect`\n\n**Demand versus capacity:** traffic flat, deploy before onset: True, verdict: capacity_fell. Demand did not rise. traffic_rps mean was 0.592 in the baseline and 0.562 in the incident window, and gateway in_flight mean fell from 0.45 to 0.21. Gateway 5xx went from 0 to as high as 10.7% right after the gateway-only deploy 225b7d2 at 08:57:03Z, which contains commit 19871dd. The first AttributeError appeared at 08:56:59Z, and the stack trace points to the line that diff added. Ollama, retrieval and llm latencies, as well as restarts and OOM kills, look the same as baseline.\n\n## Evidence\n\n- alert 2026-11-22T09:04:03.987Z **HighErrorRate** gateway: gateway is answering 5.556% of requests with 5xx\n- log `AttributeError:c869db82b3fd` x19 in gateway: AttributeError 'ChatRequest' object has no attribute 'qestion'\n- log `WARNING:a4dace19f999` x3 in gateway:  request\n- metric `requests_rps{service=llm}` baseline 0.2642 -> 0.4 (x1.5)\n- metric `error_ratio_5xx{service=gateway}` baseline 0.0 -> 0.1071 (from ~0)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.1946 -> 0.3091 (x1.6)\n- metric `latency_p95_s{endpoint=/api/chat,service=gateway}` baseline 2.5204 -> 3.9 (x1.5)\n- metric `latency_p95_s{endpoint=/api/retrieval/search,service=gateway}` baseline 0.0974 -> 0.1825 (x1.9)\n- metric `latency_p95_s{endpoint=/generate,service=llm}` baseline 2.409 -> 4.2 (x1.7)\n- metric `latency_p95_s{endpoint=/retrieve,service=retrieval}` baseline 0.0647 -> 0.204 (x3.2)\n- metric `in_flight{service=gateway}` baseline 0.4483 -> 2.0 (x4.5)\n\nDeploys in the lookback window: 6; candidate commits (time filter only): 15\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.95 | gateway | 19871dd | Typo introduced by commit 19871dd in chat_stream: len(req.qestion) instead of len(req.question). Pydantic raises AttributeError for any new session (no session_id) whose question contains no '?', and the gateway returns 500. |\n| 2 | 0.03 | gateway | none | Commit 44405f4 (also gateway, deployed in 5dc7f1a) only adds a comment to the health check and cannot explain the errors. It is listed only to rule it out. |\n\nEvidence for #1:\n- New log signature AttributeError:c869db82b3fd x19 in gateway: 'ChatRequest' object has no attribute 'qestion' at api_gateway/app/main.py chat_stream, first seen 08:56:59Z, absent in baseline\n- Diff line in 19871dd: + title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")\n- error_ratio_5xx{service=gateway} rose from 0.0 to max 0.1071 after deploy 225b7d2 (08:57:03Z); traffic_rps flat (0.59 -> 0.56)\n- ChatRequest defines only 'question', not 'qestion'\n\nEvidence for #2:\n- Diff adds only a comment line above gateway_health\n- AttributeError started before 5dc7f1a was deployed (08:56:59Z vs 08:57:45Z)\n\n## Proposed fix\n\n**Kind:** code_diff\n\nFix the misspelled attribute so chat_stream no longer raises AttributeError for new sessions whose question has no '?'. This keeps the intended 60-character title behaviour from 19871dd. The alternative is to revert 19871dd. Review and deploy through the normal pipeline.\n\n```diff\n--- a/patient/api_gateway/app/main.py\n+++ b/patient/api_gateway/app/main.py\n@@ -475,7 +475,7 @@\n         if \"?\" in req.question:\n             title = req.question.split(\"?\")[0].strip()[:60] + \"?\"\n         else:\n-            title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")\n+            title = req.question.strip()[:60] + (\"...\" if len(req.question.strip()) > 60 else \"\")\n         cursor.execute(\"INSERT INTO chat_sessions (id, title, created_at) VALUES (?, ?, ?)\", (session_id, title, datetime.utcnow().isoformat()))\n         conn.commit()\n```\n\n## Verification\n\n**Result:** verified\n  \nTest suite on the patched copy: 171 passed, 4 warnings in 4.49s\n\nNothing was applied to the running system.\n\n## Cost\n\n1 calls, 10620 prompt + 1305 completion tokens, $0.06858; reasoning 13.03s, total 23.93s\n",
+ "resolution": null,
+ "agents": {
+  "status": "running",
+  "requested_at": "2026-11-22T09:05:42Z",
+  "error": null,
+  "task_id": "20261122-090542-0a4683",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-090542-0a4683",
+  "started_at": "2026-11-22T09:05:42Z",
+  "outcome": null,
+  "failure_stage": null,
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": null,
+  "cost_usd": 0.0,
+  "diagnosis": null,
+  "patch": null,
+  "tests": null,
+  "escalation": null,
+  "pr": null,
+  "steps": [],
+  "decisions": [],
+  "updated_at": "2026-11-22T09:05:42Z",
+  "poll_error": null
+ },
+ "evidence": {
+  "alert": {
+   "received_at": "2026-11-22T09:04:08.993Z",
+   "status": "firing",
+   "alertname": "HighErrorRate",
+   "fingerprint": "7e293efa4fbf39ec",
+   "startsAt": "2026-11-22T09:04:03.987Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighErrorRate",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "More than 3% of requests to gateway failed with 5xx over 5 minutes, in at least 4 of those minutes.",
+    "summary": "gateway is answering 5.556% of requests with 5xx"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=%28sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B5m%5D%29%29+%2F+sum+by+%28service%29+%28rate%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%7D%5B5m%5D%29%29%29+%3E+0.03+and+on+%28service%29+count_over_time%28%28sum+by+%28service%29+%28increase%28knowledgeai_http_requests_total%7Bendpoint%21%3D%22%2Fmetrics%22%2Cstatus%3D~%225..%22%7D%5B1m%5D%29%29+%3E+0%29%5B5m%3A1m%5D%29+%3E%3D+4&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighErrorRate\", service=\"gateway\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "HighErrorRate",
+    "startsAt": "2026-11-22T09:04:03.987Z",
+    "labels": {
+     "alertname": "HighErrorRate",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "gateway is answering 5.556% of requests with 5xx"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-11-22T08:54:03Z",
+    "2026-11-22T09:05:03Z"
+   ],
+   "baseline": [
+    "2026-11-22T08:24:03Z",
+    "2026-11-22T08:54:03Z"
+   ]
+  },
+  "logs": [
+   {
+    "signature": "AttributeError:c869db82b3fd",
+    "count": 19,
+    "first_seen": "2026-11-22T08:56:59Z",
+    "last_seen": "2026-11-22T09:04:41Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "ERROR",
+    "message": "unhandled exception",
+    "exc_type": "AttributeError",
+    "exc_message": "'ChatRequest' object has no attribute 'qestion'",
+    "error_file": "/app/api_gateway/app/main.py",
+    "error_line": 477,
+    "error_function": "chat_stream",
+    "stack_tail": [
+     "    response = await f(request)",
+     "  File \"/usr/local/lib/python3.10/site-packages/fastapi/routing.py\", line 706, in app",
+     "    raw_response = await run_endpoint_function(",
+     "  File \"/usr/local/lib/python3.10/site-packages/fastapi/routing.py\", line 352, in run_endpoint_function",
+     "    return await dependant.call(**values)",
+     "  File \"/app/api_gateway/app/main.py\", line 477, in chat_stream",
+     "    title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")",
+     "  File \"/usr/local/lib/python3.10/site-packages/pydantic/main.py\", line 1042, in __getattr__",
+     "    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')",
+     "AttributeError: 'ChatRequest' object has no attribute 'qestion'. Did you mean: 'question'?"
+    ],
+    "git_shas": [
+     "225b7d2",
+     "5dc7f1a"
+    ],
+    "target": null,
+    "new_in_incident": true
+   },
+   {
+    "signature": "WARNING:a4dace19f999",
+    "count": 3,
+    "first_seen": "2026-11-22T08:56:36Z",
+    "last_seen": "2026-11-22T08:57:18Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "WARNING",
+    "message": "request",
+    "exc_type": null,
+    "exc_message": "",
+    "error_file": null,
+    "error_line": null,
+    "error_function": null,
+    "stack_tail": [],
+    "git_shas": [
+     "225b7d2",
+     "70c3dff"
+    ],
+    "target": null,
+    "new_in_incident": true
+   }
+  ],
+  "deploys": [
+   {
+    "ts": "2026-11-22T07:23:16Z",
+    "git_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "short_sha": "1a290b0",
+    "previous_sha": "d6d9c50b2e17b3cd4811e0ca96e939fc7d73b2e3",
+    "commits": [
+     "763af4c291a2108276c7835c896f82e2d867d78a",
+     "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "09770921d31b390faaee760557f0c3551350c6cb",
+     "25a35db6a36f692c398c514272f10dcca911fb71",
+     "a67398e8669ee79457191ee57821cb760edd50f3",
+     "1a290b0795debfc42250e3e8fb55122b549c2076"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "deploy/agai/models-claude.yaml",
+     "deploy/agai/models.yaml",
+     "deploy/gcp/create_vm.ps1",
+     "deploy/gcp/startup.sh",
+     "deploy/gcp/vm-up.sh",
+     "deploy/gcp/write_env.py",
+     "docker-compose.yml",
+     "doctor/app/llm.py",
+     "doctor/app/settings.py",
+     "doctor/requirements.txt",
+     "doctor/tests/test_anthropic_provider.py",
+     "faults/campaign.py",
+     "faults/campaign_report.py",
+     "faults/common.py",
+     "faults/run_fault.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 3.8
+    },
+    "duration_s": 33.2,
+    "reason": "GCP VM boot 1a290b0",
+    "pipeline": "manual",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:26:24Z",
+    "git_sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "short_sha": "3bb7cb1",
+    "previous_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "commits": [
+     "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+     "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019"
+    ],
+    "services_changed": [
+     "llm"
+    ],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md",
+     "patient/llm_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 3bb7cb1",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:27:06Z",
+    "git_sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "short_sha": "ee1a12f",
+    "previous_sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "commits": [
+     "771ab7700d574657aa6247b46305c72216e5adb5",
+     "ee1a12fe7a80bedba7b56259640568c4fefbe5fc"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "llm",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py",
+     "patient/llm_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.2,
+    "reason": "local pipeline push ee1a12f",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:44:20Z",
+    "git_sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "short_sha": "70c3dff",
+    "previous_sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "commits": [
+     "70c3dff428aa9f43be013e18f612229ad1b1d38b"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 70c3dff",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:57:03Z",
+    "git_sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "short_sha": "225b7d2",
+    "previous_sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "commits": [
+     "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+     "225b7d25e15feb2dc9185cebc5f640448d9e7f1c"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.3,
+    "reason": "local pipeline push 225b7d2",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:57:45Z",
+    "git_sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "short_sha": "5dc7f1a",
+    "previous_sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "commits": [
+     "44405f4f619e1f069afe5d29393331144f66f23e",
+     "5dc7f1a615f801249e55ad06500fd4258bfb972b"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.1,
+    "reason": "local pipeline push 5dc7f1a",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "763af4c291a2108276c7835c896f82e2d867d78a",
+    "subject": "Faults: keep each fault live until the agent team is done; one-table campaign report",
+    "date": "2026-11-21T10:01:25+05:30"
+   },
+   {
+    "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+    "date": "2026-11-21T10:05:59+05:30"
+   },
+   {
+    "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+    "date": "2026-11-21T10:24:55+05:30"
+   },
+   {
+    "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+    "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+    "date": "2026-11-21T10:52:03+05:30"
+   },
+   {
+    "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+    "subject": "Claude for the doctor and the agent team",
+    "date": "2026-11-22T11:44:37+05:30"
+   },
+   {
+    "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "subject": "GCP start-up: always enable and start Ollama",
+    "date": "2026-11-22T12:51:53+05:30"
+   },
+   {
+    "sha": "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+    "subject": "Explain the prompt layout",
+    "date": "2026-11-22T08:25:38Z"
+   },
+   {
+    "sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "subject": "Operations notes: restarting ollama",
+    "date": "2026-11-22T08:25:38Z"
+   },
+   {
+    "sha": "771ab7700d574657aa6247b46305c72216e5adb5",
+    "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+    "date": "2026-11-22T08:26:24Z"
+   },
+   {
+    "sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "subject": "Note the generation timeout",
+    "date": "2026-11-22T08:26:24Z"
+   },
+   {
+    "sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "subject": "Revert \"Cap embedding calls at 10 s so a stuck call frees its thread\"",
+    "date": "2026-11-22T08:43:37Z"
+   },
+   {
+    "sha": "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-11-22T08:56:20Z"
+   },
+   {
+    "sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "subject": "Explain bare model names",
+    "date": "2026-11-22T08:56:20Z"
+   },
+   {
+    "sha": "44405f4f619e1f069afe5d29393331144f66f23e",
+    "subject": "Clarify what the gateway health check covers",
+    "date": "2026-11-22T08:57:03Z"
+   },
+   {
+    "sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "subject": "Operations notes: health endpoints",
+    "date": "2026-11-22T08:57:03Z"
+   }
+  ]
+ }
+}

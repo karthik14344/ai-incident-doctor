@@ -1,0 +1,60 @@
+{
+  "run_id": "f7_kb_missing_docs-r2-gpu",
+  "fault_id": "f7_kb_missing_docs",
+  "delivery": "data",
+  "variant": null,
+  "started": "2026-11-24T15:16:33Z",
+  "trigger": "ticket",
+  "t_break": "2026-11-24T15:16:33Z",
+  "guilty_kb_version": "405bbf0b9802",
+  "kb_load": " Container aid-kb-loader-run-9d9a961daa15 Created",
+  "load": null,
+  "neighbour": false,
+  "monitoring_missed": true,
+  "ticket_filed_at": "2026-11-24T15:31:35Z",
+  "ticket": {
+    "text": "It no longer answers questions about the library, scholarships or placements.",
+    "since": "about 15 minutes ago",
+    "response": {
+      "status": "opened",
+      "incident_id": "inc_f5f7edf5a1",
+      "diagnose_after": "2026-11-24T15:31:35Z",
+      "window": {
+        "text": "It no longer answers questions about the library, scholarships or placements.",
+        "since": "about 15 minutes ago",
+        "search_range": [
+          "2026-11-24T15:09:05Z",
+          "2026-11-24T15:31:35Z"
+        ],
+        "how": "'15 minutes ago'",
+        "onset_signals": [
+          {
+            "metric": "chat_errors_per_min",
+            "onset": 1795533410.238,
+            "value": 1.091,
+            "baseline": 0.0
+          },
+          {
+            "metric": "http_5xx_per_min",
+            "onset": 1795533410.238,
+            "value": 2.182,
+            "baseline": 0.0
+          },
+          {
+            "metric": "downstream_failures_per_min",
+            "onset": 1795533410.238,
+            "value": 1.091,
+            "baseline": 0.0
+          }
+        ],
+        "onset_found": true
+      }
+    }
+  },
+  "incident_id": "inc_f5f7edf5a1",
+  "t_report": "2026-11-24T15:32:02Z",
+  "doctor_s": 27.0,
+  "t_revert_start": "2026-11-24T15:32:05Z",
+  "t_reverted": "2026-11-24T15:32:06Z",
+  "finished": "2026-11-24T15:32:06Z"
+}

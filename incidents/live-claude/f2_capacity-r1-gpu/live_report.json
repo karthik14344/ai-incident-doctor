@@ -1,0 +1,407 @@
+{
+ "incident": {
+  "id": "inc_1862a7a2e2",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-11-22T07:53:05.516Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-11-22T07:53:00.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 85.0s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "service": "gateway",
+  "received_at": "2026-11-22T07:53:05Z",
+  "diagnose_after": "2026-11-22T07:54:15Z",
+  "collection_started": "2026-11-22T07:54:15Z",
+  "evidence_saved": "2026-11-22T07:54:15Z",
+  "report_finished": "2026-11-22T07:54:48Z",
+  "alert_to_report_s": 107.9
+ },
+ "report": {
+  "incident_id": "inc_1862a7a2e2",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-11-22T07:53:05.516Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-11-22T07:53:00.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 85.0s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "created_at": "2026-11-22T07:54:48Z",
+  "live_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+  "retrieval": {
+   "time_filtered": [
+    "763af4c291a2108276c7835c896f82e2d867d78a",
+    "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "09770921d31b390faaee760557f0c3551350c6cb",
+    "25a35db6a36f692c398c514272f10dcca911fb71",
+    "1a290b0795debfc42250e3e8fb55122b549c2076"
+   ],
+   "ranked": [
+    {
+     "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+     "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+     "deployed_in": "1a290b0",
+     "lexical": 9.62,
+     "semantic": 0.6241,
+     "score": 0.8496,
+     "matched_terms": [
+      "service",
+      "latency",
+      "generate",
+      "api",
+      "embed",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+     "subject": "Claude for the doctor and the agent team",
+     "deployed_in": "1a290b0",
+     "lexical": 4.53,
+     "semantic": 0.5946,
+     "score": 0.5204,
+     "matched_terms": [
+      "timeout",
+      "cache",
+      "llm",
+      "api",
+      "output",
+      "refused"
+     ]
+    },
+    {
+     "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+     "subject": "GCP start-up: always enable and start Ollama",
+     "deployed_in": "1a290b0",
+     "lexical": 4.51,
+     "semantic": 0.5141,
+     "score": 0.4871,
+     "matched_terms": [
+      "service",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+     "deployed_in": "1a290b0",
+     "lexical": 1.52,
+     "semantic": 0.5319,
+     "score": 0.3078,
+     "matched_terms": [
+      "memory",
+      "ollama",
+      "warning"
+     ]
+    },
+    {
+     "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+     "deployed_in": "1a290b0",
+     "lexical": 1.56,
+     "semantic": 0.4869,
+     "score": 0.2924,
+     "matched_terms": [
+      "memory",
+      "ollama",
+      "warning"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/api_gateway/app/main.py::chat_stream",
+    "patient/api_gateway/app/main.py::ChatRequest",
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/api_gateway/app/main.py::_run_retrieval"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 6297,
+  "provider_failures": [],
+  "status": "ok",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "diagnosis": {
+   "summary": "Demand on /api/chat roughly tripled: gateway requests rose x3.6 and LLM /generate calls rose x6.7. The single local Ollama generation backend saturated, so requests queued up to 100 in flight and p95 latency reached about 118 s. Embedding, retrieval and Chroma stayed fast, with no errors, restarts or OOM kills. This is a capacity problem, not a defect.",
+   "incident_class": "capacity",
+   "demand_vs_capacity": {
+    "traffic_change": "rose",
+    "deploy_before_onset": true,
+    "verdict": "demand_rose",
+    "reasoning": "traffic_rps went from a baseline mean of 0.53 to an incident max of 1.49 (x2.8). requests_rps for llm went from 0.17 to 1.16 (x6.7), and answered chats rose x7.2. in_flight for gateway and llm climbed from about 0 to 100 while retrieval in_flight stayed at about 0-1. Retrieval p95 stayed flat (0.055 s vs 0.054 s mean), and ollama embed p95 was flat (0.05 s). Only ollama generate p95 exploded, rising in step with the queue. The only deploy (1a290b0) landed at 07:23:16, 20 minutes before the incident window. The 07:23-07:43 baseline after that deploy shows normal latency (p95 about 1.9 s at the start of the incident window). There are no warnings or errors in the incident window, no restarts and no OOMs, and 5xx is 0. The baseline's ConnectError and 5xx were an earlier, already-resolved blip and are absent during the incident. The same service got slower only as load rose, which points to demand, not a regression. The deploy's diffs are GCP start-up and Ollama keep-alive changes plus doctor config; none of them would slow generation under the same load."
+   },
+   "hypotheses": [
+    {
+     "cause": "Chat demand rose above the throughput of the single Ollama llama3.2 generation backend. Generate requests queue inside Ollama, so llm and gateway in_flight pile up to 100 and per-request latency grows linearly with the queue.",
+     "component": "ollama",
+     "confidence": 0.85,
+     "evidence": [
+      "requests_rps{service=llm} rose from a baseline of 0.17 to an incident max of 1.16 (x6.7); traffic_rps{all} rose x2.8",
+      "in_flight{service=llm} and in_flight{service=gateway} went from about 0.07 to 100, while in_flight{service=retrieval} stayed at a max of 1",
+      "ollama_p95_s{operation=generate} rose from 2.26 to 118.3 s, while ollama_p95_s{operation=embed} stayed flat at about 0.05 s",
+      "latency_p95_s{/retrieve} stayed flat (0.055 vs 0.054 mean)",
+      "There are no error logs, error_ratio_5xx is 0, and container_restarts and oom_kills are 0",
+      "Gateway and llm memory grew x2.6 and x2.4, consistent with a backlog of queued requests rather than a leak"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    },
+    {
+     "cause": "The gateway and llm services have no admission control or concurrency limit. Excess chat requests are accepted and queued for minutes instead of being rejected fast, which turns a throughput limit into extreme tail latency.",
+     "component": "gateway",
+     "confidence": 0.1,
+     "evidence": [
+      "in_flight{service=gateway} grew without bound to 100, while p50 /api/chat latency reached 103 s",
+      "No 429 or 503 responses: error_ratio_5xx stayed at 0 while latency climbed"
+     ],
+     "suspected_commit": null,
+     "suspected_files": [
+      "patient/api_gateway/app/main.py"
+     ]
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "edits": [],
+    "action": "Add generation capacity and shed load; do not roll back 1a290b0.\n1. Raise Ollama's parallelism if the host has GPU or CPU headroom (OLLAMA_NUM_PARALLEL), then restart ollama, or move Ollama to a larger or GPU-backed instance. Alternatively, add a second Ollama backend behind the llm service.\n2. Throttle or shed the extra /api/chat traffic at the gateway in the meantime: rate-limit it or cap concurrent generations so that excess requests get a fast 429/503 instead of queuing for over 100 s.\n3. Confirm recovery: llm in_flight should drain to about 0 and ollama generate p95 should return to about 2-4 s.\nAn operator should perform these steps manually.",
+    "rationale": "The system is healthy and the backlog is caused by demand. The only saturated resource is LLM generation in Ollama. Retrieval, embedding and Chroma are unaffected, and nothing is erroring or restarting. The remedy is more generation throughput plus admission control, not a code or config revert; the deploy 20 minutes earlier ran normally at baseline load.",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": true,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 2,
+   "prompt_tokens": 23083,
+   "completion_tokens": 3932,
+   "cost_usd": 0.170972,
+   "seconds": 32.33
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 0.28,
+   "llm_s": 32.33,
+   "total_s": 32.62
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 107.9,
+  "received_to_report_s": 103.4
+ },
+ "markdown": "# Incident inc_1862a7a2e2\n\n**Alert:** HighLatencyP95 - p95 latency of gateway /api/chat is 85.0s\n**Started:** 2026-11-22T07:53:00.51Z  \n**Running commit:** 1a290b0  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** anthropic:claude-opus-5-5\n\n## What broke\n\nDemand on /api/chat roughly tripled: gateway requests rose x3.6 and LLM /generate calls rose x6.7. The single local Ollama generation backend saturated, so requests queued up to 100 in flight and p95 latency reached about 118 s. Embedding, retrieval and Chroma stayed fast, with no errors, restarts or OOM kills. This is a capacity problem, not a defect.\n\n**Incident class:** `capacity`\n\n**Demand versus capacity:** traffic rose, deploy before onset: True, verdict: demand_rose. traffic_rps went from a baseline mean of 0.53 to an incident max of 1.49 (x2.8). requests_rps for llm went from 0.17 to 1.16 (x6.7), and answered chats rose x7.2. in_flight for gateway and llm climbed from about 0 to 100 while retrieval in_flight stayed at about 0-1. Retrieval p95 stayed flat (0.055 s vs 0.054 s mean), and ollama embed p95 was flat (0.05 s). Only ollama generate p95 exploded, rising in step with the queue. The only deploy (1a290b0) landed at 07:23:16, 20 minutes before the incident window. The 07:23-07:43 baseline after that deploy shows normal latency (p95 about 1.9 s at the start of the incident window). There are no warnings or errors in the incident window, no restarts and no OOMs, and 5xx is 0. The baseline's ConnectError and 5xx were an earlier, already-resolved blip and are absent during the incident. The same service got slower only as load rose, which points to demand, not a regression. The deploy's diffs are GCP start-up and Ollama keep-alive changes plus doctor config; none of them would slow generation under the same load.\n\n## Evidence\n\n- alert 2026-11-22T07:53:00.51Z **HighLatencyP95** gateway: p95 latency of gateway /api/chat is 85.0s\n- alert 2026-11-22T07:53:00.51Z **HighLatencyP95** llm: p95 latency of llm /generate is 84.9s\n- metric `traffic_rps{all}` baseline 0.5317 -> 1.4909 (x2.8)\n- metric `requests_rps{service=gateway}` baseline 0.4293 -> 1.5636 (x3.6)\n- metric `requests_rps{service=ingestion}` baseline 0.088 -> 0.1455 (x1.7)\n- metric `requests_rps{service=llm}` baseline 0.1732 -> 1.1636 (x6.7)\n- metric `requests_rps{service=retrieval}` baseline 0.3895 -> 3.2727 (x8.4)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.1538 -> 1.1091 (x7.2)\n- metric `chat_outcomes_rps{outcome=refused_output}` baseline 0.0 -> 0.0182 (from ~0)\n- metric `latency_p95_s{endpoint=/api/chat,service=gateway}` baseline 1.8868 -> 118.3125 (x62.7)\n\nDeploys in the lookback window: 1; candidate commits (time filter only): 6\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.85 | ollama | none | Chat demand rose above the throughput of the single Ollama llama3.2 generation backend. Generate requests queue inside Ollama, so llm and gateway in_flight pile up to 100 and per-request latency grows linearly with the queue. |\n| 2 | 0.10 | gateway | none | The gateway and llm services have no admission control or concurrency limit. Excess chat requests are accepted and queued for minutes instead of being rejected fast, which turns a throughput limit into extreme tail latency. |\n\nEvidence for #1:\n- requests_rps{service=llm} rose from a baseline of 0.17 to an incident max of 1.16 (x6.7); traffic_rps{all} rose x2.8\n- in_flight{service=llm} and in_flight{service=gateway} went from about 0.07 to 100, while in_flight{service=retrieval} stayed at a max of 1\n- ollama_p95_s{operation=generate} rose from 2.26 to 118.3 s, while ollama_p95_s{operation=embed} stayed flat at about 0.05 s\n- latency_p95_s{/retrieve} stayed flat (0.055 vs 0.054 mean)\n- There are no error logs, error_ratio_5xx is 0, and container_restarts and oom_kills are 0\n- Gateway and llm memory grew x2.6 and x2.4, consistent with a backlog of queued requests rather than a leak\n\nEvidence for #2:\n- in_flight{service=gateway} grew without bound to 100, while p50 /api/chat latency reached 103 s\n- No 429 or 503 responses: error_ratio_5xx stayed at 0 while latency climbed\n\n## Proposed fix\n\n**Kind:** action\n\nThe system is healthy and the backlog is caused by demand. The only saturated resource is LLM generation in Ollama. Retrieval, embedding and Chroma are unaffected, and nothing is erroring or restarting. The remedy is more generation throughput plus admission control, not a code or config revert; the deploy 20 minutes earlier ran normally at baseline load.\n\n**Recommended action:** Add generation capacity and shed load; do not roll back 1a290b0.\n1. Raise Ollama's parallelism if the host has GPU or CPU headroom (OLLAMA_NUM_PARALLEL), then restart ollama, or move Ollama to a larger or GPU-backed instance. Alternatively, add a second Ollama backend behind the llm service.\n2. Throttle or shed the extra /api/chat traffic at the gateway in the meantime: rate-limit it or cap concurrent generations so that excess requests get a fast 429/503 instead of queuing for over 100 s.\n3. Confirm recovery: llm in_flight should drain to about 0 and ollama generate p95 should return to about 2-4 s.\nAn operator should perform these steps manually.\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n2 calls, 23083 prompt + 3932 completion tokens, $0.170972; reasoning 32.33s, total 32.62s\n",
+ "resolution": null,
+ "agents": {
+  "status": "running",
+  "requested_at": "2026-11-22T07:54:48Z",
+  "error": null,
+  "task_id": "20261122-075448-15975f",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-075448-15975f",
+  "started_at": "2026-11-22T07:54:48Z",
+  "outcome": null,
+  "failure_stage": null,
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": null,
+  "cost_usd": 0.0,
+  "diagnosis": null,
+  "patch": null,
+  "tests": null,
+  "escalation": null,
+  "pr": null,
+  "steps": [],
+  "decisions": [],
+  "updated_at": "2026-11-22T07:54:48Z",
+  "poll_error": null
+ },
+ "evidence": {
+  "alert": {
+   "received_at": "2026-11-22T07:53:05.516Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-11-22T07:53:00.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 85.0s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-11-22T07:53:00.51Z",
+    "labels": {
+     "alertname": "HighLatencyP95",
+     "endpoint": "/api/chat",
+     "path": "generation",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "p95 latency of gateway /api/chat is 85.0s"
+   },
+   {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-11-22T07:53:00.51Z",
+    "labels": {
+     "alertname": "HighLatencyP95",
+     "endpoint": "/generate",
+     "path": "generation",
+     "service": "llm",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "p95 latency of llm /generate is 84.9s"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-11-22T07:43:00Z",
+    "2026-11-22T07:54:00Z"
+   ],
+   "baseline": [
+    "2026-11-22T07:13:00Z",
+    "2026-11-22T07:43:00Z"
+   ]
+  },
+  "logs": [],
+  "deploys": [
+   {
+    "ts": "2026-11-22T07:23:16Z",
+    "git_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "short_sha": "1a290b0",
+    "previous_sha": "d6d9c50b2e17b3cd4811e0ca96e939fc7d73b2e3",
+    "commits": [
+     "763af4c291a2108276c7835c896f82e2d867d78a",
+     "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "09770921d31b390faaee760557f0c3551350c6cb",
+     "25a35db6a36f692c398c514272f10dcca911fb71",
+     "a67398e8669ee79457191ee57821cb760edd50f3",
+     "1a290b0795debfc42250e3e8fb55122b549c2076"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "deploy/agai/models-claude.yaml",
+     "deploy/agai/models.yaml",
+     "deploy/gcp/create_vm.ps1",
+     "deploy/gcp/startup.sh",
+     "deploy/gcp/vm-up.sh",
+     "deploy/gcp/write_env.py",
+     "docker-compose.yml",
+     "doctor/app/llm.py",
+     "doctor/app/settings.py",
+     "doctor/requirements.txt",
+     "doctor/tests/test_anthropic_provider.py",
+     "faults/campaign.py",
+     "faults/campaign_report.py",
+     "faults/common.py",
+     "faults/run_fault.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 3.8
+    },
+    "duration_s": 33.2,
+    "reason": "GCP VM boot 1a290b0",
+    "pipeline": "manual",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "763af4c291a2108276c7835c896f82e2d867d78a",
+    "subject": "Faults: keep each fault live until the agent team is done; one-table campaign report",
+    "date": "2026-11-21T10:01:25+05:30"
+   },
+   {
+    "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+    "date": "2026-11-21T10:05:59+05:30"
+   },
+   {
+    "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+    "date": "2026-11-21T10:24:55+05:30"
+   },
+   {
+    "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+    "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+    "date": "2026-11-21T10:52:03+05:30"
+   },
+   {
+    "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+    "subject": "Claude for the doctor and the agent team",
+    "date": "2026-11-22T11:44:37+05:30"
+   },
+   {
+    "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "subject": "GCP start-up: always enable and start Ollama",
+    "date": "2026-11-22T12:51:53+05:30"
+   }
+  ]
+ }
+}

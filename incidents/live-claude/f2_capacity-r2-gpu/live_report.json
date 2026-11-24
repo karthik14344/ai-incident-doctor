@@ -1,0 +1,937 @@
+{
+ "incident": {
+  "id": "inc_2f42327b59",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-11-22T10:44:35.515Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-11-22T10:44:30.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 84.8s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "service": "gateway",
+  "received_at": "2026-11-22T10:44:35Z",
+  "diagnose_after": "2026-11-22T10:45:45Z",
+  "collection_started": "2026-11-22T10:45:45Z",
+  "evidence_saved": "2026-11-22T10:45:45Z",
+  "report_finished": "2026-11-22T10:46:30Z",
+  "alert_to_report_s": 120.3
+ },
+ "report": {
+  "incident_id": "inc_2f42327b59",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-11-22T10:44:35.515Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-11-22T10:44:30.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 84.8s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "created_at": "2026-11-22T10:46:30Z",
+  "live_sha": "4e34716445e8d064937eced1f42df22411b1a18a",
+  "retrieval": {
+   "time_filtered": [
+    "763af4c291a2108276c7835c896f82e2d867d78a",
+    "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "09770921d31b390faaee760557f0c3551350c6cb",
+    "25a35db6a36f692c398c514272f10dcca911fb71",
+    "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+    "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "771ab7700d574657aa6247b46305c72216e5adb5",
+    "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+    "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "44405f4f619e1f069afe5d29393331144f66f23e",
+    "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "a7794dc6920c2c9e2805733fe195f0fc9440ebd3",
+    "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "cf515c924f7539f495f6ea70261a8b52ef14b155",
+    "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "6cd55033fcb4167444b6e0773177d52e843c9d93",
+    "4e34716445e8d064937eced1f42df22411b1a18a"
+   ],
+   "ranked": [
+    {
+     "sha": "cf515c924f7539f495f6ea70261a8b52ef14b155",
+     "subject": "Fail fast when retrieval is slow - it normally answers in about 30 ms",
+     "deployed_in": "952e417",
+     "lexical": 10.19,
+     "semantic": 0.763,
+     "score": 0.9052,
+     "matched_terms": [
+      "gateway",
+      "timeout",
+      "api",
+      "chat",
+      "retrieval"
+     ]
+    },
+    {
+     "sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+     "subject": "Revert \"Fail fast when retrieval is slow - it normally answers in about 30 ms\"",
+     "deployed_in": "1c5b681",
+     "lexical": 9.9,
+     "semantic": 0.7531,
+     "score": 0.8844,
+     "matched_terms": [
+      "gateway",
+      "timeout",
+      "api",
+      "chat",
+      "retrieval"
+     ]
+    },
+    {
+     "sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+     "subject": "Note the generation timeout",
+     "deployed_in": "ee1a12f",
+     "lexical": 8.5,
+     "semantic": 0.6317,
+     "score": 0.7533,
+     "matched_terms": [
+      "service",
+      "llm",
+      "timeout",
+      "ollama",
+      "generation"
+     ]
+    },
+    {
+     "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+     "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+     "deployed_in": "1a290b0",
+     "lexical": 7.49,
+     "semantic": 0.6444,
+     "score": 0.699,
+     "matched_terms": [
+      "service",
+      "generate",
+      "api",
+      "latency",
+      "ollama",
+      "embed"
+     ]
+    },
+    {
+     "sha": "771ab7700d574657aa6247b46305c72216e5adb5",
+     "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+     "deployed_in": "ee1a12f",
+     "lexical": 6.25,
+     "semantic": 0.61,
+     "score": 0.612,
+     "matched_terms": [
+      "service",
+      "timeout",
+      "ollama",
+      "embed"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/api_gateway/app/main.py::_run_retrieval",
+    "patient/api_gateway/app/main.py::ChatRequest",
+    "patient/api_gateway/app/main.py::chat_stream"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 6199,
+  "provider_failures": [],
+  "status": "ok",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "diagnosis": {
+   "summary": "Gateway /api/chat p95 latency rose to about 85-118 s because chat/generation demand roughly quadrupled. Ollama's generate path is the shared bottleneck: requests queue behind it, in-flight hits the 100 cap at both gateway and llm, and every answer waits in line. Nothing is erroring and no relevant code change explains it.",
+   "incident_class": "capacity",
+   "demand_vs_capacity": {
+    "traffic_change": "rose",
+    "deploy_before_onset": true,
+    "verdict": "demand_rose",
+    "reasoning": "Total traffic_rps fell, but baseline traffic was mostly cheap retrieval searches. The demand that matters, chat requests that reach generation, rose about 4-5x: requests_rps{llm} went from 0.27 to 1.15 and answered chat outcomes from 0.20 to 1.07 rps. in_flight{llm} climbed from 0.16 to 100 (saturated). Latency rose with queue depth: p50 went to 104 s, but there were no errors, restarts or OOMs and service_up stayed 1. Requests are still answered successfully, just late, which is the signature of queueing at a saturated backend rather than something broken. The only deploy close to onset was 4e34716 at 10:30:38. It touched only retrieval, and retrieval latency is unchanged (p50 about 27 ms, p95 about 57 ms), so it does not explain the symptoms. The retrieval timeout commit cf515c9 was reverted by 1c5b681, and the running code shows timeout=30.0."
+   },
+   "hypotheses": [
+    {
+     "cause": "Chat demand that requires LLM generation rose about 4-5x and exceeds the throughput of the single local Ollama server. Generate calls queue, in-flight saturates at 100, and end-to-end chat latency grows to more than 100 s.",
+     "component": "ollama",
+     "confidence": 0.8,
+     "evidence": [
+      "requests_rps{service=llm} baseline 0.27 -> incident max 1.15 (x4.3); chat_outcomes_rps{answered} 0.20 -> 1.07 (x5.4)",
+      "in_flight{service=llm} and in_flight{service=gateway} baseline <1 -> 100 (saturated)",
+      "ollama_p95_s{generate} 2.4 s -> 118.4 s, while ollama_p95_s{embed} is unchanged at about 0.05 s",
+      "Retrieval latency is flat; no error/warning logs, no restarts, no OOM kills; memory growth in gateway/llm is consistent with queued requests"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    },
+    {
+     "cause": "Ollama generation got slower per request (for example, the model reloaded or there is GPU/CPU contention) independent of load, which would amplify queueing.",
+     "component": "ollama",
+     "confidence": 0.15,
+     "evidence": [
+      "Generate latency explodes while embed latency stays normal",
+      "The first incident sample of generate p95 is a normal 1.91 s, and degradation tracks the rise in llm request rate, which argues against a standalone slowdown"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    },
+    {
+     "cause": "The retrieval deploy 4e34716 at 10:30:38 changed behaviour in a way that increases generation work, for example by sending larger contexts.",
+     "component": "retrieval",
+     "confidence": 0.05,
+     "evidence": [
+      "This deploy is the only change shortly before onset",
+      "Retrieval latency and memory are normal and no diff in the candidates links it to generation load, so this is unlikely"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "edits": [],
+    "action": "Operator steps:\n1. Shed or rate-limit the surge of /api/chat traffic at the gateway, and identify its source (client or load test).\n2. Add generation capacity:\n   - Run more Ollama parallelism (raise OLLAMA_NUM_PARALLEL if GPU memory allows), or add GPU/another Ollama instance.\n   - Confirm models stay loaded (OLLAMA_KEEP_ALIVE=-1).\n3. Cap llm in-flight concurrency with fast 429/503 rejection, so queued requests do not wait about 2 minutes.\n4. Monitor in_flight{llm} draining and generate p95 returning to about 2-4 s.",
+    "rationale": "The system is healthy, but generation demand exceeds what one Ollama server can serve. Latency is pure queueing, so the remedy is to reduce demand or add capacity. Reverting code would not help: no listed commit explains the load, and the only recent deploy (retrieval) shows unchanged behaviour.",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": true,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 2,
+   "prompt_tokens": 22522,
+   "completion_tokens": 3997,
+   "cost_usd": 0.170028,
+   "seconds": 36.98
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 7.85,
+   "llm_s": 36.98,
+   "total_s": 44.83
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 120.3,
+  "received_to_report_s": 115.8
+ },
+ "markdown": "# Incident inc_2f42327b59\n\n**Alert:** HighLatencyP95 - p95 latency of gateway /api/chat is 84.8s\n**Started:** 2026-11-22T10:44:30.51Z  \n**Running commit:** 4e34716  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** anthropic:claude-opus-5-5\n\n## What broke\n\nGateway /api/chat p95 latency rose to about 85-118 s because chat/generation demand roughly quadrupled. Ollama's generate path is the shared bottleneck: requests queue behind it, in-flight hits the 100 cap at both gateway and llm, and every answer waits in line. Nothing is erroring and no relevant code change explains it.\n\n**Incident class:** `capacity`\n\n**Demand versus capacity:** traffic rose, deploy before onset: True, verdict: demand_rose. Total traffic_rps fell, but baseline traffic was mostly cheap retrieval searches. The demand that matters, chat requests that reach generation, rose about 4-5x: requests_rps{llm} went from 0.27 to 1.15 and answered chat outcomes from 0.20 to 1.07 rps. in_flight{llm} climbed from 0.16 to 100 (saturated). Latency rose with queue depth: p50 went to 104 s, but there were no errors, restarts or OOMs and service_up stayed 1. Requests are still answered successfully, just late, which is the signature of queueing at a saturated backend rather than something broken. The only deploy close to onset was 4e34716 at 10:30:38. It touched only retrieval, and retrieval latency is unchanged (p50 about 27 ms, p95 about 57 ms), so it does not explain the symptoms. The retrieval timeout commit cf515c9 was reverted by 1c5b681, and the running code shows timeout=30.0.\n\n## Evidence\n\n- alert 2026-11-22T10:44:30.51Z **HighLatencyP95** gateway: p95 latency of gateway /api/chat is 84.8s\n- alert 2026-11-22T10:44:30.51Z **HighLatencyP95** llm: p95 latency of llm /generate is 84.9s\n- metric `requests_rps{service=llm}` baseline 0.2672 -> 1.1454 (x4.3)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.1974 -> 1.0727 (x5.4)\n- metric `latency_p95_s{endpoint=/api/chat,service=gateway}` baseline 2.5448 -> 118.4151 (x46.5)\n- metric `latency_p95_s{endpoint=/generate,service=llm}` baseline 2.4342 -> 118.4434 (x48.7)\n- metric `latency_p50_s{endpoint=/api/chat,service=gateway}` baseline 1.2033 -> 104.1509 (x86.6)\n- metric `latency_p50_s{endpoint=/api/retrieval/search,service=gateway}` baseline 0.049 -> 0.0762 (x1.6)\n- metric `latency_p50_s{endpoint=/generate,service=llm}` baseline 1.1483 -> 104.434 (x90.9)\n- metric `in_flight{service=gateway}` baseline 0.7333 -> 100.0 (x136.4)\n\nDeploys in the lookback window: 13; candidate commits (time filter only): 24\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.80 | ollama | none | Chat demand that requires LLM generation rose about 4-5x and exceeds the throughput of the single local Ollama server. Generate calls queue, in-flight saturates at 100, and end-to-end chat latency grows to more than 100 s. |\n| 2 | 0.15 | ollama | none | Ollama generation got slower per request (for example, the model reloaded or there is GPU/CPU contention) independent of load, which would amplify queueing. |\n| 3 | 0.05 | retrieval | none | The retrieval deploy 4e34716 at 10:30:38 changed behaviour in a way that increases generation work, for example by sending larger contexts. |\n\nEvidence for #1:\n- requests_rps{service=llm} baseline 0.27 -> incident max 1.15 (x4.3); chat_outcomes_rps{answered} 0.20 -> 1.07 (x5.4)\n- in_flight{service=llm} and in_flight{service=gateway} baseline <1 -> 100 (saturated)\n- ollama_p95_s{generate} 2.4 s -> 118.4 s, while ollama_p95_s{embed} is unchanged at about 0.05 s\n- Retrieval latency is flat; no error/warning logs, no restarts, no OOM kills; memory growth in gateway/llm is consistent with queued requests\n\nEvidence for #2:\n- Generate latency explodes while embed latency stays normal\n- The first incident sample of generate p95 is a normal 1.91 s, and degradation tracks the rise in llm request rate, which argues against a standalone slowdown\n\nEvidence for #3:\n- This deploy is the only change shortly before onset\n- Retrieval latency and memory are normal and no diff in the candidates links it to generation load, so this is unlikely\n\n## Proposed fix\n\n**Kind:** action\n\nThe system is healthy, but generation demand exceeds what one Ollama server can serve. Latency is pure queueing, so the remedy is to reduce demand or add capacity. Reverting code would not help: no listed commit explains the load, and the only recent deploy (retrieval) shows unchanged behaviour.\n\n**Recommended action:** Operator steps:\n1. Shed or rate-limit the surge of /api/chat traffic at the gateway, and identify its source (client or load test).\n2. Add generation capacity:\n   - Run more Ollama parallelism (raise OLLAMA_NUM_PARALLEL if GPU memory allows), or add GPU/another Ollama instance.\n   - Confirm models stay loaded (OLLAMA_KEEP_ALIVE=-1).\n3. Cap llm in-flight concurrency with fast 429/503 rejection, so queued requests do not wait about 2 minutes.\n4. Monitor in_flight{llm} draining and generate p95 returning to about 2-4 s.\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n2 calls, 22522 prompt + 3997 completion tokens, $0.170028; reasoning 36.98s, total 44.83s\n",
+ "resolution": null,
+ "agents": {
+  "status": "running",
+  "requested_at": "2026-11-22T10:46:30Z",
+  "error": null,
+  "task_id": "20261122-104630-5aadb1",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-104630-5aadb1",
+  "started_at": "2026-11-22T10:46:30Z",
+  "outcome": null,
+  "failure_stage": null,
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": null,
+  "cost_usd": 0.0522,
+  "diagnosis": null,
+  "patch": null,
+  "tests": null,
+  "escalation": null,
+  "pr": null,
+  "steps": [
+   {
+    "t": "2026-11-22T10:46:31.316117+00:00",
+    "agent": "diagnoser",
+    "to": "manager",
+    "kind": "dispatch",
+    "status": "in_progress"
+   }
+  ],
+  "decisions": [
+   {
+    "t": "2026-11-22T10:46:31.305757+00:00",
+    "event": "start",
+    "choice": "diagnoser",
+    "why": "new task"
+   }
+  ],
+  "updated_at": "2026-11-22T10:46:38Z",
+  "poll_error": null
+ },
+ "evidence": {
+  "alert": {
+   "received_at": "2026-11-22T10:44:35.515Z",
+   "status": "firing",
+   "alertname": "HighLatencyP95",
+   "fingerprint": "8f6fe540ca3af344",
+   "startsAt": "2026-11-22T10:44:30.51Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "HighLatencyP95",
+    "endpoint": "/api/chat",
+    "path": "generation",
+    "service": "gateway",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "95th percentile request duration over the last 2 minutes is above the 40 s threshold.",
+    "summary": "p95 latency of gateway /api/chat is 84.8s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=histogram_quantile%280.95%2C+sum+by+%28le%2C+service%2C+endpoint%29+%28rate%28knowledgeai_http_request_duration_seconds_bucket%7Bendpoint%3D~%22%2Fapi%2Fchat%7C%2Fgenerate%22%7D%5B2m%5D%29%29%29+%3E+40&g0.tab=1",
+   "groupKey": "{}:{alertname=\"HighLatencyP95\", service=\"gateway\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-11-22T10:44:30.51Z",
+    "labels": {
+     "alertname": "HighLatencyP95",
+     "endpoint": "/api/chat",
+     "path": "generation",
+     "service": "gateway",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "p95 latency of gateway /api/chat is 84.8s"
+   },
+   {
+    "alertname": "HighLatencyP95",
+    "startsAt": "2026-11-22T10:44:30.51Z",
+    "labels": {
+     "alertname": "HighLatencyP95",
+     "endpoint": "/generate",
+     "path": "generation",
+     "service": "llm",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "p95 latency of llm /generate is 84.9s"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-11-22T10:34:30Z",
+    "2026-11-22T10:45:30Z"
+   ],
+   "baseline": [
+    "2026-11-22T10:04:30Z",
+    "2026-11-22T10:34:30Z"
+   ]
+  },
+  "logs": [],
+  "deploys": [
+   {
+    "ts": "2026-11-22T07:23:16Z",
+    "git_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "short_sha": "1a290b0",
+    "previous_sha": "d6d9c50b2e17b3cd4811e0ca96e939fc7d73b2e3",
+    "commits": [
+     "763af4c291a2108276c7835c896f82e2d867d78a",
+     "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "09770921d31b390faaee760557f0c3551350c6cb",
+     "25a35db6a36f692c398c514272f10dcca911fb71",
+     "a67398e8669ee79457191ee57821cb760edd50f3",
+     "1a290b0795debfc42250e3e8fb55122b549c2076"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "deploy/agai/models-claude.yaml",
+     "deploy/agai/models.yaml",
+     "deploy/gcp/create_vm.ps1",
+     "deploy/gcp/startup.sh",
+     "deploy/gcp/vm-up.sh",
+     "deploy/gcp/write_env.py",
+     "docker-compose.yml",
+     "doctor/app/llm.py",
+     "doctor/app/settings.py",
+     "doctor/requirements.txt",
+     "doctor/tests/test_anthropic_provider.py",
+     "faults/campaign.py",
+     "faults/campaign_report.py",
+     "faults/common.py",
+     "faults/run_fault.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 3.8
+    },
+    "duration_s": 33.2,
+    "reason": "GCP VM boot 1a290b0",
+    "pipeline": "manual",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:26:24Z",
+    "git_sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "short_sha": "3bb7cb1",
+    "previous_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "commits": [
+     "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+     "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019"
+    ],
+    "services_changed": [
+     "llm"
+    ],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md",
+     "patient/llm_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 3bb7cb1",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:27:06Z",
+    "git_sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "short_sha": "ee1a12f",
+    "previous_sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "commits": [
+     "771ab7700d574657aa6247b46305c72216e5adb5",
+     "ee1a12fe7a80bedba7b56259640568c4fefbe5fc"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "llm",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py",
+     "patient/llm_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.2,
+    "reason": "local pipeline push ee1a12f",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:44:20Z",
+    "git_sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "short_sha": "70c3dff",
+    "previous_sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "commits": [
+     "70c3dff428aa9f43be013e18f612229ad1b1d38b"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 70c3dff",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:57:03Z",
+    "git_sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "short_sha": "225b7d2",
+    "previous_sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "commits": [
+     "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+     "225b7d25e15feb2dc9185cebc5f640448d9e7f1c"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.3,
+    "reason": "local pipeline push 225b7d2",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:57:45Z",
+    "git_sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "short_sha": "5dc7f1a",
+    "previous_sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "commits": [
+     "44405f4f619e1f069afe5d29393331144f66f23e",
+     "5dc7f1a615f801249e55ad06500fd4258bfb972b"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.1,
+    "reason": "local pipeline push 5dc7f1a",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:07:18Z",
+    "git_sha": "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "short_sha": "4c8b3c0",
+    "previous_sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "commits": [
+     "4c8b3c072b8e5c74786bc5b88059e865763c86cf"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 30.8,
+    "reason": "local pipeline push 4c8b3c0",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:37:23Z",
+    "git_sha": "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "short_sha": "cb351df",
+    "previous_sha": "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "commits": [
+     "a7794dc6920c2c9e2805733fe195f0fc9440ebd3",
+     "cb351df66313621e72c2ff1b65cc69ea7912f976"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.4,
+    "reason": "local pipeline push cb351df",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:38:07Z",
+    "git_sha": "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "short_sha": "952e417",
+    "previous_sha": "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "commits": [
+     "cf515c924f7539f495f6ea70261a8b52ef14b155",
+     "952e4172e9cc17d3a8e69969a7d661418053bdce"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.8,
+    "reason": "local pipeline push 952e417",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:48:50Z",
+    "git_sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "short_sha": "1c5b681",
+    "previous_sha": "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "commits": [
+     "1c5b681115773efcf6ee55e9579e165ede612eea"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 29.9,
+    "reason": "local pipeline push 1c5b681",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T10:13:32Z",
+    "git_sha": "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "short_sha": "ace96fb",
+    "previous_sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "commits": [
+     "ace96fbdde3617bd8afac170c86dbae045b4cc71"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.0,
+    "reason": "local pipeline push ace96fb",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T10:14:15Z",
+    "git_sha": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+    "short_sha": "6cd5503",
+    "previous_sha": "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "commits": [
+     "6cd55033fcb4167444b6e0773177d52e843c9d93"
+    ],
+    "services_changed": [
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/retrieval_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 6cd5503",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T10:30:38Z",
+    "git_sha": "4e34716445e8d064937eced1f42df22411b1a18a",
+    "short_sha": "4e34716",
+    "previous_sha": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+    "commits": [
+     "4e34716445e8d064937eced1f42df22411b1a18a"
+    ],
+    "services_changed": [
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/retrieval_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.1,
+    "reason": "local pipeline push 4e34716",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "763af4c291a2108276c7835c896f82e2d867d78a",
+    "subject": "Faults: keep each fault live until the agent team is done; one-table campaign report",
+    "date": "2026-11-21T10:01:25+05:30"
+   },
+   {
+    "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+    "date": "2026-11-21T10:05:59+05:30"
+   },
+   {
+    "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+    "date": "2026-11-21T10:24:55+05:30"
+   },
+   {
+    "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+    "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+    "date": "2026-11-21T10:52:03+05:30"
+   },
+   {
+    "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+    "subject": "Claude for the doctor and the agent team",
+    "date": "2026-11-22T11:44:37+05:30"
+   },
+   {
+    "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "subject": "GCP start-up: always enable and start Ollama",
+    "date": "2026-11-22T12:51:53+05:30"
+   },
+   {
+    "sha": "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+    "subject": "Explain the prompt layout",
+    "date": "2026-11-22T08:25:38Z"
+   },
+   {
+    "sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "subject": "Operations notes: restarting ollama",
+    "date": "2026-11-22T08:25:38Z"
+   },
+   {
+    "sha": "771ab7700d574657aa6247b46305c72216e5adb5",
+    "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+    "date": "2026-11-22T08:26:24Z"
+   },
+   {
+    "sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "subject": "Note the generation timeout",
+    "date": "2026-11-22T08:26:24Z"
+   },
+   {
+    "sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "subject": "Revert \"Cap embedding calls at 10 s so a stuck call frees its thread\"",
+    "date": "2026-11-22T08:43:37Z"
+   },
+   {
+    "sha": "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-11-22T08:56:20Z"
+   },
+   {
+    "sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "subject": "Explain bare model names",
+    "date": "2026-11-22T08:56:20Z"
+   },
+   {
+    "sha": "44405f4f619e1f069afe5d29393331144f66f23e",
+    "subject": "Clarify what the gateway health check covers",
+    "date": "2026-11-22T08:57:03Z"
+   },
+   {
+    "sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "subject": "Operations notes: health endpoints",
+    "date": "2026-11-22T08:57:03Z"
+   },
+   {
+    "sha": "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "subject": "Revert \"Title new chat sessions after the question\"",
+    "date": "2026-11-22T09:06:35Z"
+   },
+   {
+    "sha": "a7794dc6920c2c9e2805733fe195f0fc9440ebd3",
+    "subject": "Operations notes: request ids",
+    "date": "2026-11-22T09:36:41Z"
+   },
+   {
+    "sha": "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "subject": "Operations notes: changing the chat model",
+    "date": "2026-11-22T09:36:41Z"
+   },
+   {
+    "sha": "cf515c924f7539f495f6ea70261a8b52ef14b155",
+    "subject": "Fail fast when retrieval is slow - it normally answers in about 30 ms",
+    "date": "2026-11-22T09:37:23Z"
+   },
+   {
+    "sha": "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "subject": "Operations notes: alert routing",
+    "date": "2026-11-22T09:37:23Z"
+   },
+   {
+    "sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "subject": "Revert \"Fail fast when retrieval is slow - it normally answers in about 30 ms\"",
+    "date": "2026-11-22T09:48:08Z"
+   },
+   {
+    "sha": "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "subject": "Operations notes: ports on the development laptop",
+    "date": "2026-11-22T10:12:50Z"
+   },
+   {
+    "sha": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+    "subject": "Serve repeated retrieval questions from memory",
+    "date": "2026-11-22T10:13:32Z"
+   },
+   {
+    "sha": "4e34716445e8d064937eced1f42df22411b1a18a",
+    "subject": "Revert \"Serve repeated retrieval questions from memory\"",
+    "date": "2026-11-22T10:29:56Z"
+   }
+  ]
+ }
+}

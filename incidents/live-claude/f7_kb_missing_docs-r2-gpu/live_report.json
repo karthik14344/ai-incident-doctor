@@ -1,0 +1,373 @@
+{
+ "incident": {
+  "id": "inc_f5f7edf5a1",
+  "trigger": "ticket",
+  "status": "ok",
+  "alert": {
+   "status": "firing",
+   "alertname": "UserReport",
+   "startsAt": "2026-11-24T15:16:50Z",
+   "fingerprint": "ticket-1795534295",
+   "labels": {
+    "alertname": "UserReport",
+    "severity": "warning",
+    "source": "ticket"
+   },
+   "annotations": {
+    "summary": "It no longer answers questions about the library, scholarships or placements.",
+    "description": "Reported by a user; no alert fired. Rough time: about 15 minutes ago."
+   },
+   "ticket": {
+    "text": "It no longer answers questions about the library, scholarships or placements.",
+    "since": "about 15 minutes ago",
+    "search_range": [
+     "2026-11-24T15:09:05Z",
+     "2026-11-24T15:31:35Z"
+    ],
+    "how": "'15 minutes ago'",
+    "onset_signals": [
+     {
+      "metric": "chat_errors_per_min",
+      "onset": 1795533410.238,
+      "value": 1.091,
+      "baseline": 0.0
+     },
+     {
+      "metric": "http_5xx_per_min",
+      "onset": 1795533410.238,
+      "value": 2.182,
+      "baseline": 0.0
+     },
+     {
+      "metric": "downstream_failures_per_min",
+      "onset": 1795533410.238,
+      "value": 1.091,
+      "baseline": 0.0
+     }
+    ],
+    "onset_found": true
+   }
+  },
+  "service": "unknown",
+  "received_at": "2026-11-24T15:31:35Z",
+  "diagnose_after": "2026-11-24T15:31:35Z",
+  "collection_started": "2026-11-24T15:31:35Z",
+  "evidence_saved": "2026-11-24T15:31:35Z",
+  "report_finished": "2026-11-24T15:32:02Z",
+  "alert_to_report_s": 912.0
+ },
+ "report": {
+  "incident_id": "inc_f5f7edf5a1",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "status": "firing",
+   "alertname": "UserReport",
+   "startsAt": "2026-11-24T15:16:50Z",
+   "fingerprint": "ticket-1795534295",
+   "labels": {
+    "alertname": "UserReport",
+    "severity": "warning",
+    "source": "ticket"
+   },
+   "annotations": {
+    "summary": "It no longer answers questions about the library, scholarships or placements.",
+    "description": "Reported by a user; no alert fired. Rough time: about 15 minutes ago."
+   },
+   "ticket": {
+    "text": "It no longer answers questions about the library, scholarships or placements.",
+    "since": "about 15 minutes ago",
+    "search_range": [
+     "2026-11-24T15:09:05Z",
+     "2026-11-24T15:31:35Z"
+    ],
+    "how": "'15 minutes ago'",
+    "onset_signals": [
+     {
+      "metric": "chat_errors_per_min",
+      "onset": 1795533410.238,
+      "value": 1.091,
+      "baseline": 0.0
+     },
+     {
+      "metric": "http_5xx_per_min",
+      "onset": 1795533410.238,
+      "value": 2.182,
+      "baseline": 0.0
+     },
+     {
+      "metric": "downstream_failures_per_min",
+      "onset": 1795533410.238,
+      "value": 1.091,
+      "baseline": 0.0
+     }
+    ],
+    "onset_found": true
+   }
+  },
+  "created_at": "2026-11-24T15:32:02Z",
+  "live_sha": "b26c3a975d83f7f79578af3722d5b4a8bb20ec4f",
+  "retrieval": {
+   "time_filtered": [],
+   "ranked": [],
+   "embedding_used": false,
+   "note": "no deploys in the lookback window",
+   "code_chunks": [
+    "patient/ingestion_service/app/vector_store.py::query_vector_store",
+    "patient/ingestion_service/app/vector_store.py::get_or_create_collection",
+    "patient/api_gateway/app/main.py::debug_retrieval",
+    "patient/api_gateway/app/main.py::_run_retrieval"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 5325,
+  "provider_failures": [],
+  "status": "ok",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "diagnosis": {
+   "summary": "At 15:16:34Z the knowledge base was swapped from version 38ba55c908d1 to 405bbf0b9802. That shrank the 'default' collection from 10 documents / 21 chunks to 4 documents / 9 chunks, so library, scholarship and placement content can no longer be retrieved. Services, traffic and code are unchanged, so this is a data issue.",
+   "incident_class": "data_issue",
+   "demand_vs_capacity": {
+    "traffic_change": "flat",
+    "deploy_before_onset": false,
+    "verdict": "neither",
+    "reasoning": "Demand did not rise. traffic_rps mean is 0.565 in the baseline and 0.602 in the incident, and the incident max of 0.87 is below the baseline max of 0.89. Capacity did not fall either: latencies are unchanged (gateway /api/chat p95 2.42s vs 2.28s; retrieval p95 0.052s vs 0.057s), there were no restarts or OOM kills, and service_up=1 throughout. The running commit b26c3a9 was deployed on 2026-11-22, and there is no deploy in the lookback window. The only change at the onset is the KB version load at 15:16:34Z, which cut the default collection's content."
+   },
+   "hypotheses": [
+    {
+     "cause": "The knowledge base was reloaded to an older or partial version (405bbf0b9802). The 'default' collection dropped from 10 docs / 21 chunks to 4 docs / 9 chunks, removing the documents on library, scholarships and placements. Retrieval finds nothing relevant for those topics, so the assistant can no longer answer them.",
+     "component": "knowledge_base",
+     "confidence": 0.85,
+     "evidence": [
+      "KB load at 2026-11-24T15:16:34Z: 38ba55c908d1 -> 405bbf0b9802, default collection {documents: 10, chunks: 21} -> {documents: 4, chunks: 9}",
+      "The same partial version was loaded at 14:49:00Z and reverted at 15:04:32Z, so 38ba55c908d1 is the known-good full KB",
+      "The user reports that specific topics fail (library, scholarships, placements), not a total outage, which fits missing documents",
+      "No deploy since 2026-11-22; traffic, latency and service health are flat"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    },
+    {
+     "cause": "A transient Chroma connectivity blip during the KB reload. The retrieval service got a DNS 'Temporary failure in name resolution' in get_or_create_collection at the same moment, which caused a few HTTP 500s from retrieval to the gateway.",
+     "component": "chroma",
+     "confidence": 0.15,
+     "evidence": [
+      "ConnectError [Errno -3] Temporary failure in name resolution at vector_store.py:34, a single occurrence at 15:16:34Z (also seen in the baseline)",
+      "downstream_failures_per_min{target=retrieval,reason=http_500} incident max 1.09 is below the baseline max 2.18, so the failure is not sustained",
+      "chroma container_restarts=0 and oom_kills=0"
+     ],
+     "suspected_commit": null,
+     "suspected_files": [
+      "patient/ingestion_service/app/vector_store.py"
+     ]
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "edits": [],
+    "action": "An operator should restore the full knowledge base by reloading KB version 38ba55c908d1 into the 'default' collection; the collection should then hold 10 documents / 21 chunks. Check the collection count, then run test queries on library, scholarships and placements. Also find out which process or person keeps loading 405bbf0b9802 (it happened at 14:49 and again at 15:16) and stop it, so the partial KB is not loaded again.",
+    "rationale": "The symptoms come from missing indexed content, not from code, configuration or capacity. Re-ingesting the known-good KB version brings back the missing topic documents. The single Chroma DNS error was transient and needs no change.",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": true,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 2,
+   "prompt_tokens": 18810,
+   "completion_tokens": 3201,
+   "cost_usd": 0.13926,
+   "seconds": 25.91
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 0.2,
+   "llm_s": 25.91,
+   "total_s": 26.12
+  },
+  "trigger": "ticket",
+  "alert_to_report_s": 912.0,
+  "received_to_report_s": 27.0
+ },
+ "markdown": "# Incident inc_f5f7edf5a1\n\n**Alert:** UserReport - It no longer answers questions about the library, scholarships or placements.\n**Started:** 2026-11-24T15:16:50Z  \n**Running commit:** b26c3a9  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** anthropic:claude-opus-5-5\n\n## What broke\n\nAt 15:16:34Z the knowledge base was swapped from version 38ba55c908d1 to 405bbf0b9802. That shrank the 'default' collection from 10 documents / 21 chunks to 4 documents / 9 chunks, so library, scholarship and placement content can no longer be retrieved. Services, traffic and code are unchanged, so this is a data issue.\n\n**Incident class:** `data_issue`\n\n**Demand versus capacity:** traffic flat, deploy before onset: False, verdict: neither. Demand did not rise. traffic_rps mean is 0.565 in the baseline and 0.602 in the incident, and the incident max of 0.87 is below the baseline max of 0.89. Capacity did not fall either: latencies are unchanged (gateway /api/chat p95 2.42s vs 2.28s; retrieval p95 0.052s vs 0.057s), there were no restarts or OOM kills, and service_up=1 throughout. The running commit b26c3a9 was deployed on 2026-11-22, and there is no deploy in the lookback window. The only change at the onset is the KB version load at 15:16:34Z, which cut the default collection's content.\n\n## Evidence\n\n- log `WARNING:a4dace19f999` x1 in gateway:  request\n- log `ConnectError:bf91e0cfbf34` x1 in retrieval: ConnectError [Errno -3] Temporary failure in name resolution\n- metric `traffic_rps{all}` baseline 0.5654 -> 0.8727 (x1.5)\n- metric `requests_rps{service=llm}` baseline 0.2516 -> 0.4 (x1.6)\n- metric `requests_rps{service=retrieval}` baseline 0.6504 -> 0.9818 (x1.5)\n- metric `error_ratio_5xx{service=gateway}` baseline 0.001 -> 0.0294 (x29.4)\n- metric `error_ratio_5xx{service=retrieval}` baseline 0.0021 -> 0.0303 (x14.4)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.1601 -> 0.3273 (x2.0)\n- metric `latency_p95_s{endpoint=/retrieve,service=retrieval}` baseline 0.0523 -> 0.082 (x1.6)\n- metric `in_flight{service=gateway}` baseline 0.0968 -> 2.0 (x20.7)\n\nDeploys in the lookback window: 0; candidate commits (time filter only): 0\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.85 | knowledge_base | none | The knowledge base was reloaded to an older or partial version (405bbf0b9802). The 'default' collection dropped from 10 docs / 21 chunks to 4 docs / 9 chunks, removing the documents on library, scholarships and placements. Retrieval finds nothing relevant for those topics, so the assistant can no longer answer them. |\n| 2 | 0.15 | chroma | none | A transient Chroma connectivity blip during the KB reload. The retrieval service got a DNS 'Temporary failure in name resolution' in get_or_create_collection at the same moment, which caused a few HTTP 500s from retrieval to the gateway. |\n\nEvidence for #1:\n- KB load at 2026-11-24T15:16:34Z: 38ba55c908d1 -> 405bbf0b9802, default collection {documents: 10, chunks: 21} -> {documents: 4, chunks: 9}\n- The same partial version was loaded at 14:49:00Z and reverted at 15:04:32Z, so 38ba55c908d1 is the known-good full KB\n- The user reports that specific topics fail (library, scholarships, placements), not a total outage, which fits missing documents\n- No deploy since 2026-11-22; traffic, latency and service health are flat\n\nEvidence for #2:\n- ConnectError [Errno -3] Temporary failure in name resolution at vector_store.py:34, a single occurrence at 15:16:34Z (also seen in the baseline)\n- downstream_failures_per_min{target=retrieval,reason=http_500} incident max 1.09 is below the baseline max 2.18, so the failure is not sustained\n- chroma container_restarts=0 and oom_kills=0\n\n## Proposed fix\n\n**Kind:** action\n\nThe symptoms come from missing indexed content, not from code, configuration or capacity. Re-ingesting the known-good KB version brings back the missing topic documents. The single Chroma DNS error was transient and needs no change.\n\n**Recommended action:** An operator should restore the full knowledge base by reloading KB version 38ba55c908d1 into the 'default' collection; the collection should then hold 10 documents / 21 chunks. Check the collection count, then run test queries on library, scholarships and placements. Also find out which process or person keeps loading 405bbf0b9802 (it happened at 14:49 and again at 15:16) and stop it, so the partial KB is not loaded again.\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n2 calls, 18810 prompt + 3201 completion tokens, $0.13926; reasoning 25.91s, total 26.12s\n",
+ "resolution": null,
+ "agents": {
+  "status": "off",
+  "note": "DOCTOR_AGENTS_URL is not set"
+ },
+ "evidence": {
+  "alert": {
+   "status": "firing",
+   "alertname": "UserReport",
+   "startsAt": "2026-11-24T15:16:50Z",
+   "fingerprint": "ticket-1795534295",
+   "labels": {
+    "alertname": "UserReport",
+    "severity": "warning",
+    "source": "ticket"
+   },
+   "annotations": {
+    "summary": "It no longer answers questions about the library, scholarships or placements.",
+    "description": "Reported by a user; no alert fired. Rough time: about 15 minutes ago."
+   },
+   "ticket": {
+    "text": "It no longer answers questions about the library, scholarships or placements.",
+    "since": "about 15 minutes ago",
+    "search_range": [
+     "2026-11-24T15:09:05Z",
+     "2026-11-24T15:31:35Z"
+    ],
+    "how": "'15 minutes ago'",
+    "onset_signals": [
+     {
+      "metric": "chat_errors_per_min",
+      "onset": 1795533410.238,
+      "value": 1.091,
+      "baseline": 0.0
+     },
+     {
+      "metric": "http_5xx_per_min",
+      "onset": 1795533410.238,
+      "value": 2.182,
+      "baseline": 0.0
+     },
+     {
+      "metric": "downstream_failures_per_min",
+      "onset": 1795533410.238,
+      "value": 1.091,
+      "baseline": 0.0
+     }
+    ],
+    "onset_found": true
+   }
+  },
+  "related_alerts": [],
+  "windows": {
+   "incident": [
+    "2026-11-24T15:06:50Z",
+    "2026-11-24T15:17:50Z"
+   ],
+   "baseline": [
+    "2026-11-24T14:36:50Z",
+    "2026-11-24T15:06:50Z"
+   ]
+  },
+  "logs": [
+   {
+    "signature": "WARNING:a4dace19f999",
+    "count": 1,
+    "first_seen": "2026-11-24T15:16:34Z",
+    "last_seen": "2026-11-24T15:16:34Z",
+    "services": [
+     "gateway"
+    ],
+    "level": "WARNING",
+    "message": "request",
+    "exc_type": null,
+    "exc_message": "",
+    "error_file": null,
+    "error_line": null,
+    "error_function": null,
+    "stack_tail": [],
+    "git_shas": [
+     "b26c3a9"
+    ],
+    "target": null,
+    "new_in_incident": false
+   },
+   {
+    "signature": "ConnectError:bf91e0cfbf34",
+    "count": 1,
+    "first_seen": "2026-11-24T15:16:34Z",
+    "last_seen": "2026-11-24T15:16:34Z",
+    "services": [
+     "retrieval"
+    ],
+    "level": "ERROR",
+    "message": "unhandled exception",
+    "exc_type": "ConnectError",
+    "exc_message": "[Errno -3] Temporary failure in name resolution",
+    "error_file": "/app/ingestion_service/app/vector_store.py",
+    "error_line": 34,
+    "error_function": "get_or_create_collection",
+    "stack_tail": [
+     "    response = self._send_single_request(request)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_client.py\", line 1014, in _send_single_request",
+     "    response = transport.handle_request(request)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 249, in handle_request",
+     "    with map_httpcore_exceptions():",
+     "  File \"/usr/local/lib/python3.10/contextlib.py\", line 153, in __exit__",
+     "    self.gen.throw(typ, value, traceback)",
+     "  File \"/usr/local/lib/python3.10/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions",
+     "    raise mapped_exc(message) from exc",
+     "httpx.ConnectError: [Errno -3] Temporary failure in name resolution"
+    ],
+    "git_shas": [
+     "b26c3a9"
+    ],
+    "target": null,
+    "new_in_incident": false
+   }
+  ],
+  "deploys": [],
+  "kb_changes": [
+   {
+    "ts": "2026-11-24T14:49:00Z",
+    "kb_version": "405bbf0b9802",
+    "previous": "38ba55c908d1",
+    "documents": 4,
+    "collections": {
+     "default": {
+      "documents": 4,
+      "chunks": 9
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-11-24T15:04:32Z",
+    "kb_version": "38ba55c908d1",
+    "previous": "405bbf0b9802",
+    "documents": 10,
+    "collections": {
+     "default": {
+      "documents": 10,
+      "chunks": 21
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   },
+   {
+    "ts": "2026-11-24T15:16:34Z",
+    "kb_version": "405bbf0b9802",
+    "previous": "38ba55c908d1",
+    "documents": 4,
+    "collections": {
+     "default": {
+      "documents": 4,
+      "chunks": 9
+     },
+     "eval_kb": {
+      "documents": 10,
+      "chunks": 21
+     }
+    },
+    "embedding_model": "nomic-embed-text"
+   }
+  ],
+  "candidate_commits": []
+ }
+}

@@ -1,0 +1,142 @@
+{
+  "status": "awaiting_approval",
+  "requested_at": "2026-11-22T11:55:45Z",
+  "error": null,
+  "task_id": "20261122-115545-b8d65e",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-115545-b8d65e",
+  "started_at": "2026-11-22T11:55:45Z",
+  "outcome": "passed",
+  "failure_stage": null,
+  "attempts": 1,
+  "max_attempts": 3,
+  "duration_ms": 43891,
+  "cost_usd": 0.1561,
+  "diagnosis": {
+    "root_cause": "In chat_stream (patient/api_gateway/app/main.py:478), the else-branch that titles a new session reads `len(req.qestion)`, which misspells `question`. ChatRequest (main.py:84-88) declares only session_id, question, collection_name and stream, with no `qestion` field or alias. Pydantic's BaseModel.__getattr__ therefore raises AttributeError. The exception is unhandled, so the ASGI middleware answers 500. The branch runs only when there is no session_id and the question has no '?'. That explains why only a fraction of /api/chat requests (~6-10% of gateway traffic) fail while traffic stays flat. The same typo was introduced earlier by commit 19871dd and reverted, and commit d0ba09a has reintroduced it. Minimal fix: on line 478, change `len(req.qestion)` to `len(req.question)`. The doctor's secondary hypothesis, a restart during rollout, would only cause transient errors and needs no code change.",
+    "implicated_files": [
+      "patient/api_gateway/app/main.py"
+    ],
+    "evidence": [
+      "patient/api_gateway/app/main.py:478: `title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")` uses the misspelled attribute `qestion`",
+      "patient/api_gateway/app/main.py:475-476: questions containing '?' take the other branch, which uses `req.question` correctly, so only questions without '?' fail",
+      "patient/api_gateway/app/main.py:84-88: ChatRequest defines only session_id, question, collection_name and stream, with no `qestion` field or alias",
+      "patient/api_gateway/app/main.py:472: the titling block runs only for new sessions (no session_id), so follow-up messages are unaffected",
+      "Stack trace: AttributeError \"'ChatRequest' object has no attribute 'qestion'\" raised from pydantic __getattr__ called at main.py:478 in chat_stream; logs show this error x18",
+      "bugs:20261122-090542-0a4683 records the identical typo from commit 19871dd earlier the same day, so this is a regression",
+      "faults/acceptance/test_f5_typo.py:4-6 posts a question without '?' ('hostel curfew timings') and expects 200; it would fail on the current code and pass after the fix"
+    ],
+    "confidence": 0.97,
+    "degraded": false,
+    "react_steps": 4
+  },
+  "patch": {
+    "diff": "diff --git a/patient/api_gateway/app/main.py b/patient/api_gateway/app/main.py\n--- a/patient/api_gateway/app/main.py\n+++ b/patient/api_gateway/app/main.py\n@@ -475,7 +475,7 @@\n         if \"?\" in req.question:\n             title = req.question.split(\"?\")[0].strip()[:60] + \"?\"\n         else:\n-            title = req.question.strip()[:60] + (\"...\" if len(req.qestion) > 60 else \"\")\n+            title = req.question.strip()[:60] + (\"...\" if len(req.question) > 60 else \"\")\n         cursor.execute(\"INSERT INTO chat_sessions (id, title, created_at) VALUES (?, ?, ?)\", (session_id, title, datetime.utcnow().isoformat()))\n         conn.commit()\n \n",
+    "rationale": "Commit d0ba09a reintroduced a typo in the new-session titling branch of chat_stream (patient/api_gateway/app/main.py:478). That line calls `len(req.qestion)`, but ChatRequest only defines `question`. Pydantic therefore raises AttributeError for every new session (no session_id) whose question has no '?', and the gateway returns a 500. The fix changes that attribute to `req.question`. The titling feature stays as it is, and the '?' branch is untouched. This matches the earlier accepted fix for the same regression (bugs:20261122-090542-0a4683). The find string includes the full line, which is unique in the file. faults/acceptance/test_f5_typo.py posts a question without '?' and expects 200, so it should pass with this change. No tests were modified.",
+    "files": [
+      "patient/api_gateway/app/main.py"
+    ],
+    "attempt": 1
+  },
+  "tests": {
+    "passed": true,
+    "total": 253,
+    "failed": 0,
+    "failure_stage": null,
+    "failing_assertions": [],
+    "duration_ms": 8326
+  },
+  "escalation": null,
+  "pr": {
+    "branch": "codefix/20261122-115545-b8d65e",
+    "pushed": false,
+    "note": "Committed in isolated workspace 20261122-115545-b8d65e-a1. Awaiting human confirmation to push/open PR.",
+    "commit_sha": "460ed42fac6ab7a83951b1924eeb856c47489c59"
+  },
+  "steps": [
+    {
+      "t": "2026-11-22T11:55:47.686605+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T11:56:14.139125+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T11:56:14.168594+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T11:56:20.861842+00:00",
+      "agent": "fixer",
+      "to": "manager",
+      "kind": "patch",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T11:56:20.888718+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T11:56:29.431109+00:00",
+      "agent": "tester",
+      "to": "manager",
+      "kind": "test_report",
+      "status": "success"
+    },
+    {
+      "t": "2026-11-22T11:56:29.458763+00:00",
+      "agent": "pr",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T11:56:29.665602+00:00",
+      "agent": "pr",
+      "to": "manager",
+      "kind": "pr_result",
+      "status": "success"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T11:55:47.681747+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T11:56:14.151117+00:00",
+      "event": "diagnosis_ready",
+      "choice": "fixer",
+      "why": "only legal transition"
+    },
+    {
+      "t": "2026-11-22T11:56:20.876647+00:00",
+      "event": "patch_ready",
+      "choice": "tester",
+      "why": "verify patch"
+    },
+    {
+      "t": "2026-11-22T11:56:29.445242+00:00",
+      "event": "tests_passed",
+      "choice": "pr_prepare",
+      "why": "tests green"
+    }
+  ],
+  "updated_at": "2026-11-22T11:56:33Z",
+  "poll_error": null,
+  "enabled": true
+}

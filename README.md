@@ -22,6 +22,15 @@ The project is judged on **measured results**, not on a demo. `RESULTS.md` has
 the numbers. `DECISIONS.md` explains every design choice. `PAVILION.md` says
 what changes when the patient moves to the second laptop.
 
+The agent team that the doctor hands its reports to (AGAI) is a separate project
+in its own repository: <https://github.com/Abhiram12062005/AGAI>. It is used from
+here through `deploy/agai/` and is not committed in this repository.
+
+The research paper is in `paper/` (`main.tex`, `references.bib` and the compiled
+`main.pdf`). The live Claude Opus 5.5 runs it reports are in
+`incidents/live-claude/`, and the comparison table is
+`doctor/eval/results/live/claude-vs-llama-live.md`.
+
 ---
 
 ## The whole flow, box by box

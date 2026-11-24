@@ -1,0 +1,73 @@
+{
+  "status": "escalated",
+  "requested_at": "2026-11-22T13:35:12Z",
+  "error": null,
+  "task_id": "20261122-133512-5d22a3",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-133512-5d22a3",
+  "started_at": "2026-11-22T13:35:12Z",
+  "outcome": "escalated",
+  "failure_stage": "diagnosis",
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": 22527,
+  "cost_usd": 0.1132,
+  "diagnosis": {
+    "root_cause": "Diagnoser failed: claude-opus-5-5 refused: reasoning_extraction",
+    "implicated_files": [],
+    "evidence": [],
+    "confidence": 0.0,
+    "degraded": true,
+    "react_steps": 0
+  },
+  "patch": null,
+  "tests": null,
+  "escalation": {
+    "reason": "no usable diagnosis",
+    "summary": "Escalating without a code fix: this is an operational outage, and no source change in patient/ is warranted.\n\nThe bug: from about 13:32Z on 2026-11-22, the gateway cannot resolve the retrieval service's hostname. Every call fails with httpx.ConnectError '[Errno -3] Temporary failure in name resolution' (patient/common/telemetry.py:194, 30 occurrences). Gateway 5xx peaked at 61%. Chats that still get through return refused_scope because they have no retrieved context.\n\nEvidence from the incident doctor:\n- Retrieval rps fell from about 3.5 to 0.07.\n- Retrieval in_flight was 0 throughout.\n- Retrieval process memory dropped from about 323MB to about 98MB, which looks like a restart.\n\nAll of this points to the retrieval container being stopped, crashed, or recreated without its compose network alias.\n\nWhat the pipeline did: no fix attempts were made. The pipeline reported 'no usable diagnosis', and the doctor's analysis found no candidate commit that could explain a DNS failure. The likeliest trigger is the retrieval rollout b26c3a9 at 13:19:57Z, about 12 minutes before the first error, but that commit is not in the candidate list. A code patch cannot fix a missing container or network registration.\n\nSuggested next steps for an operator:\n1. Inspect the container: `docker compose ps retrieval`, its logs and exit code around 13:30Z, and `docker inspect` for its network attachments.\n2. Restore it: `docker compose up -d retrieval`, or `docker network connect --alias <retrieval host> knowledgeai <container>`.\n3. Verify recovery:\n   - `getent hosts <retrieval host>` works from the gateway container;\n   - /retrieve responds;\n   - ConnectError failures drop to 0;\n   - gateway 5xx clears.\n4. If the b26c3a9 rollout caused the exit or crash, consider rolling retrieval back to image 8645aa3, then investigate that rollout.",
+    "attempts": 0,
+    "tried": [
+      "No fixer attempts were made: the pipeline had no usable diagnosis, and the incident is a dependency or infrastructure outage (retrieval service unresolvable on the Docker network), not a source-code defect."
+    ]
+  },
+  "pr": null,
+  "steps": [
+    {
+      "t": "2026-11-22T13:35:12.437584+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T13:35:26.178954+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T13:35:34.656826+00:00",
+      "agent": "manager",
+      "to": "human",
+      "kind": "escalation",
+      "status": "failure"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T13:35:12.433321+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T13:35:26.187882+00:00",
+      "event": "diagnosis_failed",
+      "choice": "escalate",
+      "why": "diagnoser failed"
+    }
+  ],
+  "updated_at": "2026-11-22T13:35:36Z",
+  "poll_error": null,
+  "enabled": true
+}

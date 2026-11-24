@@ -1,0 +1,38 @@
+{
+  "run_id": "f3b_retrieval_bad_address-r1-gpu",
+  "fault_id": "f3b_retrieval_bad_address",
+  "delivery": "environment",
+  "variant": null,
+  "started": "2026-11-22T09:20:18Z",
+  "trigger": "alert",
+  "t_break": "2026-11-22T09:20:18Z",
+  "load": null,
+  "neighbour": false,
+  "first_alert": {
+    "alertname": "DownstreamCallFailures",
+    "startsAt": "2026-11-22T09:21:28.987Z",
+    "received_at": "2026-11-22T09:21:33.991Z",
+    "labels": {
+      "alertname": "DownstreamCallFailures",
+      "pattern": "outage",
+      "service": "gateway",
+      "severity": "warning",
+      "stack": "knowledgeai",
+      "target": "retrieval"
+    }
+  },
+  "t_alert": "2026-11-22T09:21:28.987Z",
+  "unnoticed_s": 71.0,
+  "expected_alert": true,
+  "incident_id": "inc_d9cbee9e2e",
+  "t_report": "2026-11-22T09:23:11Z",
+  "doctor_s": 102.0,
+  "joined_alerts": [],
+  "agents_wait_started": "2026-11-22T09:23:15Z",
+  "agents_status": "escalated",
+  "agents_wait_finished": "2026-11-22T09:24:00Z",
+  "t_revert_start": "2026-11-22T09:24:00Z",
+  "t_reverted": "2026-11-22T09:24:01Z",
+  "t_alert_resolved": "2026-11-22T09:24:33.995Z",
+  "finished": "2026-11-22T09:24:41Z"
+}

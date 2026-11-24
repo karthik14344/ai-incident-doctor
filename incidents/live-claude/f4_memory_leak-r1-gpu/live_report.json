@@ -1,0 +1,876 @@
+{
+ "incident": {
+  "id": "inc_13fe9e525e",
+  "trigger": "alert",
+  "status": "ok",
+  "alert": {
+   "received_at": "2026-11-22T10:27:06.182Z",
+   "status": "firing",
+   "alertname": "MemoryClimbing",
+   "fingerprint": "90b78e9da122770c",
+   "startsAt": "2026-11-22T10:27:01.176Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "MemoryClimbing",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "Process memory of retrieval has risen steadily for at least 3 minutes.",
+    "summary": "resident memory of retrieval is growing by 223kiB/s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=deriv%28knowledgeai_process_resident_memory_bytes%5B5m%5D%29+%3E+131072+and+on+%28service%29+%28time%28%29+-+max+by+%28service%29+%28label_replace%28process_start_time_seconds%2C+%22service%22%2C+%22%241%22%2C+%22job%22%2C+%22%28.%2A%29%22%29%29%29+%3E+600&g0.tab=1",
+   "groupKey": "{}:{alertname=\"MemoryClimbing\", service=\"retrieval\"}"
+  },
+  "service": "retrieval",
+  "received_at": "2026-11-22T10:27:06Z",
+  "diagnose_after": "2026-11-22T10:28:16Z",
+  "collection_started": "2026-11-22T10:28:16Z",
+  "evidence_saved": "2026-11-22T10:28:16Z",
+  "report_finished": "2026-11-22T10:29:10Z",
+  "alert_to_report_s": 129.6
+ },
+ "report": {
+  "incident_id": "inc_13fe9e525e",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "received_at": "2026-11-22T10:27:06.182Z",
+   "status": "firing",
+   "alertname": "MemoryClimbing",
+   "fingerprint": "90b78e9da122770c",
+   "startsAt": "2026-11-22T10:27:01.176Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "MemoryClimbing",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "Process memory of retrieval has risen steadily for at least 3 minutes.",
+    "summary": "resident memory of retrieval is growing by 223kiB/s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=deriv%28knowledgeai_process_resident_memory_bytes%5B5m%5D%29+%3E+131072+and+on+%28service%29+%28time%28%29+-+max+by+%28service%29+%28label_replace%28process_start_time_seconds%2C+%22service%22%2C+%22%241%22%2C+%22job%22%2C+%22%28.%2A%29%22%29%29%29+%3E+600&g0.tab=1",
+   "groupKey": "{}:{alertname=\"MemoryClimbing\", service=\"retrieval\"}"
+  },
+  "created_at": "2026-11-22T10:29:04Z",
+  "live_sha": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+  "retrieval": {
+   "time_filtered": [
+    "763af4c291a2108276c7835c896f82e2d867d78a",
+    "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "09770921d31b390faaee760557f0c3551350c6cb",
+    "25a35db6a36f692c398c514272f10dcca911fb71",
+    "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+    "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "771ab7700d574657aa6247b46305c72216e5adb5",
+    "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+    "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "44405f4f619e1f069afe5d29393331144f66f23e",
+    "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "a7794dc6920c2c9e2805733fe195f0fc9440ebd3",
+    "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "cf515c924f7539f495f6ea70261a8b52ef14b155",
+    "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "6cd55033fcb4167444b6e0773177d52e843c9d93"
+   ],
+   "ranked": [
+    {
+     "sha": "cf515c924f7539f495f6ea70261a8b52ef14b155",
+     "subject": "Fail fast when retrieval is slow - it normally answers in about 30 ms",
+     "deployed_in": "952e417",
+     "lexical": 6.79,
+     "semantic": 0.7598,
+     "score": 0.9039,
+     "matched_terms": [
+      "retrieval",
+      "timeout",
+      "gateway"
+     ]
+    },
+    {
+     "sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+     "subject": "Revert \"Fail fast when retrieval is slow - it normally answers in about 30 ms\"",
+     "deployed_in": "1c5b681",
+     "lexical": 6.6,
+     "semantic": 0.765,
+     "score": 0.8891,
+     "matched_terms": [
+      "retrieval",
+      "timeout",
+      "gateway"
+     ]
+    },
+    {
+     "sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+     "subject": "Note the generation timeout",
+     "deployed_in": "ee1a12f",
+     "lexical": 5.0,
+     "semantic": 0.6718,
+     "score": 0.7105,
+     "matched_terms": [
+      "service",
+      "timeout",
+      "llm",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+     "subject": "Serve repeated retrieval questions from memory",
+     "deployed_in": "6cd5503",
+     "lexical": 4.67,
+     "semantic": 0.6896,
+     "score": 0.6884,
+     "matched_terms": [
+      "service",
+      "retrieval",
+      "memory"
+     ]
+    },
+    {
+     "sha": "771ab7700d574657aa6247b46305c72216e5adb5",
+     "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+     "deployed_in": "ee1a12f",
+     "lexical": 4.6,
+     "semantic": 0.6899,
+     "score": 0.6827,
+     "matched_terms": [
+      "service",
+      "timeout",
+      "embed",
+      "ollama"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/api_gateway/app/main.py::_run_retrieval",
+    "patient/api_gateway/app/main.py::RepoRunRequest",
+    "patient/api_gateway/app/guardrails.py::RateLimiter",
+    "patient/api_gateway/app/main.py::debug_retrieval"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 6420,
+  "provider_failures": [],
+  "status": "ok",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "diagnosis": {
+   "summary": "Commit 6cd5503, deployed to retrieval at 10:14:15Z, added a module-level `_RECENT` dict that caches every distinct retrieval response with no size limit, including a full copy of the query embedding. Retrieval RSS has grown steadily since then, from about 103 MB at baseline to 317 MB (container memory ratio 0.57). The traffic surge (about 6x) speeds the growth up but does not cause it.",
+   "incident_class": "code_defect",
+   "demand_vs_capacity": {
+    "traffic_change": "rose",
+    "deploy_before_onset": true,
+    "verdict": "capacity_fell",
+    "reasoning": "Traffic did rise about 6x (traffic_rps 1.17 -> 7.4, retrieval requests 1.24 -> 7.49 rps), but the system is serving that load well. Retrieval p50 is flat at 27 ms, retrieval p95 dropped from 0.24 s to 0.07 s and gateway chat latency did not rise. There are no errors, restarts or OOMs. The only anomaly is retrieval memory climbing steadily at about 223 KiB/s. It starts right after the retrieval-only deploy 6cd5503 (10:14:15Z, 3 minutes before the incident window). That diff adds an unbounded in-process cache that stores the response, the raw chunks and the query embedding for every distinct question. Load alone would not make a stateless service's memory grow monotonically, and gateway and llm memory stay flat under the same surge. This is a change-induced leak that higher traffic amplifies, not pure capacity."
+   },
+   "hypotheses": [
+    {
+     "cause": "An unbounded per-process response cache (`_RECENT`) in retrieval /retrieve grows with every distinct question and is never evicted. Each entry holds raw_chunks, the assembled context and a Python list copy of the embedding (about 768 boxed floats).",
+     "component": "retrieval",
+     "confidence": 0.85,
+     "evidence": [
+      "diff 6cd5503: `_RECENT: Dict[str, Dict[str, Any]] = {}` at module level with no max size or eviction",
+      "diff 6cd5503: `_RECENT[key] = {**response, \"query_embedding\": list(query_emb)}` stores a full embedding plus chunks per unique question",
+      "process_memory_mb{service=retrieval}: baseline mean 102.7 -> incident first 171.3, last 317.1, monotonically rising; MemoryClimbing alert at 223 kiB/s",
+      "container_memory_ratio{service=retrieval} 0.145 -> 0.571, while gateway/llm/ingestion memory stays flat under the same traffic",
+      "deploy 6cd5503 (services=['retrieval']) at 10:14:15Z, immediately before the 10:17 incident window",
+      "retrieval p95 fell 0.24 s -> 0.067 s and ollama embed p95 fell to 0.048 s, consistent with cache hits skipping the embedding round-trip, so the new code path is active"
+     ],
+     "suspected_commit": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+     "suspected_files": [
+      "patient/retrieval_service/app/main.py"
+     ]
+    },
+    {
+     "cause": "The traffic surge (about 6x rps, many distinct questions) is legitimate demand. It is not the defect itself, but it fills the unbounded cache faster.",
+     "component": "retrieval",
+     "confidence": 0.12,
+     "evidence": [
+      "traffic_rps 1.17 -> 7.4 (x6.3); in_flight{retrieval} max 4",
+      "No errors, timeouts or latency degradation, so the service has the capacity to handle the load"
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    }
+   ],
+   "fix": {
+    "kind": "code_diff",
+    "edits": [
+     {
+      "file": "patient/retrieval_service/app/main.py",
+      "find": "_RECENT: Dict[str, Dict[str, Any]] = {}",
+      "replace": "_RECENT: Dict[str, Dict[str, Any]] = {}\n_RECENT_MAX = 256"
+     },
+     {
+      "file": "patient/retrieval_service/app/main.py",
+      "find": "    _RECENT[key] = {**response, \"query_embedding\": list(query_emb)}",
+      "replace": "    if len(_RECENT) >= _RECENT_MAX:\n        _RECENT.pop(next(iter(_RECENT)), None)\n    _RECENT[key] = response"
+     }
+    ],
+    "action": null,
+    "rationale": "This bounds the cache to 256 entries, evicting the oldest first (dicts preserve insertion order). It also stops storing the redundant embedding list, so cached responses match fresh ones and use far less memory. Reverting 6cd5503 outright is a reasonable alternative, because the cache key ignores knowledge-base changes and could serve stale context after ingestion. Once the fix is deployed through normal review, retrieval memory should plateau. A manual restart of retrieval will reclaim the memory already leaked.",
+    "unified_diff": "--- a/patient/retrieval_service/app/main.py\n+++ b/patient/retrieval_service/app/main.py\n@@ -66,6 +66,7 @@\n \n # Recent retrievals, so a repeated question skips the embedding round-trip.\n _RECENT: Dict[str, Dict[str, Any]] = {}\n+_RECENT_MAX = 256\n \n \n @app.post(\"/retrieve\")\n@@ -103,7 +104,9 @@\n         \"assembled_context\": assembled[\"assembled_context\"],\n         \"raw_chunks\": chunks\n     }\n-    _RECENT[key] = {**response, \"query_embedding\": list(query_emb)}\n+    if len(_RECENT) >= _RECENT_MAX:\n+        _RECENT.pop(next(iter(_RECENT)), None)\n+    _RECENT[key] = response\n     return response\n \n @app.get(\"/health\")\n",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": true,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 2,
+   "prompt_tokens": 23204,
+   "completion_tokens": 4703,
+   "cost_usd": 0.186876,
+   "seconds": 42.46
+  },
+  "verification": {
+   "kind": "code",
+   "sha": "6cd5503",
+   "applied": true,
+   "suite": {
+    "passed": true,
+    "returncode": 0,
+    "summary": "171 passed, 4 warnings in 4.59s",
+    "output_tail": "........................................................................ [ 84%]\n...........................                                              [100%]\n=============================== warnings summary ===============================\n../../../usr/local/lib/python3.10/site-packages/starlette/testclient.py:53\n  /usr/local/lib/python3.10/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\ntests/test_gateway_regression.py::test_saving_settings_never_writes_the_string_none\ntests/test_gateway_regression.py::test_saving_settings_round_trips_changed_values\ntests/test_gateway_regression.py::test_saving_settings_round_trips_changed_values\n  /tmp/doctor_sandbox_tfu95d4i/patient/api_gateway/app/main.py:937: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/\n    settings_dict = req.dict(exclude_none=True)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n171 passed, 4 warnings in 4.59s",
+    "seconds": 5.7
+   },
+   "status": "verified"
+  },
+  "timings": {
+   "retrieval_s": 5.62,
+   "llm_s": 42.46,
+   "total_s": 53.83
+  },
+  "trigger": "alert",
+  "alert_to_report_s": 129.6,
+  "received_to_report_s": 124.7
+ },
+ "markdown": "# Incident inc_13fe9e525e\n\n**Alert:** MemoryClimbing - resident memory of retrieval is growing by 223kiB/s\n**Started:** 2026-11-22T10:27:01.176Z  \n**Running commit:** 6cd5503  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** anthropic:claude-opus-5-5\n\n## What broke\n\nCommit 6cd5503, deployed to retrieval at 10:14:15Z, added a module-level `_RECENT` dict that caches every distinct retrieval response with no size limit, including a full copy of the query embedding. Retrieval RSS has grown steadily since then, from about 103 MB at baseline to 317 MB (container memory ratio 0.57). The traffic surge (about 6x) speeds the growth up but does not cause it.\n\n**Incident class:** `code_defect`\n\n**Demand versus capacity:** traffic rose, deploy before onset: True, verdict: capacity_fell. Traffic did rise about 6x (traffic_rps 1.17 -> 7.4, retrieval requests 1.24 -> 7.49 rps), but the system is serving that load well. Retrieval p50 is flat at 27 ms, retrieval p95 dropped from 0.24 s to 0.07 s and gateway chat latency did not rise. There are no errors, restarts or OOMs. The only anomaly is retrieval memory climbing steadily at about 223 KiB/s. It starts right after the retrieval-only deploy 6cd5503 (10:14:15Z, 3 minutes before the incident window). That diff adds an unbounded in-process cache that stores the response, the raw chunks and the query embedding for every distinct question. Load alone would not make a stateless service's memory grow monotonically, and gateway and llm memory stay flat under the same surge. This is a change-induced leak that higher traffic amplifies, not pure capacity.\n\n## Evidence\n\n- alert 2026-11-22T10:27:01.176Z **MemoryClimbing** retrieval: resident memory of retrieval is growing by 223kiB/s\n- metric `traffic_rps{all}` baseline 1.1721 -> 7.4 (x6.3)\n- metric `requests_rps{service=gateway}` baseline 1.2385 -> 7.4545 (x6.0)\n- metric `requests_rps{service=retrieval}` baseline 1.2408 -> 7.4909 (x6.0)\n- metric `chat_outcomes_rps{outcome=refused_output}` baseline 0.0015 -> 0.0182 (x12.1)\n- metric `latency_p95_s{endpoint=/generate,service=llm}` baseline 2.9018 -> 4.4 (x1.5)\n- metric `in_flight{service=gateway}` baseline 0.5 -> 4.0 (x8.0)\n- metric `in_flight{service=llm}` baseline 0.4 -> 2.0 (x5.0)\n- metric `in_flight{service=retrieval}` baseline 0.0333 -> 4.0 (x120.1)\n\nDeploys in the lookback window: 12; candidate commits (time filter only): 23\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.85 | retrieval | 6cd5503 | An unbounded per-process response cache (`_RECENT`) in retrieval /retrieve grows with every distinct question and is never evicted. Each entry holds raw_chunks, the assembled context and a Python list copy of the embedding (about 768 boxed floats). |\n| 2 | 0.12 | retrieval | none | The traffic surge (about 6x rps, many distinct questions) is legitimate demand. It is not the defect itself, but it fills the unbounded cache faster. |\n\nEvidence for #1:\n- diff 6cd5503: `_RECENT: Dict[str, Dict[str, Any]] = {}` at module level with no max size or eviction\n- diff 6cd5503: `_RECENT[key] = {**response, \"query_embedding\": list(query_emb)}` stores a full embedding plus chunks per unique question\n- process_memory_mb{service=retrieval}: baseline mean 102.7 -> incident first 171.3, last 317.1, monotonically rising; MemoryClimbing alert at 223 kiB/s\n- container_memory_ratio{service=retrieval} 0.145 -> 0.571, while gateway/llm/ingestion memory stays flat under the same traffic\n- deploy 6cd5503 (services=['retrieval']) at 10:14:15Z, immediately before the 10:17 incident window\n- retrieval p95 fell 0.24 s -> 0.067 s and ollama embed p95 fell to 0.048 s, consistent with cache hits skipping the embedding round-trip, so the new code path is active\n\nEvidence for #2:\n- traffic_rps 1.17 -> 7.4 (x6.3); in_flight{retrieval} max 4\n- No errors, timeouts or latency degradation, so the service has the capacity to handle the load\n\n## Proposed fix\n\n**Kind:** code_diff\n\nThis bounds the cache to 256 entries, evicting the oldest first (dicts preserve insertion order). It also stops storing the redundant embedding list, so cached responses match fresh ones and use far less memory. Reverting 6cd5503 outright is a reasonable alternative, because the cache key ignores knowledge-base changes and could serve stale context after ingestion. Once the fix is deployed through normal review, retrieval memory should plateau. A manual restart of retrieval will reclaim the memory already leaked.\n\n```diff\n--- a/patient/retrieval_service/app/main.py\n+++ b/patient/retrieval_service/app/main.py\n@@ -66,6 +66,7 @@\n \n # Recent retrievals, so a repeated question skips the embedding round-trip.\n _RECENT: Dict[str, Dict[str, Any]] = {}\n+_RECENT_MAX = 256\n \n \n @app.post(\"/retrieve\")\n@@ -103,7 +104,9 @@\n         \"assembled_context\": assembled[\"assembled_context\"],\n         \"raw_chunks\": chunks\n     }\n-    _RECENT[key] = {**response, \"query_embedding\": list(query_emb)}\n+    if len(_RECENT) >= _RECENT_MAX:\n+        _RECENT.pop(next(iter(_RECENT)), None)\n+    _RECENT[key] = response\n     return response\n \n @app.get(\"/health\")\n```\n\n## Verification\n\n**Result:** verified\n  \nTest suite on the patched copy: 171 passed, 4 warnings in 4.59s\n\nNothing was applied to the running system.\n\n## Cost\n\n2 calls, 23204 prompt + 4703 completion tokens, $0.186876; reasoning 42.46s, total 53.83s\n",
+ "resolution": null,
+ "agents": {
+  "status": "running",
+  "requested_at": "2026-11-22T10:29:10Z",
+  "error": null,
+  "task_id": "20261122-102910-bef102",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-102910-bef102",
+  "started_at": "2026-11-22T10:29:10Z",
+  "outcome": null,
+  "failure_stage": null,
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": null,
+  "cost_usd": 0.0,
+  "diagnosis": null,
+  "patch": null,
+  "tests": null,
+  "escalation": null,
+  "pr": null,
+  "steps": [],
+  "decisions": [],
+  "updated_at": "2026-11-22T10:29:10Z",
+  "poll_error": null
+ },
+ "evidence": {
+  "alert": {
+   "received_at": "2026-11-22T10:27:06.182Z",
+   "status": "firing",
+   "alertname": "MemoryClimbing",
+   "fingerprint": "90b78e9da122770c",
+   "startsAt": "2026-11-22T10:27:01.176Z",
+   "endsAt": "0001-01-01T00:00:00Z",
+   "labels": {
+    "alertname": "MemoryClimbing",
+    "instance": "retrieval:8002",
+    "job": "retrieval",
+    "service": "retrieval",
+    "severity": "warning",
+    "stack": "knowledgeai"
+   },
+   "annotations": {
+    "description": "Process memory of retrieval has risen steadily for at least 3 minutes.",
+    "summary": "resident memory of retrieval is growing by 223kiB/s"
+   },
+   "generatorURL": "http://7eaba6bea935:9090/graph?g0.expr=deriv%28knowledgeai_process_resident_memory_bytes%5B5m%5D%29+%3E+131072+and+on+%28service%29+%28time%28%29+-+max+by+%28service%29+%28label_replace%28process_start_time_seconds%2C+%22service%22%2C+%22%241%22%2C+%22job%22%2C+%22%28.%2A%29%22%29%29%29+%3E+600&g0.tab=1",
+   "groupKey": "{}:{alertname=\"MemoryClimbing\", service=\"retrieval\"}"
+  },
+  "related_alerts": [
+   {
+    "alertname": "MemoryClimbing",
+    "startsAt": "2026-11-22T10:27:01.176Z",
+    "labels": {
+     "alertname": "MemoryClimbing",
+     "instance": "retrieval:8002",
+     "job": "retrieval",
+     "service": "retrieval",
+     "severity": "warning",
+     "stack": "knowledgeai"
+    },
+    "summary": "resident memory of retrieval is growing by 223kiB/s"
+   }
+  ],
+  "windows": {
+   "incident": [
+    "2026-11-22T10:17:01Z",
+    "2026-11-22T10:28:01Z"
+   ],
+   "baseline": [
+    "2026-11-22T09:47:01Z",
+    "2026-11-22T10:17:01Z"
+   ]
+  },
+  "logs": [],
+  "deploys": [
+   {
+    "ts": "2026-11-22T07:23:16Z",
+    "git_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "short_sha": "1a290b0",
+    "previous_sha": "d6d9c50b2e17b3cd4811e0ca96e939fc7d73b2e3",
+    "commits": [
+     "763af4c291a2108276c7835c896f82e2d867d78a",
+     "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "09770921d31b390faaee760557f0c3551350c6cb",
+     "25a35db6a36f692c398c514272f10dcca911fb71",
+     "a67398e8669ee79457191ee57821cb760edd50f3",
+     "1a290b0795debfc42250e3e8fb55122b549c2076"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "deploy/agai/models-claude.yaml",
+     "deploy/agai/models.yaml",
+     "deploy/gcp/create_vm.ps1",
+     "deploy/gcp/startup.sh",
+     "deploy/gcp/vm-up.sh",
+     "deploy/gcp/write_env.py",
+     "docker-compose.yml",
+     "doctor/app/llm.py",
+     "doctor/app/settings.py",
+     "doctor/requirements.txt",
+     "doctor/tests/test_anthropic_provider.py",
+     "faults/campaign.py",
+     "faults/campaign_report.py",
+     "faults/common.py",
+     "faults/run_fault.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 3.8
+    },
+    "duration_s": 33.2,
+    "reason": "GCP VM boot 1a290b0",
+    "pipeline": "manual",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:26:24Z",
+    "git_sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "short_sha": "3bb7cb1",
+    "previous_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "commits": [
+     "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+     "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019"
+    ],
+    "services_changed": [
+     "llm"
+    ],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md",
+     "patient/llm_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 3bb7cb1",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:27:06Z",
+    "git_sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "short_sha": "ee1a12f",
+    "previous_sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "commits": [
+     "771ab7700d574657aa6247b46305c72216e5adb5",
+     "ee1a12fe7a80bedba7b56259640568c4fefbe5fc"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "llm",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py",
+     "patient/llm_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.2,
+    "reason": "local pipeline push ee1a12f",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:44:20Z",
+    "git_sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "short_sha": "70c3dff",
+    "previous_sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "commits": [
+     "70c3dff428aa9f43be013e18f612229ad1b1d38b"
+    ],
+    "services_changed": [
+     "gateway",
+     "ingestion",
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/ingestion_service/app/embedder.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 70c3dff",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:57:03Z",
+    "git_sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "short_sha": "225b7d2",
+    "previous_sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "commits": [
+     "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+     "225b7d25e15feb2dc9185cebc5f640448d9e7f1c"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.3,
+    "reason": "local pipeline push 225b7d2",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T08:57:45Z",
+    "git_sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "short_sha": "5dc7f1a",
+    "previous_sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "commits": [
+     "44405f4f619e1f069afe5d29393331144f66f23e",
+     "5dc7f1a615f801249e55ad06500fd4258bfb972b"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.1,
+    "reason": "local pipeline push 5dc7f1a",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:07:18Z",
+    "git_sha": "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "short_sha": "4c8b3c0",
+    "previous_sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "commits": [
+     "4c8b3c072b8e5c74786bc5b88059e865763c86cf"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.2
+    },
+    "duration_s": 30.8,
+    "reason": "local pipeline push 4c8b3c0",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:37:23Z",
+    "git_sha": "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "short_sha": "cb351df",
+    "previous_sha": "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "commits": [
+     "a7794dc6920c2c9e2805733fe195f0fc9440ebd3",
+     "cb351df66313621e72c2ff1b65cc69ea7912f976"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.4,
+    "reason": "local pipeline push cb351df",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:38:07Z",
+    "git_sha": "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "short_sha": "952e417",
+    "previous_sha": "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "commits": [
+     "cf515c924f7539f495f6ea70261a8b52ef14b155",
+     "952e4172e9cc17d3a8e69969a7d661418053bdce"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py",
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.8,
+    "reason": "local pipeline push 952e417",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T09:48:50Z",
+    "git_sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "short_sha": "1c5b681",
+    "previous_sha": "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "commits": [
+     "1c5b681115773efcf6ee55e9579e165ede612eea"
+    ],
+    "services_changed": [
+     "gateway"
+    ],
+    "files_changed": [
+     "patient/api_gateway/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 29.9,
+    "reason": "local pipeline push 1c5b681",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T10:13:32Z",
+    "git_sha": "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "short_sha": "ace96fb",
+    "previous_sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "commits": [
+     "ace96fbdde3617bd8afac170c86dbae045b4cc71"
+    ],
+    "services_changed": [],
+    "files_changed": [
+     "patient/docs/OPERATIONS.md"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.0,
+    "reason": "local pipeline push ace96fb",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   },
+   {
+    "ts": "2026-11-22T10:14:15Z",
+    "git_sha": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+    "short_sha": "6cd5503",
+    "previous_sha": "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "commits": [
+     "6cd55033fcb4167444b6e0773177d52e843c9d93"
+    ],
+    "services_changed": [
+     "retrieval"
+    ],
+    "files_changed": [
+     "patient/retrieval_service/app/main.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 0.1
+    },
+    "duration_s": 30.5,
+    "reason": "local pipeline push 6cd5503",
+    "pipeline": "local",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "763af4c291a2108276c7835c896f82e2d867d78a",
+    "subject": "Faults: keep each fault live until the agent team is done; one-table campaign report",
+    "date": "2026-11-21T10:01:25+05:30"
+   },
+   {
+    "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+    "date": "2026-11-21T10:05:59+05:30"
+   },
+   {
+    "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+    "date": "2026-11-21T10:24:55+05:30"
+   },
+   {
+    "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+    "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+    "date": "2026-11-21T10:52:03+05:30"
+   },
+   {
+    "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+    "subject": "Claude for the doctor and the agent team",
+    "date": "2026-11-22T11:44:37+05:30"
+   },
+   {
+    "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "subject": "GCP start-up: always enable and start Ollama",
+    "date": "2026-11-22T12:51:53+05:30"
+   },
+   {
+    "sha": "9ee91cd6d39a170945dc0d5f5e2f4c71a779f93a",
+    "subject": "Explain the prompt layout",
+    "date": "2026-11-22T08:25:38Z"
+   },
+   {
+    "sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+    "subject": "Operations notes: restarting ollama",
+    "date": "2026-11-22T08:25:38Z"
+   },
+   {
+    "sha": "771ab7700d574657aa6247b46305c72216e5adb5",
+    "subject": "Cap embedding calls at 10 s so a stuck call frees its thread",
+    "date": "2026-11-22T08:26:24Z"
+   },
+   {
+    "sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+    "subject": "Note the generation timeout",
+    "date": "2026-11-22T08:26:24Z"
+   },
+   {
+    "sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+    "subject": "Revert \"Cap embedding calls at 10 s so a stuck call frees its thread\"",
+    "date": "2026-11-22T08:43:37Z"
+   },
+   {
+    "sha": "19871dd3612bfbf636e3cdc41a176aa37615c9db",
+    "subject": "Title new chat sessions after the question",
+    "date": "2026-11-22T08:56:20Z"
+   },
+   {
+    "sha": "225b7d25e15feb2dc9185cebc5f640448d9e7f1c",
+    "subject": "Explain bare model names",
+    "date": "2026-11-22T08:56:20Z"
+   },
+   {
+    "sha": "44405f4f619e1f069afe5d29393331144f66f23e",
+    "subject": "Clarify what the gateway health check covers",
+    "date": "2026-11-22T08:57:03Z"
+   },
+   {
+    "sha": "5dc7f1a615f801249e55ad06500fd4258bfb972b",
+    "subject": "Operations notes: health endpoints",
+    "date": "2026-11-22T08:57:03Z"
+   },
+   {
+    "sha": "4c8b3c072b8e5c74786bc5b88059e865763c86cf",
+    "subject": "Revert \"Title new chat sessions after the question\"",
+    "date": "2026-11-22T09:06:35Z"
+   },
+   {
+    "sha": "a7794dc6920c2c9e2805733fe195f0fc9440ebd3",
+    "subject": "Operations notes: request ids",
+    "date": "2026-11-22T09:36:41Z"
+   },
+   {
+    "sha": "cb351df66313621e72c2ff1b65cc69ea7912f976",
+    "subject": "Operations notes: changing the chat model",
+    "date": "2026-11-22T09:36:41Z"
+   },
+   {
+    "sha": "cf515c924f7539f495f6ea70261a8b52ef14b155",
+    "subject": "Fail fast when retrieval is slow - it normally answers in about 30 ms",
+    "date": "2026-11-22T09:37:23Z"
+   },
+   {
+    "sha": "952e4172e9cc17d3a8e69969a7d661418053bdce",
+    "subject": "Operations notes: alert routing",
+    "date": "2026-11-22T09:37:23Z"
+   },
+   {
+    "sha": "1c5b681115773efcf6ee55e9579e165ede612eea",
+    "subject": "Revert \"Fail fast when retrieval is slow - it normally answers in about 30 ms\"",
+    "date": "2026-11-22T09:48:08Z"
+   },
+   {
+    "sha": "ace96fbdde3617bd8afac170c86dbae045b4cc71",
+    "subject": "Operations notes: ports on the development laptop",
+    "date": "2026-11-22T10:12:50Z"
+   },
+   {
+    "sha": "6cd55033fcb4167444b6e0773177d52e843c9d93",
+    "subject": "Serve repeated retrieval questions from memory",
+    "date": "2026-11-22T10:13:32Z"
+   }
+  ]
+ }
+}

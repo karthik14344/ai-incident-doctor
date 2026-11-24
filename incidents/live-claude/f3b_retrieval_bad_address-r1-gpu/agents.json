@@ -1,0 +1,73 @@
+{
+  "status": "escalated",
+  "requested_at": "2026-11-22T09:23:11Z",
+  "error": null,
+  "task_id": "20261122-092311-d9653d",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-092311-d9653d",
+  "started_at": "2026-11-22T09:23:11Z",
+  "outcome": "escalated",
+  "failure_stage": "diagnosis",
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": 34166,
+  "cost_usd": 0.1972,
+  "diagnosis": {
+    "root_cause": "Diagnoser failed: claude-opus-5-5 refused: reasoning_extraction",
+    "implicated_files": [],
+    "evidence": [],
+    "confidence": 0.0,
+    "degraded": true,
+    "react_steps": 0
+  },
+  "patch": null,
+  "tests": null,
+  "escalation": {
+    "reason": "no usable diagnosis",
+    "summary": "Escalating to a human engineer. No code fix was attempted.\n\nBug: The gateway's calls to the retrieval service are failing on the KnowledgeAI app. The alert is DownstreamCallFailures, it started at 2026-11-22T09:21:28Z, and the running commit is 4c8b3c072b8e. Since about 09:20:21Z every gateway->retrieval call fails with httpx ConnectError '[Errno -3] Temporary failure in name resolution' (EAI_AGAIN), raised at patient/common/telemetry.py:194. That error appeared 29 times and was absent in the baseline. Gateway 5xx rose to 75%. Retrieval RPS fell from 0.85 to 0.07. Retrieval had 0 restarts, 0 OOMs and steady memory.\n\nWhat was tried: Nothing. The pipeline stopped before the Fixer stage because the Diagnoser produced no usable diagnosis, so there were no fix attempts and no tests.\n\nWhy this is likely not a code problem: The evidence points to infrastructure rather than source code, and the monitoring agent implicated no commit. This is a name-resolution failure, not connection refused. The most likely cause (0.65) is that the retrieval container was detached from the compose network or lost its DNS alias. The other candidate (0.2) is a fault in Docker's embedded DNS or the gateway container's resolver.\n\nSuggested next steps:\n1. Inside the gateway container, run `getent hosts retrieval` and compare the result with the configured retrieval URL.\n2. Run `docker network inspect <compose-network>` and confirm retrieval is attached with the 'retrieval' alias.\n3. If it is detached, run `docker network connect --alias retrieval <network> <retrieval-container>` or `docker compose up -d retrieval`.\n4. Check whether the gateway's retrieval address config or env changed in a recent deploy. If it did, restore the service hostname.\n5. Confirm that ConnectError drops to 0 and gateway 5xx returns to about 4%.\n\nOnly if steps 1\u20134 show the gateway is using a wrong hostname from code or config under patient/ should this come back as a code fix.",
+    "attempts": 0,
+    "tried": [
+      "No fix attempts were made. The pipeline escalated because the diagnosis was unusable (no implicated files or code cause)."
+    ]
+  },
+  "pr": null,
+  "steps": [
+    {
+      "t": "2026-11-22T09:23:12.511131+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "dispatch",
+      "status": "in_progress"
+    },
+    {
+      "t": "2026-11-22T09:23:37.504418+00:00",
+      "agent": "diagnoser",
+      "to": "manager",
+      "kind": "diagnosis",
+      "status": "failure"
+    },
+    {
+      "t": "2026-11-22T09:23:45.462761+00:00",
+      "agent": "manager",
+      "to": "human",
+      "kind": "escalation",
+      "status": "failure"
+    }
+  ],
+  "decisions": [
+    {
+      "t": "2026-11-22T09:23:12.506427+00:00",
+      "event": "start",
+      "choice": "diagnoser",
+      "why": "new task"
+    },
+    {
+      "t": "2026-11-22T09:23:37.514837+00:00",
+      "event": "diagnosis_failed",
+      "choice": "escalate",
+      "why": "diagnoser failed"
+    }
+  ],
+  "updated_at": "2026-11-22T09:23:51Z",
+  "poll_error": null,
+  "enabled": true
+}

@@ -1,0 +1,93 @@
+{
+  "run_id": "f1_embed_timeout-r2-gpu",
+  "fault_id": "f1_embed_timeout",
+  "delivery": "push",
+  "variant": "guilty_earlier",
+  "started": "2026-11-22T11:16:36Z",
+  "trigger": "ticket",
+  "t_break": "2026-11-22T11:16:36Z",
+  "pushes": [
+    {
+      "label": "guilty",
+      "sha": "88a9ffb0582e454ea57a125aad4690464cd76f4c",
+      "pushed_at": "2026-11-22T11:16:36Z",
+      "push_returned_at": "2026-11-22T11:17:19Z",
+      "push_seconds": 42.9,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for 88a9ffb0582e454ea57a125aad4690464cd76f4c - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/88a9ffb0582e454ea57a125aad4690464cd76f4c.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   4e34716..88a9ffb  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T11:17:19Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "distractors-after",
+      "sha": "88a9ffb0582e454ea57a125aad4690464cd76f4c",
+      "pushed_at": "2026-11-22T11:17:19Z",
+      "push_returned_at": "2026-11-22T11:17:19Z",
+      "push_seconds": 0.0,
+      "ok": false,
+      "output_tail": [
+        "Everything up-to-date"
+      ],
+      "deploy_ts": "2026-11-22T11:17:19Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "3c9f8faac7c7d6b558ecfa1d09cfc0ecd3d939e0",
+      "pushed_at": "2026-11-22T11:35:00Z",
+      "push_returned_at": "2026-11-22T11:35:42Z",
+      "push_seconds": 42.2,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (30s)        ",
+        "remote: pipeline: SUCCESS for 3c9f8faac7c7d6b558ecfa1d09cfc0ecd3d939e0 - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/3c9f8faac7c7d6b558ecfa1d09cfc0ecd3d939e0.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   88a9ffb..3c9f8fa  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T11:35:42Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "load": null,
+  "neighbour": true,
+  "monitoring_missed": true,
+  "ticket_filed_at": "2026-11-22T11:32:20Z",
+  "ticket": {
+    "text": "Answers have been wrong or unrelated to my question for a while now.",
+    "since": "about 16 minutes ago",
+    "response": {
+      "status": "opened",
+      "incident_id": "inc_b233d93740",
+      "diagnose_after": "2026-11-22T11:32:20Z",
+      "window": {
+        "text": "Answers have been wrong or unrelated to my question for a while now.",
+        "since": "about 16 minutes ago",
+        "search_range": [
+          "2026-11-22T11:08:20Z",
+          "2026-11-22T11:32:20Z"
+        ],
+        "how": "'16 minutes ago'",
+        "onset_signals": [],
+        "onset_found": false
+      }
+    }
+  },
+  "incident_id": "inc_b233d93740",
+  "t_report": "2026-11-22T11:32:56Z",
+  "doctor_s": 36.0,
+  "agents_wait_started": "2026-11-22T11:33:00Z",
+  "agents_status": "awaiting_approval",
+  "agents_wait_finished": "2026-11-22T11:35:00Z",
+  "neighbour_calls": 34263,
+  "t_revert_start": "2026-11-22T11:35:00Z",
+  "t_reverted": "2026-11-22T11:35:42Z",
+  "finished": "2026-11-22T11:35:42Z"
+}

@@ -1,0 +1,401 @@
+{
+ "incident": {
+  "id": "inc_f1dff65801",
+  "trigger": "ticket",
+  "status": "ok",
+  "alert": {
+   "status": "firing",
+   "alertname": "UserReport",
+   "startsAt": "2026-11-22T08:18:07Z",
+   "fingerprint": "ticket-1795336927",
+   "labels": {
+    "alertname": "UserReport",
+    "severity": "warning",
+    "source": "ticket"
+   },
+   "annotations": {
+    "summary": "Answers have been wrong or unrelated to my question for a while now.",
+    "description": "Reported by a user; no alert fired. Rough time: about 16 minutes ago."
+   },
+   "ticket": {
+    "text": "Answers have been wrong or unrelated to my question for a while now.",
+    "since": "about 16 minutes ago",
+    "search_range": [
+     "2026-11-22T08:18:07Z",
+     "2026-11-22T08:42:07Z"
+    ],
+    "how": "'16 minutes ago'",
+    "onset_signals": [],
+    "onset_found": false
+   }
+  },
+  "service": "unknown",
+  "received_at": "2026-11-22T08:42:07Z",
+  "diagnose_after": "2026-11-22T08:42:07Z",
+  "collection_started": "2026-11-22T08:42:07Z",
+  "evidence_saved": "2026-11-22T08:42:08Z",
+  "report_finished": "2026-11-22T08:42:36Z",
+  "alert_to_report_s": 1469.6
+ },
+ "report": {
+  "incident_id": "inc_f1dff65801",
+  "arm": "logs_commits_incidents",
+  "alert": {
+   "status": "firing",
+   "alertname": "UserReport",
+   "startsAt": "2026-11-22T08:18:07Z",
+   "fingerprint": "ticket-1795336927",
+   "labels": {
+    "alertname": "UserReport",
+    "severity": "warning",
+    "source": "ticket"
+   },
+   "annotations": {
+    "summary": "Answers have been wrong or unrelated to my question for a while now.",
+    "description": "Reported by a user; no alert fired. Rough time: about 16 minutes ago."
+   },
+   "ticket": {
+    "text": "Answers have been wrong or unrelated to my question for a while now.",
+    "since": "about 16 minutes ago",
+    "search_range": [
+     "2026-11-22T08:18:07Z",
+     "2026-11-22T08:42:07Z"
+    ],
+    "how": "'16 minutes ago'",
+    "onset_signals": [],
+    "onset_found": false
+   }
+  },
+  "created_at": "2026-11-22T08:42:36Z",
+  "live_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+  "retrieval": {
+   "time_filtered": [
+    "763af4c291a2108276c7835c896f82e2d867d78a",
+    "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "09770921d31b390faaee760557f0c3551350c6cb",
+    "25a35db6a36f692c398c514272f10dcca911fb71",
+    "1a290b0795debfc42250e3e8fb55122b549c2076"
+   ],
+   "ranked": [
+    {
+     "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+     "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+     "deployed_in": "1a290b0",
+     "lexical": 6.71,
+     "semantic": 0.6172,
+     "score": 0.8469,
+     "matched_terms": [
+      "service",
+      "generate",
+      "latency",
+      "embed",
+      "ollama",
+      "api"
+     ]
+    },
+    {
+     "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+     "subject": "GCP start-up: always enable and start Ollama",
+     "deployed_in": "1a290b0",
+     "lexical": 3.33,
+     "semantic": 0.5599,
+     "score": 0.5222,
+     "matched_terms": [
+      "service",
+      "ollama"
+     ]
+    },
+    {
+     "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+     "subject": "Claude for the doctor and the agent team",
+     "deployed_in": "1a290b0",
+     "lexical": 2.65,
+     "semantic": 0.6114,
+     "score": 0.4814,
+     "matched_terms": [
+      "timeout",
+      "llm",
+      "cache",
+      "api",
+      "refused",
+      "output"
+     ]
+    },
+    {
+     "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+     "deployed_in": "1a290b0",
+     "lexical": 1.12,
+     "semantic": 0.5593,
+     "score": 0.3236,
+     "matched_terms": [
+      "memory",
+      "ollama",
+      "warning"
+     ]
+    },
+    {
+     "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+     "deployed_in": "1a290b0",
+     "lexical": 1.15,
+     "semantic": 0.5351,
+     "score": 0.3166,
+     "matched_terms": [
+      "memory",
+      "ollama",
+      "warning"
+     ]
+    }
+   ],
+   "embedding_used": true,
+   "note": null,
+   "code_chunks": [
+    "patient/api_gateway/app/main.py::ChatRequest",
+    "patient/api_gateway/app/main.py::chat_stream",
+    "patient/api_gateway/app/main.py::SettingsRequest",
+    "patient/api_gateway/app/main.py::debug_retrieval"
+   ],
+   "past_incidents": []
+  },
+  "prompt_tokens_estimate": 5961,
+  "provider_failures": [],
+  "status": "ok",
+  "provider": "anthropic",
+  "model": "claude-opus-5-5",
+  "diagnosis": {
+   "summary": "A user reports answers that are wrong or unrelated to the question, but no metric, log line or deploy explains it. Retrieval and embedding are healthy and nothing changed. The most likely cause is the knowledge base or retrieved context not matching what the user asks: missing or wrong documents, or a wrong collection. A runtime settings change such as embedding_model, top_k or collection is the alternative. Confidence is low.",
+   "incident_class": "data_issue",
+   "demand_vs_capacity": {
+    "traffic_change": "flat",
+    "deploy_before_onset": false,
+    "verdict": "neither",
+    "reasoning": "Traffic did not rise. traffic_rps averaged 1.061 in the baseline and 0.897 in the incident window; peaks were similar (1.58 vs 1.65). The only deploy (1a290b0) was at 07:23:16Z, about 55 minutes before onset and before the baseline window started. Its commits only touch the GCP start-up and Ollama scripts and agent/doctor config, so none of them can make answers semantically wrong. Generation latency (p50 about 55s, p95 up to 118.5s, in_flight reaching 100) is high, but it is just as high in the baseline. The report is also about correctness, not slowness or errors. There are no 5xx errors, restarts, OOM kills or embedding fallbacks, and no warning/error logs. This is neither a demand rise nor a capacity drop."
+   },
+   "hypotheses": [
+    {
+     "cause": "Retrieval returns context that does not match the user's questions, so the LLM answers from irrelevant chunks. Possible reasons: the knowledge base lacks the documents the user expects, documents are stale or wrong, or the query targets a collection that does not hold the relevant content.",
+     "component": "knowledge_base",
+     "confidence": 0.4,
+     "evidence": [
+      "The symptom is answer relevance, while every health signal is nominal. Retrieval p50 is 0.026s and p95 0.054s, unchanged; embed p95 is 0.0475s, unchanged; embedding_fallbacks_per_min is 0.",
+      "No knowledge-base version change is in the lookback window (kb=38ba55c908d1 loaded with deploy 1a290b0), so the content may be stale or incomplete for what the user asks.",
+      "chat_outcomes answered/refused rates are proportional to traffic, so the pipeline completes. The problem is what it retrieves or generates, not whether it runs."
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    },
+    {
+     "cause": "Runtime settings stored in the gateway settings table were changed without a deploy. Examples: embedding_model differing from the model used at ingestion, a very small top_k, or a different llm_model. Any of these silently degrades retrieval relevance or answer quality.",
+     "component": "retrieval",
+     "confidence": 0.3,
+     "evidence": [
+      "chat_stream builds the retrieval payload from get_settings_map(): top_k, embedding_model and ollama_base_url, each falling back to a default. These are editable at runtime via SettingsRequest and leave no deploy trace.",
+      "No errors or fallbacks would be raised if the embedding model was swapped for one with the same dimension, or if top_k was lowered. Relevance drops silently.",
+      "No metric departed from baseline, which fits a silent quality regression rather than a failure."
+     ],
+     "suspected_commit": null,
+     "suspected_files": [
+      "patient/api_gateway/app/main.py"
+     ]
+    },
+    {
+     "cause": "A long-standing LLM saturation (in_flight pinned at 100, p50 near 105s at peaks) degrades the user experience. Slow streamed responses may be cut off or abandoned, which the user perceives as wrong or unrelated answers. This condition predates the window, so it is not a new incident.",
+     "component": "ollama",
+     "confidence": 0.15,
+     "evidence": [
+      "in_flight{service=llm} reached 100 in both windows; ollama_p95_s{generate} max was 118.5s in both.",
+      "latency_p50_s /generate averaged 55.9s in the baseline and 39.9s in the incident window. The load is not new, only persistent."
+     ],
+     "suspected_commit": null,
+     "suspected_files": []
+    }
+   ],
+   "fix": {
+    "kind": "action",
+    "edits": [],
+    "action": "Investigate before changing anything. (1) Get the user's example questions and their session_id. Replay each question through POST /api/retrieval/search with the same collection_name. Check whether the returned chunks are relevant and come from the expected documents. (2) Inspect the gateway settings table: embedding_model must equal the model used at ingestion (nomic-embed-text). Also check top_k, llm_model and ollama_base_url against defaults, and revert any unintended change. (3) Check the Chroma collection: document count, sources, and kb version 38ba55c908d1. If the expected documents are missing or stale, re-ingest the correct knowledge-base version. (4) Separately, track the persistent LLM saturation (in_flight 100, p95 about 118s) as its own capacity concern, for example by limiting concurrency or adding generation capacity.",
+    "rationale": "No code, config diff or deploy is implicated, and no metric moved, so a code or config edit cannot be justified. The fastest way to confirm or rule out the knowledge-base and settings hypotheses is to replay the reported questions through retrieval and compare the context with what is expected. Nothing should be applied to the running system automatically.",
+    "unified_diff": "",
+    "edit_problems": []
+   },
+   "constraint_violations": []
+  },
+  "repaired": false,
+  "remaining_errors": [],
+  "usage": {
+   "calls": 1,
+   "prompt_tokens": 10067,
+   "completion_tokens": 2775,
+   "cost_usd": 0.095768,
+   "seconds": 28.02
+  },
+  "verification": {
+   "status": "unverified - needs human review",
+   "reason": "an operational action cannot be tested on a copy; a human must carry it out"
+  },
+  "timings": {
+   "retrieval_s": 0.22,
+   "llm_s": 28.02,
+   "total_s": 28.24
+  },
+  "trigger": "ticket",
+  "alert_to_report_s": 1469.6,
+  "received_to_report_s": 29.6
+ },
+ "markdown": "# Incident inc_f1dff65801\n\n**Alert:** UserReport - Answers have been wrong or unrelated to my question for a while now.\n**Started:** 2026-11-22T08:18:07Z  \n**Running commit:** 1a290b0  \n**Evidence arm:** logs_commits_incidents  \n**Reasoned by:** anthropic:claude-opus-5-5\n\n## What broke\n\nA user reports answers that are wrong or unrelated to the question, but no metric, log line or deploy explains it. Retrieval and embedding are healthy and nothing changed. The most likely cause is the knowledge base or retrieved context not matching what the user asks: missing or wrong documents, or a wrong collection. A runtime settings change such as embedding_model, top_k or collection is the alternative. Confidence is low.\n\n**Incident class:** `data_issue`\n\n**Demand versus capacity:** traffic flat, deploy before onset: False, verdict: neither. Traffic did not rise. traffic_rps averaged 1.061 in the baseline and 0.897 in the incident window; peaks were similar (1.58 vs 1.65). The only deploy (1a290b0) was at 07:23:16Z, about 55 minutes before onset and before the baseline window started. Its commits only touch the GCP start-up and Ollama scripts and agent/doctor config, so none of them can make answers semantically wrong. Generation latency (p50 about 55s, p95 up to 118.5s, in_flight reaching 100) is high, but it is just as high in the baseline. The report is also about correctness, not slowness or errors. There are no 5xx errors, restarts, OOM kills or embedding fallbacks, and no warning/error logs. This is neither a demand rise nor a capacity drop.\n\n## Evidence\n\n- metric `traffic_rps{all}` baseline 1.061 -> 1.6545 (x1.6)\n- metric `requests_rps{service=gateway}` baseline 1.1378 -> 1.7091 (x1.5)\n- metric `requests_rps{service=llm}` baseline 0.7161 -> 1.1636 (x1.6)\n- metric `chat_outcomes_rps{outcome=answered}` baseline 0.6364 -> 1.0727 (x1.7)\n- metric `chat_outcomes_rps{outcome=refused_output}` baseline 0.0029 -> 0.0182 (x6.3)\n- metric `latency_p95_s{endpoint=/api/chat,service=gateway}` baseline 62.3759 -> 118.5 (x1.9)\n- metric `latency_p95_s{endpoint=/generate,service=llm}` baseline 64.4639 -> 118.5 (x1.8)\n- metric `latency_p50_s{endpoint=/api/chat,service=gateway}` baseline 54.0744 -> 105.0 (x1.9)\n\nDeploys in the lookback window: 1; candidate commits (time filter only): 6\n\n## Ranked causes\n\n| # | confidence | component | suspected commit | cause |\n|---|---|---|---|---|\n| 1 | 0.40 | knowledge_base | none | Retrieval returns context that does not match the user's questions, so the LLM answers from irrelevant chunks. Possible reasons: the knowledge base lacks the documents the user expects, documents are stale or wrong, or the query targets a collection that does not hold the relevant content. |\n| 2 | 0.30 | retrieval | none | Runtime settings stored in the gateway settings table were changed without a deploy. Examples: embedding_model differing from the model used at ingestion, a very small top_k, or a different llm_model. Any of these silently degrades retrieval relevance or answer quality. |\n| 3 | 0.15 | ollama | none | A long-standing LLM saturation (in_flight pinned at 100, p50 near 105s at peaks) degrades the user experience. Slow streamed responses may be cut off or abandoned, which the user perceives as wrong or unrelated answers. This condition predates the window, so it is not a new incident. |\n\nEvidence for #1:\n- The symptom is answer relevance, while every health signal is nominal. Retrieval p50 is 0.026s and p95 0.054s, unchanged; embed p95 is 0.0475s, unchanged; embedding_fallbacks_per_min is 0.\n- No knowledge-base version change is in the lookback window (kb=38ba55c908d1 loaded with deploy 1a290b0), so the content may be stale or incomplete for what the user asks.\n- chat_outcomes answered/refused rates are proportional to traffic, so the pipeline completes. The problem is what it retrieves or generates, not whether it runs.\n\nEvidence for #2:\n- chat_stream builds the retrieval payload from get_settings_map(): top_k, embedding_model and ollama_base_url, each falling back to a default. These are editable at runtime via SettingsRequest and leave no deploy trace.\n- No errors or fallbacks would be raised if the embedding model was swapped for one with the same dimension, or if top_k was lowered. Relevance drops silently.\n- No metric departed from baseline, which fits a silent quality regression rather than a failure.\n\nEvidence for #3:\n- in_flight{service=llm} reached 100 in both windows; ollama_p95_s{generate} max was 118.5s in both.\n- latency_p50_s /generate averaged 55.9s in the baseline and 39.9s in the incident window. The load is not new, only persistent.\n\n## Proposed fix\n\n**Kind:** action\n\nNo code, config diff or deploy is implicated, and no metric moved, so a code or config edit cannot be justified. The fastest way to confirm or rule out the knowledge-base and settings hypotheses is to replay the reported questions through retrieval and compare the context with what is expected. Nothing should be applied to the running system automatically.\n\n**Recommended action:** Investigate before changing anything. (1) Get the user's example questions and their session_id. Replay each question through POST /api/retrieval/search with the same collection_name. Check whether the returned chunks are relevant and come from the expected documents. (2) Inspect the gateway settings table: embedding_model must equal the model used at ingestion (nomic-embed-text). Also check top_k, llm_model and ollama_base_url against defaults, and revert any unintended change. (3) Check the Chroma collection: document count, sources, and kb version 38ba55c908d1. If the expected documents are missing or stale, re-ingest the correct knowledge-base version. (4) Separately, track the persistent LLM saturation (in_flight 100, p95 about 118s) as its own capacity concern, for example by limiting concurrency or adding generation capacity.\n\n## Verification\n\n**Result:** unverified - needs human review\n  \nan operational action cannot be tested on a copy; a human must carry it out\n\nNothing was applied to the running system.\n\n## Cost\n\n1 calls, 10067 prompt + 2775 completion tokens, $0.095768; reasoning 28.02s, total 28.24s\n",
+ "resolution": null,
+ "agents": {
+  "status": "running",
+  "requested_at": "2026-11-22T08:42:36Z",
+  "error": null,
+  "task_id": "20261122-084236-e2fd65",
+  "url": "http://34.21.178.236:8200/run.html?id=20261122-084236-e2fd65",
+  "started_at": "2026-11-22T08:42:36Z",
+  "outcome": null,
+  "failure_stage": null,
+  "attempts": 0,
+  "max_attempts": 3,
+  "duration_ms": null,
+  "cost_usd": 0.0,
+  "diagnosis": null,
+  "patch": null,
+  "tests": null,
+  "escalation": null,
+  "pr": null,
+  "steps": [],
+  "decisions": [],
+  "updated_at": "2026-11-22T08:42:36Z",
+  "poll_error": null
+ },
+ "evidence": {
+  "alert": {
+   "status": "firing",
+   "alertname": "UserReport",
+   "startsAt": "2026-11-22T08:18:07Z",
+   "fingerprint": "ticket-1795336927",
+   "labels": {
+    "alertname": "UserReport",
+    "severity": "warning",
+    "source": "ticket"
+   },
+   "annotations": {
+    "summary": "Answers have been wrong or unrelated to my question for a while now.",
+    "description": "Reported by a user; no alert fired. Rough time: about 16 minutes ago."
+   },
+   "ticket": {
+    "text": "Answers have been wrong or unrelated to my question for a while now.",
+    "since": "about 16 minutes ago",
+    "search_range": [
+     "2026-11-22T08:18:07Z",
+     "2026-11-22T08:42:07Z"
+    ],
+    "how": "'16 minutes ago'",
+    "onset_signals": [],
+    "onset_found": false
+   }
+  },
+  "related_alerts": [],
+  "windows": {
+   "incident": [
+    "2026-11-22T08:08:07Z",
+    "2026-11-22T08:19:07Z"
+   ],
+   "baseline": [
+    "2026-11-22T07:38:07Z",
+    "2026-11-22T08:08:07Z"
+   ]
+  },
+  "logs": [],
+  "deploys": [
+   {
+    "ts": "2026-11-22T07:23:16Z",
+    "git_sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "short_sha": "1a290b0",
+    "previous_sha": "d6d9c50b2e17b3cd4811e0ca96e939fc7d73b2e3",
+    "commits": [
+     "763af4c291a2108276c7835c896f82e2d867d78a",
+     "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+     "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+     "09770921d31b390faaee760557f0c3551350c6cb",
+     "25a35db6a36f692c398c514272f10dcca911fb71",
+     "a67398e8669ee79457191ee57821cb760edd50f3",
+     "1a290b0795debfc42250e3e8fb55122b549c2076"
+    ],
+    "services_changed": [
+     "compose",
+     "doctor"
+    ],
+    "files_changed": [
+     ".env.example",
+     "deploy/agai/models-claude.yaml",
+     "deploy/agai/models.yaml",
+     "deploy/gcp/create_vm.ps1",
+     "deploy/gcp/startup.sh",
+     "deploy/gcp/vm-up.sh",
+     "deploy/gcp/write_env.py",
+     "docker-compose.yml",
+     "doctor/app/llm.py",
+     "doctor/app/settings.py",
+     "doctor/requirements.txt",
+     "doctor/tests/test_anthropic_provider.py",
+     "faults/campaign.py",
+     "faults/campaign_report.py",
+     "faults/common.py",
+     "faults/run_fault.py"
+    ],
+    "kb_version": "38ba55c908d1",
+    "component_tags": {
+     "DOCTOR_IMAGE_TAG": "a67398e",
+     "ALERT_SINK_IMAGE_TAG": "fd2722b",
+     "CONTAINER_EXPORTER_IMAGE_TAG": "d8f4807",
+     "FRONTEND_IMAGE_TAG": "28fcfbe"
+    },
+    "outcome": "success",
+    "error": null,
+    "smoke_test": {
+     "ok": true,
+     "seconds": 3.8
+    },
+    "duration_s": 33.2,
+    "reason": "GCP VM boot 1a290b0",
+    "pipeline": "manual",
+    "host": "aid-vm.asia-southeast1-c.c.gen-lang-client-0747635989.internal"
+   }
+  ],
+  "kb_changes": [],
+  "candidate_commits": [
+   {
+    "sha": "763af4c291a2108276c7835c896f82e2d867d78a",
+    "subject": "Faults: keep each fault live until the agent team is done; one-table campaign report",
+    "date": "2026-11-21T10:01:25+05:30"
+   },
+   {
+    "sha": "0fb2e4ce052a2da32a1a31e6de1d4d7deae7e2bb",
+    "subject": "GCP start-up: set HOME so models download; let Ollama's installer install the GPU driver",
+    "date": "2026-11-21T10:05:59+05:30"
+   },
+   {
+    "sha": "45c03ece2e3656b1f518b6b43d5fade3a22f161f",
+    "subject": "GCP start-up: Ubuntu's pre-built 595 driver before Ollama",
+    "date": "2026-11-21T10:24:55+05:30"
+   },
+   {
+    "sha": "09770921d31b390faaee760557f0c3551350c6cb",
+    "subject": "GCP VM: keep the models loaded and warm them after every deploy",
+    "date": "2026-11-21T10:52:03+05:30"
+   },
+   {
+    "sha": "25a35db6a36f692c398c514272f10dcca911fb71",
+    "subject": "Claude for the doctor and the agent team",
+    "date": "2026-11-22T11:44:37+05:30"
+   },
+   {
+    "sha": "1a290b0795debfc42250e3e8fb55122b549c2076",
+    "subject": "GCP start-up: always enable and start Ollama",
+    "date": "2026-11-22T12:51:53+05:30"
+   }
+  ]
+ }
+}

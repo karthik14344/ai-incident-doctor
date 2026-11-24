@@ -1,0 +1,96 @@
+{
+  "run_id": "f1_embed_timeout-r1-gpu",
+  "fault_id": "f1_embed_timeout",
+  "delivery": "push",
+  "variant": "guilty_last",
+  "started": "2026-11-22T08:25:37Z",
+  "trigger": "ticket",
+  "pushes": [
+    {
+      "label": "distractors",
+      "sha": "3bb7cb1413d357a4c681996ceeb1bd70f6c4b019",
+      "pushed_at": "2026-11-22T08:25:38Z",
+      "push_returned_at": "2026-11-22T08:26:24Z",
+      "push_seconds": 46.5,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for 3bb7cb1413d357a4c681996ceeb1bd70f6c4b019 - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/3bb7cb1413d357a4c681996ceeb1bd70f6c4b019.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        " * [new branch]      main -> main"
+      ],
+      "deploy_ts": "2026-11-22T08:26:24Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "guilty",
+      "sha": "ee1a12fe7a80bedba7b56259640568c4fefbe5fc",
+      "pushed_at": "2026-11-22T08:26:24Z",
+      "push_returned_at": "2026-11-22T08:27:07Z",
+      "push_seconds": 42.4,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (30s)        ",
+        "remote: pipeline: SUCCESS for ee1a12fe7a80bedba7b56259640568c4fefbe5fc - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/ee1a12fe7a80bedba7b56259640568c4fefbe5fc.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   3bb7cb1..ee1a12f  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T08:27:06Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    },
+    {
+      "label": "revert",
+      "sha": "70c3dff428aa9f43be013e18f612229ad1b1d38b",
+      "pushed_at": "2026-11-22T08:43:37Z",
+      "push_returned_at": "2026-11-22T08:44:20Z",
+      "push_seconds": 42.7,
+      "ok": true,
+      "output_tail": [
+        "remote: === deploy: ok (31s)        ",
+        "remote: pipeline: SUCCESS for 70c3dff428aa9f43be013e18f612229ad1b1d38b - log: /opt/aid/ai-incident-doctor/runtime/pipeline-logs/70c3dff428aa9f43be013e18f612229ad1b1d38b.log        ",
+        "To /opt/aid/ai-incident-doctor/runtime/pipeline.git",
+        "   ee1a12f..70c3dff  main -> main"
+      ],
+      "deploy_ts": "2026-11-22T08:44:20Z",
+      "deploy_outcome": "success",
+      "pipeline": "local"
+    }
+  ],
+  "t_break": "2026-11-22T08:26:24Z",
+  "load": null,
+  "neighbour": true,
+  "monitoring_missed": true,
+  "ticket_filed_at": "2026-11-22T08:42:07Z",
+  "ticket": {
+    "text": "Answers have been wrong or unrelated to my question for a while now.",
+    "since": "about 16 minutes ago",
+    "response": {
+      "status": "opened",
+      "incident_id": "inc_f1dff65801",
+      "diagnose_after": "2026-11-22T08:42:07Z",
+      "window": {
+        "text": "Answers have been wrong or unrelated to my question for a while now.",
+        "since": "about 16 minutes ago",
+        "search_range": [
+          "2026-11-22T08:18:07Z",
+          "2026-11-22T08:42:07Z"
+        ],
+        "how": "'16 minutes ago'",
+        "onset_signals": [],
+        "onset_found": false
+      }
+    }
+  },
+  "incident_id": "inc_f1dff65801",
+  "t_report": "2026-11-22T08:42:36Z",
+  "doctor_s": 29.0,
+  "agents_wait_started": "2026-11-22T08:42:37Z",
+  "agents_status": "escalated",
+  "agents_wait_finished": "2026-11-22T08:43:37Z",
+  "neighbour_calls": 31899,
+  "t_revert_start": "2026-11-22T08:43:37Z",
+  "t_reverted": "2026-11-22T08:44:20Z",
+  "finished": "2026-11-22T08:44:20Z"
+}
